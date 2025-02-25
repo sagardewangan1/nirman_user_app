@@ -32,7 +32,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   TextEditingController newPasswordController = TextEditingController();
   TextEditingController repeatNewPasswordController = TextEditingController();
 
-  bool keepLoggedIn = true;
+  bool shashaktnirman_is_logged_in = true;
 
   @override
   Widget build(BuildContext context) {

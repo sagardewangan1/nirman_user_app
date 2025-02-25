@@ -31,7 +31,7 @@ def keystoreProperties = new Properties()
    }
 
 android {
-    namespace = "com.xgenious.qixer"
+    namespace = "com.shashaktnirmanuserapp"
     compileSdk = 35
     ndkVersion = flutter.ndkVersion
 
@@ -46,7 +46,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.xgenious.qixer"
+        applicationId = "com.shashaktnirmanuserapp"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdk = flutter.minSdkVersion
@@ -56,13 +56,13 @@ android {
     }
 
     signingConfigs {
-       release {
-           keyAlias keystoreProperties['keyAlias']
-           keyPassword keystoreProperties['keyPassword']
-           storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
-           storePassword keystoreProperties['storePassword']
-       }
-   }
+        release {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
+            storePassword keystoreProperties['storePassword']
+        }
+    }
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.
@@ -73,6 +73,7 @@ android {
         }
     }
 }
+
 
 flutter {
     source = "../.."
@@ -86,3 +87,46 @@ dependencies {
     implementation 'com.pusher:push-notifications-android:1.9.0'
 
 }
+
+
+// relase time with jks file
+//
+//defaultConfig {
+//    // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
+//    applicationId = "com.shashaktnirmanuserapp"
+//    // You can update the following values to match your application needs.
+//    // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
+//    minSdk = flutter.minSdkVersion
+//    targetSdk = flutter.targetSdkVersion
+//    versionCode = flutterVersionCode.toInteger()
+//    versionName = flutterVersionName
+//}
+//
+//signingConfigs {
+//    release {
+//        keyAlias keystoreProperties['keyAlias']
+//        keyPassword keystoreProperties['keyPassword']
+//        storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
+//        storePassword keystoreProperties['storePassword']
+//    }
+//}
+//buildTypes {
+//    release {
+//        // TODO: Add your own signing config for the release build.
+//        // Signing with the debug keys for now, so `flutter run --release` works.
+//        minifyEnabled false
+//        shrinkResources false
+//        signingConfig signingConfigs.release
+//    }
+//}
+//
+//
+//modified here for this error
+//
+//        * What went wrong:
+//        Execution failed for task ':app:packageRelease'.
+//> A failure occurred while executing com.android.build.gradle.tasks.PackageAndroidArtifact$IncrementalSplitterRunnable
+//        > SigningConfig "release" is missing required property "storeFile".
+//
+//
+//        i want to ignore store file

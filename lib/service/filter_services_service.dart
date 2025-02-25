@@ -192,13 +192,13 @@ class FilterServicesService with ChangeNotifier {
       sellerId, lat, lng) {
     double randomLat = lat;
     double randomLng = lng;
-    var latLng = randomLat.toString() + ", " + randomLng.toString();
+    var latLng = "$randomLat, $randomLng";
     if (markerKeys.contains(latLng) && !latLng.contains("null")) {
       do {
         final ranLatLng = getRandomCoordinates(lat, lng, 500);
         randomLat = ranLatLng.first;
         randomLng = ranLatLng.last;
-        latLng = randomLat.toString() + ", " + randomLng.toString();
+        latLng = "$randomLat, $randomLng";
       } while (markerKeys.contains(latLng));
     }
     markerKeys.add(latLng);

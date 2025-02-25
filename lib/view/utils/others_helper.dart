@@ -8,11 +8,18 @@ import 'package:qixer/view/utils/responsive.dart';
 
 import '../../service/app_string_service.dart';
 
-String siteLink = "https://color.sagardev.in";
+String siteLink = "https://sashaktnirmaan.com"; // Production
+// String siteLink = "http://192.168.1.13/focus/qixer-v2.7.0"; // Developement
 
 String get baseApi => '$siteLink/api/v1';
+String rupeeSymbol = '\u20B9';
 
 String placeHolderUrl = 'https://i.postimg.cc/rpsKNndW/New-Project.png';
+String appLogoIcon = 'assets/images/nirmanlogo.jpeg';
+String appIconUrl =
+    'https://sashaktnirmaan.com/assets/uploads/media-uploader/app_logo.jpeg';
+String placeHolderUrl2 = 'https://i.postimg.cc/mgZ1SD5P/Untitled-design.jpg';
+String loadMoreGif = 'https://i.postimg.cc/FsTXxr5r/target-4755-128.gif';
 String userPlaceHolderUrl =
     'https://i.postimg.cc/ZYQp5Xv1/blank-profile-picture-gb26b7fbdf-1280.png';
 String appVersion = 'v1.0';
@@ -112,5 +119,41 @@ extension PriceConverter on String {
             .replaceAll(",", "")
             .replaceAll(rtlProvider.currency, "")) ??
         0;
+  }
+}
+
+enum EnquiryType {
+  support,
+  product,
+  feedback,
+  general,
+  urgent,
+  high,
+  medium,
+  low
+}
+
+extension EnquiryTypeExtension on EnquiryType {
+  String get name {
+    switch (this) {
+      case EnquiryType.support:
+        return "Support";
+      case EnquiryType.product:
+        return "Product Inquiry";
+      case EnquiryType.feedback:
+        return "Feedback";
+      case EnquiryType.general:
+        return "General Query";
+      case EnquiryType.urgent:
+        return "Urgent";
+      case EnquiryType.high:
+        return "High Priority";
+      case EnquiryType.medium:
+        return "Medium Priority";
+      case EnquiryType.low:
+        return "Low Priority";
+      default:
+        return "";
+    }
   }
 }

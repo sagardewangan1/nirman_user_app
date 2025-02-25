@@ -13,7 +13,6 @@ class StateDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cc = ConstantColors();
-
     return Consumer<CountryStatesService>(
       builder: (context, provider, child) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -11,18 +11,18 @@ String categoryModelToJson(CategoryModel data) => json.encode(data.toJson());
 
 class CategoryModel {
   CategoryModel({
-    required this.category,
+    this.category,
   });
 
-  List<Category> category;
+  List<Category>? category;
 
   factory CategoryModel.fromJson(Map json) => CategoryModel(
         category: List<Category>.from(
-            json["category"].map((x) => Category.fromJson(x))),
+            json["category"]?.map((x) => Category.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
-        "category": List<dynamic>.from(category.map((x) => x.toJson())),
+        "category": List<dynamic>.from(category?.map((x) => x.toJson()) ?? []),
       };
 }
 

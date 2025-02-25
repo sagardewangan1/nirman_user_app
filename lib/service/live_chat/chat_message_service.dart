@@ -83,7 +83,7 @@ class ChatMessagesService with ChangeNotifier {
     } else {}
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var token = prefs.getString('token');
+    var token = prefs.getString('shashaktnirmantoken');
 
     var header = {
       //if header type is application/json then the data should be in jsonEncode method
@@ -147,7 +147,7 @@ class ChatMessagesService with ChangeNotifier {
 
   sendMessage(toUser, message, imagePath, BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var token = prefs.getString('token');
+    var token = prefs.getString('shashaktnirmantoken');
 
     var dio = Dio();
     dio.options.headers['Content-Type'] = 'multipart/form-data';

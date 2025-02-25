@@ -33,22 +33,26 @@ class SearchBar extends StatelessWidget {
       children: [
         Consumer<AppStringService>(
           builder: (context, asProvider, child) => Container(
-            margin: const EdgeInsets.only(bottom: 16),
             child: Column(
               children: [
-                TextFormField(
-                  controller: sfm.searchTextController,
-                  decoration: const InputDecoration(
-                    hintText: 'Search',
-                  ),
-                  onChanged: (text) {
-                    sfm.timer?.cancel();
-                    sfm.timer = Timer(const Duration(seconds: 1), () {
-                      Provider.of<FilterServicesService>(context, listen: false)
-                          .setSearchText(text);
-                    });
-                  },
-                ).hp20,
+                Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.0),
+                        color: cc.white),
+                    child: TextFormField(
+                      controller: sfm.searchTextController,
+                      decoration: const InputDecoration(
+                        hintText: 'Search',
+                      ),
+                      onChanged: (text) {
+                        sfm.timer?.cancel();
+                        sfm.timer = Timer(const Duration(seconds: 1), () {
+                          Provider.of<FilterServicesService>(context,
+                                  listen: false)
+                              .setSearchText(text);
+                        });
+                      },
+                    )).hp20,
                 12.toHeight,
                 Card(
                   surfaceTintColor: cc.black9,
@@ -68,18 +72,18 @@ class SearchBar extends StatelessWidget {
                         icon: "filter",
                         subtitle: "Filter",
                       ),
-                      FilterIconButton(
-                          subtitle: "Location",
-                          icon: "location",
-                          onPressed: () {
-                            sfm.setLFilters(context);
-                            showModalBottomSheet(
-                              context: context,
-                              builder: (context) {
-                                return const LocationSheet();
-                              },
-                            );
-                          }),
+                      // FilterIconButton(
+                      //     subtitle: "Location",
+                      //     icon: "location",
+                      //     onPressed: () {
+                      //       sfm.setLFilters(context);
+                      //       showModalBottomSheet(
+                      //         context: context,
+                      //         builder: (context) {
+                      //           return const LocationSheet();
+                      //         },
+                      //       );
+                      //     }),
                       FilterIconButton(
                           subtitle: "Category",
                           onPressed: () {
@@ -104,47 +108,13 @@ class SearchBar extends StatelessWidget {
                       ),
                     ],
                   ),
-                ).hp20,
-                //Country state
-                // Row(
-                //   children: [
-                //     Expanded(
-                //       flex: 1,
-                //       child: CountryDropdown(
-                //         textWidth: MediaQuery.of(context).size.width / 3.6,
-                //       ),
-                //     ),
-                //     const SizedBox(
-                //       width: 10,
-                //     ),
-                //     Expanded(
-                //         flex: 1,
-                //         child: StateDropdown(
-                //           textWidth: MediaQuery.of(context).size.width / 3.6,
-                //         ))
-                //   ],
-                // ),
-
-                // //Area, online/offline
-                // sizedBoxCustom(15),
-                // const Row(
-                //   children: [
-                //     // const Expanded(
-                //     //   child: AreaDropdown(),
-                //     // ),
-                //     // const SizedBox(
-                //     //   width: 10,
-                //     // ),
-                //     Expanded(child: OnlineOfflineDropdown())
-                //   ],
-                // ),
-
-                //Services
+                ).hp15,
                 Consumer<FilterServicesService>(
                     builder: (context, provider, child) {
                   return CustomFutureWidget(
                     shimmer: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 30),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 30, horizontal: 15),
                         child: OthersHelper().showLoading(cc.primaryColor)),
                     isLoading: provider.searchLoading,
                     child: Expanded(
@@ -154,65 +124,89 @@ class SearchBar extends StatelessWidget {
                           ? CommonHelper()
                               .nothingfound(context, "No results found")
                           : ListView.separated(
-                              padding: const EdgeInsets.all(20),
+                              padding: EdgeInsets.zero,
+                              separatorBuilder: (context, index) => 0.toHeight,
                               itemBuilder: (context, i) {
-                                return InkWell(
-                                  splashColor: Colors.transparent,
-                                  highlightColor: Colors.transparent,
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute<void>(
-                                        builder: (BuildContext context) =>
-                                            const ServiceDetailsPage(),
-                                      ),
-                                    );
-                                    Provider.of<ServiceDetailsService>(context,
-                                            listen: false)
-                                        .fetchServiceDetails(provider
-                                            .serviceMap[i]['serviceId']);
-                                  },
-                                  child: ServiceCard(
-                                    cc: cc,
-                                    imageLink: provider.serviceMap[i]
-                                            ['image'] ??
-                                        placeHolderUrl,
-                                    rating: twoDouble(
-                                        provider.serviceMap[i]['rating']),
-                                    title: provider.serviceMap[i]['title'],
-                                    sellerName: provider.serviceMap[i]
-                                        ['sellerName'],
-                                    price: provider.serviceMap[i]['price'],
-                                    buttonText: 'Book Now',
-                                    width: double.infinity,
-                                    marginRight: 0.0,
-                                    pressed: () {
-                                      provider.saveOrUnsave(
-                                          provider.serviceMap[i]['serviceId'],
-                                          provider.serviceMap[i]['title'],
-                                          provider.serviceMap[i]['image'],
-                                          provider.serviceMap[i]['price']
-                                              .round(),
-                                          provider.serviceMap[i]['sellerName'],
-                                          twoDouble(
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 15, vertical: 5),
+                                  child: Column(
+                                    children: [
+                                      InkWell(
+                                        splashColor: Colors.transparent,
+                                        highlightColor: Colors.transparent,
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute<void>(
+                                              builder: (BuildContext context) =>
+                                                  const ServiceDetailsPage(),
+                                            ),
+                                          );
+                                          Provider.of<ServiceDetailsService>(
+                                                  context,
+                                                  listen: false)
+                                              .fetchServiceDetails(provider
+                                                  .serviceMap[i]['serviceId']);
+                                        },
+                                        child: ServiceCard(
+                                          cc: cc,
+                                          imageLink: provider.serviceMap[i]
+                                                  ['image'] ??
+                                              placeHolderUrl,
+                                          rating: twoDouble(
                                               provider.serviceMap[i]['rating']),
-                                          i,
-                                          context,
-                                          provider.serviceMap[i]['sellerId']);
-                                    },
-                                    isSaved: provider.serviceMap[i]
-                                                ['isSaved'] ==
-                                            true
-                                        ? true
-                                        : false,
-                                    serviceId: provider.serviceMap[i]
-                                        ['serviceId'],
-                                    sellerId: provider.serviceMap[i]
-                                        ['sellerId'],
+                                          title: provider.serviceMap[i]
+                                              ['title'],
+                                          sellerName: provider.serviceMap[i]
+                                              ['sellerName'],
+                                          price: provider.serviceMap[i]
+                                              ['price'],
+                                          buttonText: 'Enquiry Now',
+                                          width: double.infinity,
+                                          marginRight: 5.0,
+                                          pressed: () {
+                                            provider.saveOrUnsave(
+                                                provider.serviceMap[i]
+                                                    ['serviceId'],
+                                                provider.serviceMap[i]['title'],
+                                                provider.serviceMap[i]['image'],
+                                                provider.serviceMap[i]['price']
+                                                    .round(),
+                                                provider.serviceMap[i]
+                                                    ['sellerName'],
+                                                twoDouble(provider.serviceMap[i]
+                                                    ['rating']),
+                                                i,
+                                                context,
+                                                provider.serviceMap[i]
+                                                    ['sellerId']);
+                                          },
+                                          isSaved: provider.serviceMap[i]
+                                                      ['isSaved'] ==
+                                                  true
+                                              ? true
+                                              : false,
+                                          serviceId: provider.serviceMap[i]
+                                              ['serviceId'],
+                                          sellerId: provider.serviceMap[i]
+                                              ['sellerId'],
+                                          cardFrom: 'Home',
+                                          address: "Raipur",
+                                          experience: "10 yr",
+                                          status: "1",
+                                        ),
+                                      ),
+                                      // if (i < provider.serviceMap.length - 1)
+                                      //   Divider(
+                                      //     thickness: 1,
+                                      //     height: 2,
+                                      //     color: cc.black6,
+                                      //   )
+                                    ],
                                   ),
                                 );
                               },
-                              separatorBuilder: (context, index) => 16.toHeight,
                               itemCount: provider.serviceMap.length),
                     ),
                   );

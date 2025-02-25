@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:qixer/data/network/network_api_services.dart';
+import 'package:qixer/model/recent_service_model.dart';
 import 'package:qixer/model/serviceby_category_model.dart';
 import 'package:qixer/model/sub_category_model.dart';
 import 'package:qixer/service/common_service.dart';
@@ -67,13 +68,9 @@ class ServiceByCategoryService with ChangeNotifier {
     apiLink =
         '$baseApi/service-list/category-subcategory-rating-sort-by-search/?cat=$categoryId&subcat=${selectedSubCat?.id ?? ""}&page=$currentPage';
     //====================>
-
     if (isrefresh) {
-      //making the list empty first to show loading bar (we are showing loading bar while the product list is empty)
-      //we are make the list empty when the sub category or brand is selected because then the refresh is true
       serviceMap = [];
       notifyListeners();
-
       Provider.of<ServiceByCategoryService>(context, listen: false)
           .setCurrentPage(1);
     } else {
@@ -91,13 +88,99 @@ class ServiceByCategoryService with ChangeNotifier {
       //if connection is ok
       var response = await http.get(Uri.parse(apiLink));
 
-      debugPrint(response.body.toString());
+      // final decodedResponse = jsonDecode(response.body);
+      // print(decodedResponse["all_services"]["data"].toString());
 
-      // var jsonDataServiceList =
-      //     jsonDecode(response.body)['all_services']['data'];
+      var jsonDataServiceList =
+          jsonDecode(response.body)['all_services']['data'];
+      print(jsonDataServiceList[0]['seller_for_mobile'].toString());
 
       if (response.statusCode == 201) {
         var data = ServicebyCategoryModel.fromJson(jsonDecode(response.body));
+        imageList = [];
+        setTotalPage(data.allServices.lastPage);
+
+        for (int i = 0; i < data.allServices.data.length; i++) {
+          String? serviceImage;
+
+          if (data.serviceImage.length > i) {
+            serviceImage = data.serviceImage[i]?.imgUrl;
+          } else {
+            serviceImage = null;
+          }
+
+          int totalRating = 0;
+          for (int j = 0;
+              j < data.allServices.data[i].reviewsForMobile.length;
+              j++) {
+            totalRating = totalRating +
+                data.allServices.data[i].reviewsForMobile[j].rating!.toInt();
+          }
+          double averageRate = 0;
+
+          if (data.allServices.data[i].reviewsForMobile.isNotEmpty) {
+            averageRate = (totalRating /
+                data.allServices.data[i].reviewsForMobile.length);
+          }
+          averageRateList.add(averageRate);
+          imageList.add(serviceImage);
+        }
+
+        if (isrefresh) {
+          //if refreshed, then remove all service from list and insert new data
+          setServiceList(
+              data.allServices.data, averageRateList, imageList, false);
+        } else {
+          //else add new data
+          setServiceList(
+              data.allServices.data, averageRateList, imageList, true);
+        }
+
+        currentPage++;
+        setCurrentPage(currentPage);
+        return true;
+      } else {
+        if (serviceMap.isEmpty) {
+          hasError = true;
+          notifyListeners();
+        }
+        notifyListeners();
+        return false;
+      }
+    }
+  }
+
+  fetchServiceBySubCateId(context, categoryId, subCatId,
+      {bool isrefresh = false}) async {
+    //=================>
+    String apiLink;
+    apiLink =
+        '$baseApi/service-list/category-subcategory-rating-sort-by-search/?cat=$categoryId&subcat=${subCatId ?? ""}&page=$currentPage';
+    //====================>
+    print("url-======> $apiLink");
+    if (isrefresh) {
+      //making the list empty first to show loading bar (we are showing loading bar while the product list is empty)
+      //we are make the list empty when the sub category or brand is selected because then the refresh is true
+      serviceMap = [];
+      notifyListeners();
+
+      Provider.of<ServiceByCategoryService>(context, listen: false)
+          .setCurrentPage(1);
+    } else {}
+    var connection = await checkConnection();
+    if (connection) {
+      //if connection is ok
+      var response = await http.get(Uri.parse(apiLink));
+
+      // var jsonDataServiceList = jsonDecode(response.body)['all_services']
+      //     ['data'][0]["seller_for_mobile"];
+      //
+      // debugPrint("api response : ======> ${jsonDataServiceList.toString()}");
+
+      if (response.statusCode == 201) {
+        ServicebyCategoryModel data =
+            ServicebyCategoryModel.fromJson(jsonDecode(response.body));
+
         imageList = [];
         setTotalPage(data.allServices.lastPage);
 
@@ -157,20 +240,29 @@ class ServiceByCategoryService with ChangeNotifier {
       serviceMap = [];
       notifyListeners();
     }
-
     for (int i = 0; i < data.length; i++) {
+      var seller = data[i].sellerForMobile;
+      // Skip this iteration if sellerForMobile is null OR empty
+      if (seller == null && seller?.toJson().isEmpty ?? true) {
+        continue;
+      }
+      //
+      // print(
+      //     "\nnew data printing ==========> ${data[i].title} && ${seller.toJson()} <============");
+      // //
       serviceMap.add({
         'serviceId': data[i].id,
         'title': data[i].title,
-        'sellerName': data[i].sellerForMobile.name,
+        'name': seller
+            .name, // Assuming sellerForMobile is a List and using first seller
         'price': data[i].price,
         'rating': averageRateList[i],
         'image': imageList[i],
         'isSaved': false,
         'sellerId': data[i].sellerId,
       });
-      checkIfAlreadySaved(data[i].id, data[i].title,
-          data[i].sellerForMobile.name, serviceMap.length - 1);
+      checkIfAlreadySaved(
+          data[i].id, data[i].title, seller.name, serviceMap.length - 1);
     }
   }
 
@@ -226,7 +318,6 @@ class ServiceByCategoryService with ChangeNotifier {
         headers: commonAuthHeader);
 
     if (responseData != null) {
-      debugPrint(responseData.toString());
       subCatList = SubcategoryModel.fromJson(responseData).subCategories;
       notifyListeners();
     }

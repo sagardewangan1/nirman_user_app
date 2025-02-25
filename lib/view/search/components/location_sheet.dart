@@ -3,7 +3,10 @@ import 'package:provider/provider.dart';
 import 'package:qixer/helper/extension/context_extension.dart';
 import 'package:qixer/helper/extension/int_extension.dart';
 import 'package:qixer/helper/extension/widget_extension.dart';
+import 'package:qixer/service/common_service.dart';
+import 'package:qixer/service/jobs_service/recent_jobs_service.dart';
 import 'package:qixer/view/search/service_filter_model.dart';
+import 'package:qixer/view/utils/common_helper.dart';
 import 'package:qixer/view/utils/custom_dropdown.dart';
 import 'package:qixer/view/utils/field_label.dart';
 import 'package:qixer/view/utils/location_from_google.dart';
@@ -137,6 +140,100 @@ class LocationSheet extends StatelessWidget {
               ],
             ),
           ))
+        ],
+      ),
+    );
+  }
+}
+
+class LocationSheet2 extends StatelessWidget {
+  const LocationSheet2({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final sfm = ServiceFilterViewModel.instance;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      margin:
+          EdgeInsets.only(bottom: (MediaQuery.of(context).viewInsets.bottom)),
+      decoration: BoxDecoration(
+          borderRadius: const BorderRadius.only(
+            topRight: Radius.circular(20),
+            topLeft: Radius.circular(20),
+          ),
+          color: cc.white,
+          border: Border.all(color: cc.black7)),
+      constraints: BoxConstraints(
+          maxHeight:
+              context.height / 2 + (MediaQuery.of(context).viewInsets.bottom)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Align(
+            alignment: Alignment.center,
+            child: Container(
+              height: 4,
+              width: 48,
+              margin: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: cc.black7,
+              ),
+            ),
+          ),
+          Center(
+            child: Text(
+              textAlign: TextAlign.center,
+              "Select Your City Here",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          Divider(),
+          Expanded(
+            child: Consumer<RecentJobsService>(
+              builder: (contexts, provider, child) {
+                // Add 1 to the itemCount to account for the "Select City" option
+                final cityCount = provider.allCitiesDataModel.data?.length ?? 0;
+                return ListView.builder(
+                  itemCount: cityCount + 1, // +1 for the "Select City" option
+                  itemBuilder: (contexts2, index) {
+                    if (index == 0) {
+                      // This is the "Select City" option
+                      return Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: InkWell(
+                          onTap: () {
+                            provider.setCityID(0, 'Select City');
+                            Navigator.pop(context);
+                          },
+                          child: Text('Select City'),
+                        ),
+                      );
+                    } else {
+                      // Get the city data, adjusting the index to account for the "Select City" option
+                      final cities =
+                          provider.allCitiesDataModel.data?[index - 1];
+                      return Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: InkWell(
+                          onTap: () {
+                            provider.setCityID(cities?.id ?? 0,
+                                cities?.serviceArea.toString() ?? '');
+                            runAtHome(context);
+                            Navigator.pop(context);
+                          },
+                          child: Text(cities?.serviceArea.toString() ?? ''),
+                        ),
+                      );
+                    }
+                  },
+                );
+              },
+            ),
+          )
         ],
       ),
     );

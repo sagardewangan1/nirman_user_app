@@ -34,7 +34,7 @@ class RecentJobs extends StatelessWidget {
                         SectionTitle(
                           cc: cc,
                           title: lnProvider.getString('Recent jobs'),
-                          hasSeeAllBtn: false,
+                          hasSeeAllBtn: true,
                           pressed: () {},
                         ),
                         sizedBoxCustom(18),

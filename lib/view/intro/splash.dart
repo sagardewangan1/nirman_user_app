@@ -33,8 +33,9 @@ class _SplashScreenState extends State<SplashScreen> {
     initializeLNProvider(context);
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool? intro = prefs.getBool('intro');
+    bool? isLogin = prefs.getBool('shashaktnirman_is_logged_in');
     debugPrint(intro.toString());
-    if (intro == null) {
+    if (isLogin == false || isLogin == null) {
       //that means user is opening the app for the first time.. so , show the intro
       Future.delayed(const Duration(microseconds: 2), () {
         Navigator.pushReplacement<void, void>(
@@ -66,12 +67,11 @@ class _SplashScreenState extends State<SplashScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                height: 40,
+                height: 80,
                 width: double.infinity,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                     image: DecorationImage(
-                        image: AssetImage('assets/images/logo.png'),
-                        fit: BoxFit.fitHeight)),
+                        image: AssetImage(appLogoIcon), fit: BoxFit.fitHeight)),
               ),
               const SizedBox(height: 24),
               OthersHelper().showLoading(ConstantColors().primaryColor),

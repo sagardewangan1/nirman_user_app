@@ -11,7 +11,6 @@ import 'package:qixer/view/utils/common_helper.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:qixer/view/utils/others_helper.dart';
 
-import '../home/components/home_app_bar.dart';
 
 class HomeMapView extends StatelessWidget {
   HomeMapView({super.key});

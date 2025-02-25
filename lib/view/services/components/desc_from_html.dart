@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+import 'package:qixer/view/utils/constant_colors.dart';
 
 class DescInHtml extends StatelessWidget {
-  const DescInHtml({super.key, this.desc});
+  const DescInHtml({super.key, this.desc, required this.cc});
   final desc;
+  final ConstantColors cc;
 
   @override
   Widget build(BuildContext context) {
@@ -11,11 +13,8 @@ class DescInHtml extends StatelessWidget {
         HtmlWidget(
       // the first parameter (`html`) is required
       '''
-
-     $desc
-
-     
-  ''',
+      $desc
+      ''',
 
       // all other parameters are optional, a few notable params:
 
@@ -47,8 +46,8 @@ class DescInHtml extends StatelessWidget {
       renderMode: RenderMode.column,
 
       // set the default styling for text
-      textStyle: TextStyle(fontSize: 15),
-
+      textStyle: TextStyle(
+          fontSize: 14, fontWeight: FontWeight.w400, color: cc.black3),
       // turn on `webView` if you need IFRAME support (it's disabled by default)
     );
   }

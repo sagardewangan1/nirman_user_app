@@ -18,32 +18,33 @@ class CustomInput extends StatelessWidget {
   TextEditingController? controller;
   int? maxLines;
   int? minLines;
+  Color? color;
 
-  CustomInput({
-    Key? key,
-    required this.hintText,
-    this.onChanged,
-    this.textInputAction = TextInputAction.next,
-    this.isPasswordField = false,
-    this.focusNode,
-    this.isNumberField = false,
-    this.controller,
-    this.validation,
-    this.icon,
-    this.paddingHorizontal = 8.0,
-    this.marginBottom = 19,
-    this.borderRadius = 8,
-    this.paddingVertical = 18,
-    this.maxLines,
-    this.minLines,
-  }) : super(key: key);
+  CustomInput(
+      {super.key,
+      required this.hintText,
+      this.onChanged,
+      this.textInputAction = TextInputAction.next,
+      this.isPasswordField = false,
+      this.focusNode,
+      this.isNumberField = false,
+      this.controller,
+      this.validation,
+      this.icon,
+      this.paddingHorizontal = 8.0,
+      this.marginBottom = 19,
+      this.borderRadius = 8,
+      this.paddingVertical = 18,
+      this.maxLines,
+      this.minLines,
+      this.color});
 
   @override
   Widget build(BuildContext context) {
     return Container(
         margin: EdgeInsets.only(bottom: marginBottom),
         decoration: BoxDecoration(
-            // color: ConstantColors().greySecondary,
+            color: color ?? Colors.transparent,
             borderRadius: BorderRadius.circular(borderRadius)),
         child: TextFormField(
           controller: controller,

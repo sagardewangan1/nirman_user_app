@@ -113,7 +113,7 @@ class TopRatedServices extends StatelessWidget {
                     ),
                   ],
                 )
-              : Text(asProvider.getString('Something went wrong'))
+              : Offstage()
           : Container(),
     );
   }

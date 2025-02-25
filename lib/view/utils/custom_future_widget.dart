@@ -6,7 +6,7 @@ class CustomFutureWidget extends StatelessWidget {
   final isLoading;
   final function;
   const CustomFutureWidget(
-      {
+      {super.key, 
       required this.child,
       this.function,
       this.shimmer,

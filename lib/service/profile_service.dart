@@ -50,11 +50,12 @@ class ProfileService with ChangeNotifier {
   }
 
   Future<bool> fetchData() async {
+    print("token form profile=====>");
     var connection = await checkConnection();
     if (!connection) return false;
     //internet connection is on
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var token = prefs.getString('token');
+    var token = prefs.getString('shashaktnirmantoken');
 
     setLoadingTrue();
 

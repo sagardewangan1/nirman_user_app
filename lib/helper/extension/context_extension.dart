@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:flutter_quill/flutter_quill.dart' as quill;
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -175,5 +176,38 @@ extension ShowSnackBar on BuildContext {
               )
           ],
         )));
+  }
+}
+
+extension QuillControllerHtmlConversion on quill.QuillController {
+  String getHtmlContent() {
+    final delta = document.toDelta();
+    // Manual conversion of delta to HTML string
+    String htmlString = "<div>";
+    for (var element in delta.toList()) {
+      if (element.data != null) {
+        htmlString +=
+            "<p>${element.data}</p>"; // Wrap text with <p> tags for paragraphs
+      }
+    }
+    htmlString += "</div>";
+    return htmlString;
+  }
+}
+
+extension TimeOfDayFormatting on TimeOfDay {
+  String formatTo12Hour() {
+    final now = DateTime.now();
+    final formattedTime = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      this.hour,
+      this.minute,
+    );
+    final hour = formattedTime.hour % 12 == 0 ? 12 : formattedTime.hour % 12;
+    final minute = formattedTime.minute.toString().padLeft(2, '0');
+    final period = formattedTime.hour >= 12 ? 'PM' : 'AM';
+    return '$hour:$minute $period';
   }
 }

@@ -68,7 +68,7 @@ class CreateJobService with ChangeNotifier {
 
     setLoadingStatus(true);
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var token = prefs.getString('token');
+    var token = prefs.getString('shashaktnirmantoken');
 
     FormData formData;
     var dio = Dio();

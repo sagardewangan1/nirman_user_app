@@ -14,14 +14,18 @@ class MenuPersonalInfoSection extends StatelessWidget {
     return Consumer<AppStringService>(
       builder: (context, asProvider, child) => Consumer<ProfileService>(
           builder: (context, profileProvider, child) => Container(
-                padding: EdgeInsets.symmetric(horizontal: screenPadding),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8.0)),
+                padding: EdgeInsets.symmetric(
+                    horizontal: screenPadding, vertical: 10),
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       CommonHelper().titleCommon(
                           asProvider.getString("Personal information's")),
                       const SizedBox(
-                        height: 25,
+                        height: 15,
                       ),
                       BookingHelper().bRow(
                           'null',
@@ -46,17 +50,17 @@ class MenuPersonalInfoSection extends StatelessWidget {
                           profileProvider
                                   .profileDetails.userDetails.country.country ??
                               ''),
-                      BookingHelper().bRow(
-                          'null',
-                          asProvider.getString("Post Code"),
-                          profileProvider.profileDetails.userDetails.postCode ??
-                              ''),
-                      BookingHelper().bRow(
-                          'null',
-                          asProvider.getString("Address"),
-                          profileProvider.profileDetails.userDetails.address ??
-                              '',
-                          lastBorder: false),
+                      // BookingHelper().bRow(
+                      //     'null',
+                      //     asProvider.getString("Post Code"),
+                      //     profileProvider.profileDetails.userDetails.postCode ??
+                      //         ''),
+                      // BookingHelper().bRow(
+                      //     'null',
+                      //     asProvider.getString("Address"),
+                      //     profileProvider.profileDetails.userDetails.address ??
+                      //         '',
+                      //     lastBorder: false),
                     ]),
               )),
     );

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:qixer/helper/extension/context_extension.dart';
+import 'package:qixer/view/selectionRole/selectionRoleView.dart';
 
-import '../auth/login/login.dart';
 import '../utils/custom_button.dart';
 import 'common_helper.dart';
 
@@ -36,7 +36,9 @@ class LoginOrRegister extends StatelessWidget {
           CustomButton(
               btText: 'Sign-In/Sign-Up',
               onPressed: () {
-                context.toPage(const LoginPage(hasBackButton: true));
+                context.toPage(const SelectionRoleView(
+                  hasBackButton: true,
+                ));
               },
               isLoading: false,
               width: context.width / 2)

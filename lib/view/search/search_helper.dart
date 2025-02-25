@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:qixer/view/home/components/marker_window_painter.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -56,7 +55,7 @@ class SearchHelper {
                                   decoration: const BoxDecoration(
                                       image: DecorationImage(
                                           image: AssetImage(
-                                              'assets/images/icon.png'),
+                                              'assets/images/icons2.jpeg'),
                                           opacity: .5)),
                                 ),
                               ],

@@ -30,7 +30,7 @@ class AppStringService with ChangeNotifier {
     if (connection) {
       //internet connection is on
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      var token = prefs.getString('token');
+      var token = prefs.getString('shashaktnirmantoken');
       if (doNotLoad) {
         final strings = prefs.getString('translated_string');
         tStrings = jsonDecode(strings ?? 'null');

@@ -112,7 +112,7 @@ class HomepageHelper {
                                   decoration: const BoxDecoration(
                                       image: DecorationImage(
                                           image: AssetImage(
-                                              'assets/images/icon.png'),
+                                              'assets/images/icons2.png'),
                                           opacity: .5)),
                                 ),
                               ],

@@ -48,21 +48,7 @@ class ImageBig extends StatelessWidget {
                     color: Colors.white,
                     iconSize: 19,
                   ),
-                  Container(
-                    margin: EdgeInsets.only(
-                        left: MediaQuery.of(context).size.width / 4),
-                    child: Text(
-                      serviceName,
-                      textAlign: TextAlign.start,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
+                  Spacer(),
                 ],
               )),
         )

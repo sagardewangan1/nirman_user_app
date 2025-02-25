@@ -25,7 +25,7 @@ class OrdersService with ChangeNotifier {
   completeOrder(BuildContext context, {required orderId}) async {
     //get user id
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var token = prefs.getString('token');
+    var token = prefs.getString('shashaktnirmantoken');
 
     var header = {
       //if header type is application/json then the data should be in jsonEncode method
@@ -89,7 +89,7 @@ class OrdersService with ChangeNotifier {
       {required orderId, required sellerId, required declineReason}) async {
     //get user id
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var token = prefs.getString('token');
+    var token = prefs.getString('shashaktnirmantoken');
 
     var header = {
       //if header type is application/json then the data should be in jsonEncode method
@@ -169,7 +169,7 @@ class OrdersService with ChangeNotifier {
   fetchDeclineHistory(BuildContext context, {required orderId}) async {
     //get user id
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var token = prefs.getString('token');
+    var token = prefs.getString('shashaktnirmantoken');
 
     var header = {
       //if header type is application/json then the data should be in jsonEncode method
@@ -219,7 +219,7 @@ class OrdersService with ChangeNotifier {
   cancelOrder(BuildContext context, {required orderId}) async {
     //get user id
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var token = prefs.getString('token');
+    var token = prefs.getString('shashaktnirmantoken');
 
     var header = {
       //if header type is application/json then the data should be in jsonEncode method

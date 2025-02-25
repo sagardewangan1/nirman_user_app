@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'package:qixer/model/CategoryDataModel.dart';
 import 'package:qixer/model/service_by_filter_model.dart';
 import 'package:qixer/model/sub_category_model.dart';
 import 'package:qixer/service/common_service.dart';
@@ -79,7 +80,7 @@ class AllServicesService with ChangeNotifier {
 
   setSelectedCategoryId(value) {
     selectedCategoryId = value;
-    notifyListeners();
+    // notifyListeners();
   }
 
   setSubcatValue(value) {
@@ -170,10 +171,10 @@ class AllServicesService with ChangeNotifier {
       // selectedCategory = categoriesList[0].name;
       // selectedCategoryId = categoriesList[0].id;
 
-      //if all category is selected then don't load sub category
-      if (categoryDropdownList.length != 1 && selectedCategoryId != 0) {
-        fetchSubcategory(selectedCategoryId);
-      }
+      // //if all category is selected then don't load sub category
+      // if (categoryDropdownList.length != 1 && selectedCategoryId != 0) {
+      //   fetchSubcategory(selectedCategoryId);
+      // }
     } else {
       //already showed in dropdown. no need to do anything
 
@@ -182,7 +183,11 @@ class AllServicesService with ChangeNotifier {
     }
   }
 
+  List<Subcategories> _subCatList = [];
+  List<Subcategories> get subCatList => _subCatList;
+
   Future<bool> fetchSubcategory(categoryId) async {
+    setSelectedCategoryId(int.parse(categoryId));
     //make sub category list to default first
     if (selectedCategoryId == 0) {
       defaultSubcategory();
@@ -193,20 +198,27 @@ class AllServicesService with ChangeNotifier {
       if (selectedCategoryId != 0) {
         //this trick is only to show loading when category other than 'All' is selected
         subcatDropdownList = [];
+        _subCatList = [];
         selectedSubcat = '';
-        notifyListeners();
+        // notifyListeners();
       }
-
-      var response = await http
-          .get(Uri.parse('$baseApi/category/sub-category/$categoryId'));
+      var url = Uri.parse('$baseApi/category/sub-category/$categoryId');
+      var response = await http.get(url);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         defaultSubcategory();
         var data = SubcategoryModel.fromJson(jsonDecode(response.body));
         for (int i = 0; i < data.subCategories.length; i++) {
           subcatDropdownList.add(data.subCategories[i].name!);
+          _subCatList.add(Subcategories(
+            id: data.subCategories[i].id,
+            name: data.subCategories[i].name,
+            image: data.subCategories[i].image,
+          ));
           subcatDropdownIndexList.add(data.subCategories[i].id!);
         }
+
+        print("_subCatList .length====> ${_subCatList.length}");
 
         // selectedSubcat = data.subCategories[0].name!;
         // selectedSubcatId = data.subCategories[0].id!;

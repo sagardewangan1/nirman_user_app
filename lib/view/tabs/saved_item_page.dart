@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:qixer/service/app_string_service.dart';
 import 'package:qixer/service/common_service.dart';
 import 'package:qixer/service/saved_items_service.dart';
 import 'package:qixer/view/home/components/service_card.dart';
@@ -28,7 +29,25 @@ class _SavedItemPageState extends State<SavedItemPage> {
     ConstantColors cc = ConstantColors();
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      // backgroundColor: Colors.white,
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: Consumer<AppStringService>(
+          builder: (context, asProvider, child) => Padding(
+            padding: const EdgeInsets.only(right: 20.0),
+            child: Text(
+              overflow: TextOverflow.visible,
+              asProvider.getString(lnProvider.getString('Saved services')),
+              textAlign: TextAlign.center,
+              softWrap: true,
+              style: TextStyle(
+                  color: cc.greyPrimary,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600),
+            ),
+          ),
+        ),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Container(
@@ -40,11 +59,11 @@ class _SavedItemPageState extends State<SavedItemPage> {
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                          const SizedBox(
-                            height: 25,
-                          ),
-                          CommonHelper().titleCommon(
-                              lnProvider.getString('Saved services')),
+                          // const SizedBox(
+                          //   height: 25,
+                          // ),
+                          // CommonHelper().titleCommon(
+                          //     lnProvider.getString('Saved services')),
                           const SizedBox(
                             height: 22,
                           ),
@@ -55,6 +74,10 @@ class _SavedItemPageState extends State<SavedItemPage> {
                                   i++)
                                 Container(
                                   margin: const EdgeInsets.only(bottom: 20),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    color: Colors.white,
+                                  ),
                                   child: ServiceCard(
                                     cc: cc,
                                     imageLink: provider.savedItemList[i]

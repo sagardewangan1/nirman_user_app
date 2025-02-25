@@ -30,8 +30,8 @@ class FilterSheet extends StatelessWidget {
           color: cc.white,
           border: Border.all(color: cc.black7)),
       constraints: BoxConstraints(
-          maxHeight:
-              context.height / 2 + (MediaQuery.of(context).viewInsets.bottom)),
+          maxHeight: context.height / 2.5 +
+              (MediaQuery.of(context).viewInsets.bottom)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -97,31 +97,31 @@ class FilterSheet extends StatelessWidget {
                   ],
                 ),
                 16.toHeight,
-                const FieldLabel(label: "Ratings"),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    ValueListenableBuilder<num?>(
-                      valueListenable: sfm.rating,
-                      builder: (context, rating, child) {
-                        return RatingBar.builder(
-                            initialRating: rating?.toDouble() ?? 0,
-                            itemBuilder: (context, index) => Icon(
-                                  Icons.star_rounded,
-                                  color: cc.yellowColor,
-                                ),
-                            onRatingUpdate: (r) {
-                              sfm.rating.value = r;
-                            });
-                      },
-                    ),
-                    IconButton(
-                        onPressed: () {
-                          sfm.rating.value = null;
-                        },
-                        icon: const Icon(Icons.replay_outlined))
-                  ],
-                ),
+                // const FieldLabel(label: "Ratings"),
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //   children: [
+                //     ValueListenableBuilder<num?>(
+                //       valueListenable: sfm.rating,
+                //       builder: (context, rating, child) {
+                //         return RatingBar.builder(
+                //             initialRating: rating?.toDouble() ?? 0,
+                //             itemBuilder: (context, index) => Icon(
+                //                   Icons.star_rounded,
+                //                   color: cc.yellowColor,
+                //                 ),
+                //             onRatingUpdate: (r) {
+                //               sfm.rating.value = r;
+                //             });
+                //       },
+                //     ),
+                //     IconButton(
+                //         onPressed: () {
+                //           sfm.rating.value = null;
+                //         },
+                //         icon: const Icon(Icons.replay_outlined))
+                //   ],
+                // ),
                 20.toHeight,
                 Row(
                   children: [

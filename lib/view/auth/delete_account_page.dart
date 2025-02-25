@@ -6,11 +6,10 @@ import '../booking/components/textarea_field.dart';
 import '../utils/common_helper.dart';
 import '../utils/constant_colors.dart';
 import '../utils/constant_styles.dart';
-import '../utils/custom_input.dart';
 import '../utils/others_helper.dart';
 
 class DeleteAccountPage extends StatelessWidget {
-  DeleteAccountPage({Key? key}) : super(key: key);
+  DeleteAccountPage({super.key});
 
   TextEditingController descController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -96,16 +95,16 @@ class DeleteAccountPage extends StatelessWidget {
                   const SizedBox(
                     height: 20,
                   ),
-                  CommonHelper().labelCommon(ln.getString("Enter password")),
-
-                  CustomInput(
-                    hintText: ln.getString('Enter password'),
-                    controller: passwordController,
-                  ),
-
-                  const SizedBox(
-                    height: 30,
-                  ),
+                  // CommonHelper().labelCommon(ln.getString("Enter password")),
+                  //
+                  // CustomInput(
+                  //   hintText: ln.getString('Enter password'),
+                  //   controller: passwordController,
+                  // ),
+                  //
+                  // const SizedBox(
+                  //   height: 30,
+                  // ),
 
                   Consumer<DeleteAccountService>(
                     builder: (context, provider, child) => CommonHelper()
@@ -117,12 +116,12 @@ class DeleteAccountPage extends StatelessWidget {
                               Colors.black);
                           return;
                         }
-                        if (passwordController.text.length < 6) {
-                          OthersHelper().showToast(
-                              ln.getString('Please enter a valid password'),
-                              Colors.black);
-                          return;
-                        }
+                        // if (passwordController.text.length < 6) {
+                        //   OthersHelper().showToast(
+                        //       ln.getString('Please enter a valid password'),
+                        //       Colors.black);
+                        //   return;
+                        // }
 
                         provider.deleteAccount(
                           context,

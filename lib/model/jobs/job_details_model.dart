@@ -135,7 +135,7 @@ class JobDetails {
         "job_request": jobRequest == null
             ? null
             : List<dynamic>.from(jobRequest!.map((x) => x.toJson())),
-        "buyer": buyer == null ? null : buyer?.toJson(),
+        "buyer": buyer?.toJson(),
       };
 }
 

@@ -12,7 +12,7 @@ class StateDropdownService with ChangeNotifier {
   var statesDropdownList = [];
   var statesDropdownIndexList = [];
 
-  dynamic selectedState = 'Select City';
+  dynamic selectedState = 'Select State';
   dynamic selectedStateId = defaultId;
 
   bool isLoading = false;

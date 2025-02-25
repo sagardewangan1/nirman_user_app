@@ -187,8 +187,9 @@ class CountryStatesService with ChangeNotifier {
       notifyListeners();
     });
 
-    var response =
-        await http.get(Uri.parse('$baseApi/country/service-city/$countryId'));
+    var apilink = Uri.parse('$baseApi/country/service-city/$countryId');
+    print("api link====> $apilink");
+    var response = await http.get(apilink);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       var data = StatesDropdownModel.fromJson(jsonDecode(response.body));

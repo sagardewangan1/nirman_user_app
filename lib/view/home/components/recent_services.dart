@@ -34,9 +34,9 @@ class RecentServices extends StatelessWidget {
                         ),
                         Consumer<AllServicesService>(
                           builder: (context, allServiceProvider, child) =>
-                              SectionTitle(
+                              CategoryTitle2(
                             cc: cc,
-                            title: asProvider.getString('Recently listed'),
+                            title: asProvider.getString('Featured Services'),
                             pressed: () {
                               //when user clicks on recent see all. set sort by dropdown to latest
                               allServiceProvider
@@ -59,11 +59,11 @@ class RecentServices extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(
-                          height: 18,
+                          height: 10,
                         ),
-                        Container(
-                          margin: const EdgeInsets.only(top: 5),
-                          height: 194,
+                        SizedBox(
+                          height: 200,
+                          width: MediaQuery.of(context).size.width * 0.95,
                           child: ListView(
                             scrollDirection: Axis.horizontal,
                             shrinkWrap: true,
@@ -72,73 +72,102 @@ class RecentServices extends StatelessWidget {
                               for (int i = 0;
                                   i < provider.recentServiceMap.length;
                                   i++)
-                                InkWell(
-                                  splashColor: Colors.transparent,
-                                  highlightColor: Colors.transparent,
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute<void>(
-                                        builder: (BuildContext context) =>
-                                            const ServiceDetailsPage(),
+                                Padding(
+                                  padding: const EdgeInsets.all(5.0),
+                                  child: Row(
+                                    children: [
+                                      InkWell(
+                                        splashColor: Colors.transparent,
+                                        highlightColor: Colors.transparent,
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute<void>(
+                                              builder: (BuildContext context) =>
+                                                  const ServiceDetailsPage(),
+                                            ),
+                                          );
+                                          Provider.of<ServiceDetailsService>(
+                                                  context,
+                                                  listen: false)
+                                              .fetchServiceDetails(
+                                                  provider.recentServiceMap[i]
+                                                      ['serviceId']);
+                                        },
+                                        child: ServiceCard(
+                                          cc: cc,
+                                          imageLink:
+                                              provider.recentServiceMap[i]
+                                                      ['image'] ??
+                                                  placeHolderUrl,
+                                          rating: twoDouble(provider
+                                              .recentServiceMap[i]['rating']),
+                                          title: provider.recentServiceMap[i]
+                                              ['title'],
+                                          sellerName:
+                                              provider.recentServiceMap[i]
+                                                  ['sellerName'],
+                                          price: provider.recentServiceMap[i]
+                                              ['price'],
+                                          buttonText: 'Enquiry Now',
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width -
+                                              85,
+                                          marginRight: 5.0,
+                                          pressed: () {
+                                            //     'service id is ${provider.recentServiceMap[i]['serviceId']}');
+                                            provider.saveOrUnsave(
+                                                provider.recentServiceMap[i]
+                                                    ['serviceId'],
+                                                provider.recentServiceMap[i]
+                                                    ['title'],
+                                                provider.recentServiceMap[i]
+                                                    ['image'],
+                                                provider.recentServiceMap[i]
+                                                    ['price'],
+                                                provider.recentServiceMap[i]
+                                                    ['sellerName'],
+                                                twoDouble(
+                                                    provider.recentServiceMap[i]
+                                                        ['rating']),
+                                                i,
+                                                context,
+                                                provider.recentServiceMap[i]
+                                                    ['sellerId']);
+                                          },
+                                          isSaved: provider.recentServiceMap[i]
+                                                      ['isSaved'] ==
+                                                  true
+                                              ? true
+                                              : false,
+                                          serviceId: provider
+                                              .recentServiceMap[i]['serviceId'],
+                                          sellerId: provider.recentServiceMap[i]
+                                              ['sellerId'],
+                                          cardFrom: 'Home',
+                                          address: "Raipur",
+                                          experience: '10 yr',
+                                          status: '1',
+                                        ),
                                       ),
-                                    );
-                                    Provider.of<ServiceDetailsService>(context,
-                                            listen: false)
-                                        .fetchServiceDetails(provider
-                                            .recentServiceMap[i]['serviceId']);
-                                  },
-                                  child: ServiceCard(
-                                    cc: cc,
-                                    imageLink: provider.recentServiceMap[i]
-                                            ['image'] ??
-                                        placeHolderUrl,
-                                    rating: twoDouble(
-                                        provider.recentServiceMap[i]['rating']),
-                                    title: provider.recentServiceMap[i]
-                                        ['title'],
-                                    sellerName: provider.recentServiceMap[i]
-                                        ['sellerName'],
-                                    price: provider.recentServiceMap[i]
-                                        ['price'],
-                                    buttonText: 'Book Now',
-                                    width:
-                                        MediaQuery.of(context).size.width - 85,
-                                    marginRight: 17.0,
-                                    pressed: () {
-                                      //     'service id is ${provider.recentServiceMap[i]['serviceId']}');
-                                      provider.saveOrUnsave(
-                                          provider.recentServiceMap[i]
-                                              ['serviceId'],
-                                          provider.recentServiceMap[i]['title'],
-                                          provider.recentServiceMap[i]['image'],
-                                          provider.recentServiceMap[i]['price'],
-                                          provider.recentServiceMap[i]
-                                              ['sellerName'],
-                                          twoDouble(provider.recentServiceMap[i]
-                                              ['rating']),
-                                          i,
-                                          context,
-                                          provider.recentServiceMap[i]
-                                              ['sellerId']);
-                                    },
-                                    isSaved: provider.recentServiceMap[i]
-                                                ['isSaved'] ==
-                                            true
-                                        ? true
-                                        : false,
-                                    serviceId: provider.recentServiceMap[i]
-                                        ['serviceId'],
-                                    sellerId: provider.recentServiceMap[i]
-                                        ['sellerId'],
+                                      // if (i <
+                                      //     provider.recentServiceMap.length - 1)
+                                      //   VerticalDivider(
+                                      //     endIndent: 20,
+                                      //     width: 1,
+                                      //     thickness: 1,
+                                      //     color: cc.black6,
+                                      //   ),
+                                    ],
                                   ),
-                                )
+                                ),
                             ],
                           ),
                         ),
                       ],
                     )
-                  : Text(asProvider.getString('Something went wrong'))
+                  : Offstage()
               : Container()
           : Container(
               alignment: Alignment.center,

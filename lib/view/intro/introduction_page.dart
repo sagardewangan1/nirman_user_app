@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:qixer/helper/extension/context_extension.dart';
 import 'package:qixer/helper/extension/int_extension.dart';
 import 'package:qixer/view/intro/intro_helper.dart';
+import 'package:qixer/view/selectionRole/selectionRoleView.dart';
 import 'package:qixer/view/utils/common_helper.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:qixer/view/utils/responsive.dart';
@@ -20,6 +22,12 @@ class _IntroductionPageState extends State<IntroductionPage> {
   ConstantColors cc = ConstantColors();
   int _selectedSlide = 0;
   final PageController _pageController = PageController();
+
+  @override
+  void initState() {
+    print("_selectedSlide init======> $_selectedSlide");
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,25 +54,32 @@ class _IntroductionPageState extends State<IntroductionPage> {
                   });
                 },
                 itemCount: 3,
-                itemBuilder: (context, i) {
+                itemBuilder: (context, index) {
                   return Container(
                     margin: const EdgeInsets.symmetric(horizontal: 20),
                     child: Column(
                       children: [
-                        Container(
-                          width: double.infinity,
-                          height:
-                              screenHeight < fourinchScreenHeight ? 130 : 260,
-                          margin: const EdgeInsets.only(bottom: 24),
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: AssetImage(IntroHelper().getImage(i)),
-                              fit: BoxFit.fitHeight,
-                            ),
-                          ),
+                        // Container(
+                        //   width: double.infinity,
+                        //   height:
+                        //       screenHeight < fourinchScreenHeight ? 130 : 260,
+                        //   margin: const EdgeInsets.only(bottom: 24),
+                        //   decoration: BoxDecoration(
+                        //     image: DecorationImage(
+                        //       image: AssetImage(IntroHelper().getImage(i)),
+                        //       fit: BoxFit.fitHeight,
+                        //     ),
+                        //   ),
+                        // ),
+                        CommonHelper().profileImage(
+                          IntroHelper().getImage(index),
+                          screenHeight < fourinchScreenHeight ? 130 : 260,
+                          double.infinity,
+                          fit: BoxFit.fitHeight,
                         ),
+                        Gap(28),
                         Text(
-                          IntroHelper().geTitle(i),
+                          IntroHelper().geTitle(index),
                           style: TextStyle(
                               color: cc.greyPrimary,
                               fontSize: 19,
@@ -76,7 +91,7 @@ class _IntroductionPageState extends State<IntroductionPage> {
 
                         // Subtitle =============>
                         CommonHelper().paragraphCommon(
-                            IntroHelper().geSubTitle(i),
+                            IntroHelper().geSubTitle(index),
                             textAlign: TextAlign.center)
                       ],
                     ),
@@ -128,7 +143,7 @@ class _IntroductionPageState extends State<IntroductionPage> {
                     context.toUntilPage(const LandingPage());
                     SharedPreferences prefs =
                         await SharedPreferences.getInstance();
-                    prefs.setBool('intro', true);
+                    // prefs.setBool('intro', true);
                   },
                   child: Container(
                     alignment: Alignment.center,
@@ -153,11 +168,14 @@ class _IntroductionPageState extends State<IntroductionPage> {
               Expanded(
                 child: InkWell(
                   onTap: () async {
+                    print("_selectedSlide======> $_selectedSlide");
                     if (_selectedSlide == 2) {
                       SharedPreferences prefs =
                           await SharedPreferences.getInstance();
-                      prefs.setBool('intro', true);
-                      context.toUntilPage(const LandingPage());
+                      // prefs.setBool('intro', true);
+                      context.toUntilPage(const SelectionRoleView(
+                        hasBackButton: false,
+                      ));
                     } else {
                       _pageController.animateToPage(_selectedSlide + 1,
                           duration: const Duration(milliseconds: 300),

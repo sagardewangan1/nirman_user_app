@@ -1,11 +1,8 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:qixer/view/utils/others_helper.dart';
 
-import '../../../../service/serviceby_category_service.dart';
-import '../../../services/service_by_category_page.dart';
 
 class CategoryCard extends StatelessWidget {
   const CategoryCard(
@@ -14,69 +11,66 @@ class CategoryCard extends StatelessWidget {
       required this.id,
       required this.cc,
       required this.index,
-      required this.marginRight,
-      required this.imagelink});
+      required this.imagelink,
+      this.onTap});
 
   final name;
   final id;
   final cc;
   final index;
   final imagelink;
-  final double marginRight;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
-      onTap: () {
-        final sbcProvider =
-            Provider.of<ServiceByCategoryService>(context, listen: false);
-        sbcProvider.fetchSubcategoryList(id);
-        Navigator.push(
-          context,
-          MaterialPageRoute<void>(
-            builder: (BuildContext context) => ServiceCategoryPage(
-              categoryName: name,
-              categoryId: id,
-            ),
-          ),
-        );
-      },
+      onTap: onTap,
       child: Container(
         alignment: Alignment.center,
-        width: 100,
-        margin: EdgeInsets.only(
-          right: marginRight,
-        ),
         decoration: BoxDecoration(
-            border: Border.all(color: cc.borderColor),
-            borderRadius: BorderRadius.circular(9)),
-        padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
+            color: cc.white,
+            borderRadius: BorderRadius.circular(9),
+            border: Border.all(width: 1, color: cc.black8)),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(
-                height: 35,
-                width: double.infinity,
-                child: CachedNetworkImage(
-                  imageUrl: imagelink ?? placeHolderUrl,
-                  errorWidget: (context, url, error) => const Icon(Icons.error),
-                  fit: BoxFit.fitHeight,
-                )),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(5.0),
+              child: SizedBox(
+                  height: 50,
+                  // width: double.infinity,
+                  child: CachedNetworkImage(
+                    imageUrl: imagelink ?? placeHolderUrl,
+                    errorWidget: (context, url, error) => Icon(
+                      Icons.image_not_supported,
+                      color: Colors.grey.shade600,
+                    ),
+                    fit: BoxFit.fitHeight,
+                  )),
+            ),
             const SizedBox(
               height: 5,
             ),
-            AutoSizeText(
-              name,
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                color: cc.greyFour,
-                fontSize: 13,
-                height: 1.4,
-                fontWeight: FontWeight.w400,
+            SizedBox(
+              width: 100,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 3.0),
+                child: AutoSizeText(
+                  name,
+                  softWrap: true,
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  wrapWords: true,
+                  style: TextStyle(
+                    color: cc.greyFour,
+                    fontSize: 13,
+                    height: 1.4,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
               ),
             ),
           ],

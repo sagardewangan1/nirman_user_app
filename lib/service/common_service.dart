@@ -88,23 +88,31 @@ runAtstart(BuildContext context) async {
   //     .fetchTranslatedStrings();
 }
 
-runAtHome(BuildContext context) async {
-  await Provider.of<PushNotificationService>(context, listen: false)
-      .fetchPusherCredential(context: context);
-  Provider.of<SliderService>(context, listen: false).loadSlider();
-  Provider.of<CategoryService>(context, listen: false).fetchCategory();
-  Provider.of<TopRatedServicesSerivce>(context, listen: false)
-      .fetchTopService();
-  Provider.of<RecentServicesService>(context, listen: false)
-      .fetchRecentService();
-  Provider.of<RecentJobsService>(context, listen: false)
-      .fetchRecentJobs(context);
-  Provider.of<ProfileService>(context, listen: false).getProfileDetails();
-  // Provider.of<CountryStatesService>(context, listen: false)
-  //     .fetchCountries(context);
-
-  Provider.of<PermissionsService>(context, listen: false)
-      .fetchUserPermissions(context);
+Future<void> runAtHome(BuildContext context) async {
+  try {
+    await Provider.of<PushNotificationService>(context, listen: false)
+        .fetchPusherCredential(context: context);
+    Provider.of<SliderService>(context, listen: false).loadSlider();
+    final int? cityId = context.read<RecentJobsService>().cityID;
+    print("cityId= $cityId");
+    Provider.of<CategoryService>(context, listen: false)
+        .fetchCategory(location_id: cityId.toString() ?? '');
+    Provider.of<TopRatedServicesSerivce>(context, listen: false)
+        .fetchTopService();
+    Provider.of<RecentServicesService>(context, listen: false)
+        .fetchRecentService();
+    Provider.of<RecentJobsService>(context, listen: false)
+        .fetchRecentJobs(context);
+    Provider.of<RecentJobsService>(context, listen: false)
+        .fetchAllCities(context);
+    Provider.of<ProfileService>(context, listen: false).getProfileDetails();
+    // Provider.of<CountryStatesService>(context, listen: false)
+    //     .fetchCountries(context);
+    Provider.of<PermissionsService>(context, listen: false)
+        .fetchUserPermissions(context);
+  } catch (e) {
+    print("Error: $e");
+  }
 
   //
 }

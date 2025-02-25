@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:qixer/model/categoryModel.dart';
 import 'package:qixer/model/child_category_model.dart';
@@ -25,15 +27,29 @@ class FilterCategoryService with ChangeNotifier {
   bool subCatLoading = false;
   bool childCatLoading = false;
 
-  fetchCategory() async {
-    var url = "$baseApi/category";
+  fetchCategory({String? location}) async {
+    var url = "$baseApi/category?cat_area_id=$location";
+    try {
+      final responseData = await NetworkApiServices().getApi(url, "Category");
 
-    final responseData = await NetworkApiServices().getApi(url, "Category");
+      if (responseData != null) {
+        var decodedData = jsonDecode(responseData['body']);
 
-    if (responseData != null) {
-      var tempData = CategoryModel.fromJson(responseData);
-      _categoryModel = tempData;
-      return true;
+        if (decodedData != null && decodedData["category"] != null) {
+          var tempData = CategoryModel.fromJson(decodedData);
+          _categoryModel = tempData;
+          return true;
+        } else {
+          debugPrint("Category data is null or invalid.");
+          return false;
+        }
+      } else {
+        debugPrint("Response is null");
+        return false;
+      }
+    } catch (e) {
+      debugPrint("Error: $e");
+      return false;
     }
   }
 
@@ -69,7 +85,7 @@ class FilterCategoryService with ChangeNotifier {
   Category? getCat(name) {
     try {
       return categoryModel.category
-          .firstWhere((element) => element.name == name);
+          ?.firstWhere((element) => element.name == name);
     } catch (e) {}
     return null;
   }

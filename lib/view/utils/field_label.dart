@@ -5,7 +5,7 @@ import 'constant_colors.dart';
 
 class FieldLabel extends StatelessWidget {
   final String label;
-  const FieldLabel({Key? key, required this.label}) : super(key: key);
+  const FieldLabel({super.key, required this.label});
 
   @override
   Widget build(BuildContext context) {

@@ -9,6 +9,7 @@ class ConstantColors {
   final Color yellowColor = const Color(0xffFFC300);
   final Color borderColor = const Color(0xffEAECF0);
   final Color warningColor = const Color(0xffF05454);
+  final Color errorColor = const Color(0xfff11616);
   final Color greyPrimary = const Color(0xff101828);
   final Color greyParagraph = const Color(0xff667085);
   final Color greyThree = const Color(0xff344054);
@@ -26,4 +27,5 @@ class ConstantColors {
   Color get black4 => const Color(0xff475467);
   Color get black3 => const Color(0xff344054);
   Color get black2 => const Color(0xff1D2939);
+  Color get linkColor => Color(0xFF0000FF);
 }

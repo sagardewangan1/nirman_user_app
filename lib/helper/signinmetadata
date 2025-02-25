@@ -1,0 +1,6 @@
+// New Test Root Placements keytool -genkey -v -keystore ~/shashaktnirmanjks.jks -keyalg RSA -keysize 2048 -validity 10000 -alias shashaktnirmanjks
+
+User name - shashaktnirmanjks
+Pass- shashakt@nirmanjks123
+Name - shashaktnirmanjks
+Alias name- shashaktnirmanjks

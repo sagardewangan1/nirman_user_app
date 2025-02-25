@@ -65,21 +65,25 @@ class SliderDetail {
     this.backgroundImage,
     this.title,
     this.subTitle,
+    this.sliderType,
   });
 
   String? backgroundImage;
   String? title;
   String? subTitle;
+  String? sliderType;
 
   factory SliderDetail.fromJson(Map<String, dynamic> json) => SliderDetail(
         backgroundImage: json["background_image"],
         title: json["title"],
         subTitle: json["sub_title"],
+        sliderType: json["slider_type"],
       );
 
   Map<String, dynamic> toJson() => {
         "background_image": backgroundImage,
         "title": title,
         "sub_title": subTitle,
+        "slider_type": sliderType,
       };
 }

@@ -55,7 +55,7 @@ class ReportMessagesService with ChangeNotifier {
       //if connection is ok
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      var token = prefs.getString('token');
+      var token = prefs.getString('shashaktnirmantoken');
       var header = {
         //if header type is application/json then the data should be in jsonEncode method
         "Accept": "application/json",
@@ -105,7 +105,7 @@ class ReportMessagesService with ChangeNotifier {
 
   sendMessage(ticketId, message, imagePath) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var token = prefs.getString('token');
+    var token = prefs.getString('shashaktnirmantoken');
 
     // var data = jsonEncode({
     //   'ticket_id': ticketId,

@@ -38,7 +38,7 @@ class OrderDetailsService with ChangeNotifier {
       {bool isFromOrderComplete = false}) async {
     //get user id
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var token = prefs.getString('token');
+    var token = prefs.getString('shashaktnirmantoken');
 
     var header = {
       //if header type is application/json then the data should be in jsonEncode method
@@ -89,7 +89,7 @@ class OrderDetailsService with ChangeNotifier {
   Future<bool> fetchOrderExtraList(orderId) async {
     //get user id
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var token = prefs.getString('token');
+    var token = prefs.getString('shashaktnirmantoken');
 
     var header = {
       //if header type is application/json then the data should be in jsonEncode method
@@ -146,7 +146,7 @@ class OrderDetailsService with ChangeNotifier {
       {bool manualPaymentSelected = false, imagePath}) async {
     //get user id
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var token = prefs.getString('token');
+    var token = prefs.getString('shashaktnirmantoken');
 
     var connection = await checkConnection();
     if (!connection) return false;
@@ -238,7 +238,7 @@ class OrderDetailsService with ChangeNotifier {
       {required extraId, required orderId}) async {
     //get user id
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var token = prefs.getString('token');
+    var token = prefs.getString('shashaktnirmantoken');
 
     var header = {
       //if header type is application/json then the data should be in jsonEncode method

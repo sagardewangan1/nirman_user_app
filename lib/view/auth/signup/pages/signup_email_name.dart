@@ -3,17 +3,17 @@ import 'package:provider/provider.dart';
 import 'package:qixer/service/app_string_service.dart';
 import 'package:qixer/service/auth_services/signup_service.dart';
 import 'package:qixer/view/auth/signup/components/email_name_fields.dart';
-import 'package:qixer/view/auth/signup/signup_helper.dart';
 import 'package:qixer/view/utils/common_helper.dart';
 
 import '../../../utils/constant_colors.dart';
 
 class SignupEmailName extends StatefulWidget {
-  const SignupEmailName(
-      {super.key,
-      this.fullNameController,
-      this.userNameController,
-      this.emailController});
+  const SignupEmailName({
+    super.key,
+    this.fullNameController,
+    this.userNameController,
+    this.emailController,
+  });
 
   final fullNameController;
   final userNameController;
@@ -34,7 +34,7 @@ class _SignupEmailNameState extends State<SignupEmailName> {
 
   final _formKey = GlobalKey<FormState>();
 
-  bool keepLoggedIn = true;
+  bool shashaktnirman_is_logged_in = true;
 
   @override
   Widget build(BuildContext context) {
@@ -48,9 +48,10 @@ class _SignupEmailNameState extends State<SignupEmailName> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               EmailNameFields(
-                  emailController: widget.emailController,
-                  fullNameController: widget.fullNameController,
-                  userNameController: widget.userNameController),
+                emailController: widget.emailController,
+                fullNameController: widget.fullNameController,
+                userNameController: widget.userNameController,
+              ),
               const SizedBox(
                 height: 18,
               ),
@@ -64,9 +65,10 @@ class _SignupEmailNameState extends State<SignupEmailName> {
                     .buttonOrange(asProvider.getString("Continue"), () {
                   if (_formKey.currentState!.validate()) {
                     provider.pagecontroller.animateToPage(
-                        provider.selectedPage + 1,
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.ease);
+                      provider.selectedPage + 1,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.ease,
+                    );
                   }
                 }),
               ),
@@ -74,7 +76,7 @@ class _SignupEmailNameState extends State<SignupEmailName> {
               const SizedBox(
                 height: 25,
               ),
-              SignupHelper().haveAccount(context),
+              // SignupHelper().haveAccount(context),
 
               //Divider (or)
               //             const SizedBox(

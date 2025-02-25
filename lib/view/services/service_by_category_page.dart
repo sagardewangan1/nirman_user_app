@@ -7,7 +7,6 @@ import 'package:qixer/service/serviceby_category_service.dart';
 import 'package:qixer/view/services/service_details_page.dart';
 import 'package:qixer/view/utils/common_helper.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
-import 'package:qixer/view/utils/custom_dropdown.dart';
 import 'package:qixer/view/utils/others_helper.dart';
 import 'package:qixer/view/utils/responsive.dart';
 
@@ -15,10 +14,14 @@ import '../home/components/service_card.dart';
 
 class ServiceCategoryPage extends StatelessWidget {
   ServiceCategoryPage(
-      {super.key, this.categoryName = '', required this.categoryId});
+      {super.key,
+      this.categoryName = '',
+      required this.categoryId,
+      this.subCatId});
 
   final String categoryName;
   final dynamic categoryId;
+  final dynamic subCatId;
 
   final RefreshController refreshController =
       RefreshController(initialRefresh: true);
@@ -30,10 +33,8 @@ class ServiceCategoryPage extends StatelessWidget {
     debugPrint("page auto loading".toString());
     ConstantColors cc = ConstantColors();
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: CommonHelper().appbarCommon(categoryName, context, () {
         sbcProvider.setEverythingToDefault();
-
         Navigator.pop(context);
       }),
       body: SmartRefresher(
@@ -44,8 +45,8 @@ class ServiceCategoryPage extends StatelessWidget {
                 ? false
                 : true,
         onRefresh: () async {
-          final result =
-              await sbcProvider.fetchCategoryService(context, categoryId);
+          final result = await sbcProvider.fetchServiceBySubCateId(
+              context, categoryId, subCatId);
           if (result) {
             refreshController.refreshCompleted();
           } else {
@@ -53,8 +54,8 @@ class ServiceCategoryPage extends StatelessWidget {
           }
         },
         onLoading: () async {
-          final result =
-              await sbcProvider.fetchCategoryService(context, categoryId);
+          final result = await sbcProvider.fetchServiceBySubCateId(
+              context, categoryId, subCatId);
           if (result) {
             debugPrint('loadcomplete ran');
             //loadcomplete function loads the data again
@@ -77,30 +78,26 @@ class ServiceCategoryPage extends StatelessWidget {
           },
           child: SingleChildScrollView(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 25),
+              // padding: const EdgeInsets.symmetric(horizontal: 25),
               child: Consumer<ServiceByCategoryService>(
                 builder: (context, provider, child) => Column(
                   children: [
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    CustomDropdown(
-                      lnProvider.getString('Select Subcategory'),
-                      provider.subCatList.map((e) => e.name).toList(),
-                      (newValue) {
-                        provider.selectSubCategory(
-                            context, categoryId, newValue);
-                      },
-                      value: provider.selectedSubCat?.name,
-                    ),
+                    // const SizedBox(
+                    //   height: 15,
+                    // ),
+                    // CustomDropdown(
+                    //   lnProvider.getString('Select Subcategory'),
+                    //   provider.subCatList.map((e) => e.name).toList(),
+                    //   (newValue) {
+                    //     provider.selectSubCategory(
+                    //         context, categoryId, newValue);
+                    //   },
+                    //   value: provider.selectedSubCat?.name,
+                    // ),
                     provider.hasError != true
                         ? provider.serviceMap.isNotEmpty
                             ? Column(children: [
                                 // Service List ===============>
-
-                                const SizedBox(
-                                  height: 15,
-                                ),
                                 for (int i = 0;
                                     i < provider.serviceMap.length;
                                     i++)
@@ -123,55 +120,62 @@ class ServiceCategoryPage extends StatelessWidget {
                                               .fetchServiceDetails(provider
                                                   .serviceMap[i]['serviceId']);
                                         },
-                                        child: ServiceCard(
-                                          cc: cc,
-                                          imageLink: provider.serviceMap[i]
-                                                  ['image'] ??
-                                              placeHolderUrl,
-                                          rating: twoDouble(
-                                              provider.serviceMap[i]['rating']),
-                                          title: provider.serviceMap[i]
-                                              ['title'],
-                                          sellerName: provider.serviceMap[i]
-                                              ['sellerName'],
-                                          price: provider.serviceMap[i]
-                                              ['price'],
-                                          buttonText: 'Book Now',
-                                          width: double.infinity,
-                                          marginRight: 0.0,
-                                          pressed: () {
-                                            provider.saveOrUnsave(
-                                                provider.serviceMap[i]
-                                                    ['serviceId'],
-                                                provider.serviceMap[i]['title'],
-                                                provider.serviceMap[i]['image'],
-                                                provider.serviceMap[i]['price']
-                                                    .round(),
-                                                provider.serviceMap[i]
-                                                    ['sellerName'],
-                                                twoDouble(provider.serviceMap[i]
-                                                    ['rating']),
-                                                i,
-                                                context,
-                                                provider.serviceMap[i]
-                                                    ['sellerId']);
-                                          },
-                                          isSaved: provider.serviceMap[i]
-                                                      ['isSaved'] ==
-                                                  true
-                                              ? true
-                                              : false,
-                                          serviceId: provider.serviceMap[i]
-                                              ['serviceId'],
-                                          sellerId: provider.serviceMap[i]
-                                              ['sellerId'],
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(5.0),
+                                          child: ServiceCard(
+                                            cc: cc,
+                                            imageLink: provider.serviceMap[i]
+                                                    ['image'] ??
+                                                placeHolderUrl,
+                                            rating: twoDouble(provider
+                                                .serviceMap[i]['rating']),
+                                            title: provider.serviceMap[i]
+                                                ['title'],
+                                            sellerName: provider.serviceMap[i]
+                                                ['sellerName'],
+                                            price: provider.serviceMap[i]
+                                                ['price'],
+                                            buttonText: 'Book Now',
+                                            width: double.infinity,
+                                            marginRight: 0.0,
+                                            pressed: () {
+                                              provider.saveOrUnsave(
+                                                  provider.serviceMap[i]
+                                                      ['serviceId'],
+                                                  provider.serviceMap[i]
+                                                      ['title'],
+                                                  provider.serviceMap[i]
+                                                      ['image'],
+                                                  provider.serviceMap[i]
+                                                          ['price']
+                                                      .round(),
+                                                  provider.serviceMap[i]
+                                                      ['sellerName'],
+                                                  twoDouble(provider
+                                                      .serviceMap[i]['rating']),
+                                                  i,
+                                                  context,
+                                                  provider.serviceMap[i]
+                                                      ['sellerId']);
+                                            },
+                                            isSaved: provider.serviceMap[i]
+                                                        ['isSaved'] ==
+                                                    true
+                                                ? true
+                                                : false,
+                                            serviceId: provider.serviceMap[i]
+                                                ['serviceId'],
+                                            sellerId: provider.serviceMap[i]
+                                                ['sellerId'],
+                                            address: "Raipur",
+                                            experience: '10 yr',
+                                            status: '1',
+                                            cardFrom: "Home",
+                                          ),
                                         ),
                                       ),
-                                      const SizedBox(
-                                        height: 25,
-                                      ),
                                     ],
-                                  )
+                                  ),
                               ])
                             : Container(
                                 alignment: Alignment.center,

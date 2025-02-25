@@ -132,7 +132,7 @@ class GoogleSignInService with ChangeNotifier {
   saveDetailsAfterSocialLogin(String email, userName, String token, int userId,
       bool isGoogleLogin) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool('keepLoggedIn', true);
+    prefs.setBool('shashaktnirman_is_logged_in', true);
 
     prefs.setString("email", email);
     prefs.setString("userName", email);

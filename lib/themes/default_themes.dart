@@ -29,11 +29,11 @@ class DefaultThemes {
               .textTheme
               .titleSmall!
               .copyWith(color: cc.warningColor),
-          filled: true,
+          // filled: true,
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
           enabledBorder: OutlineInputBorder(
-              borderSide: const BorderSide(color: Colors.transparent),
+              borderSide: BorderSide(color: ConstantColors().black5),
               borderRadius: BorderRadius.circular(8)),
           focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(color: ConstantColors().primaryColor)),

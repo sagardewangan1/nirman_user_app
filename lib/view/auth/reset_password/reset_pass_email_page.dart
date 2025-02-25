@@ -19,7 +19,7 @@ class _ResetPassEmailPageState extends State<ResetPassEmailPage> {
 
   TextEditingController emailController = TextEditingController();
 
-  bool keepLoggedIn = true;
+  bool shashaktnirman_is_logged_in = true;
 
   @override
   Widget build(BuildContext context) {

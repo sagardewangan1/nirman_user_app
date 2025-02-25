@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:qixer/view/utils/responsive.dart';
 
 import 'constant_colors.dart';
@@ -15,24 +16,31 @@ class CustomInput extends StatelessWidget {
   final double paddingHorizontal;
   final maxLength;
   final Iterable<String>? autofillHints;
+  final List<TextInputFormatter>? inputType;
+  final bool? readOnly;
+  final int? maxLines;
+  final counterText;
 
   TextEditingController? controller;
 
-  CustomInput({
-    super.key,
-    required this.hintText,
-    this.onChanged,
-    this.textInputAction = TextInputAction.next,
-    this.isPasswordField = false,
-    this.focusNode,
-    this.isNumberField = false,
-    this.controller,
-    this.validation,
-    this.icon,
-    this.paddingHorizontal = 8.0,
-    this.maxLength,
-    this.autofillHints,
-  });
+  CustomInput(
+      {super.key,
+      required this.hintText,
+      this.onChanged,
+      this.textInputAction = TextInputAction.next,
+      this.isPasswordField = false,
+      this.focusNode,
+      this.isNumberField = false,
+      this.controller,
+      this.validation,
+      this.icon,
+      this.paddingHorizontal = 8.0,
+      this.maxLength,
+      this.autofillHints,
+      this.inputType,
+      this.readOnly = false,
+      this.maxLines,
+      this.counterText});
 
   @override
   Widget build(BuildContext context) {
@@ -49,10 +57,14 @@ class CustomInput extends StatelessWidget {
           validator: validation,
           textInputAction: textInputAction,
           obscureText: isPasswordField,
+          maxLines: maxLines,
           maxLength: maxLength,
           autofillHints: autofillHints,
+          inputFormatters: inputType,
+          readOnly: readOnly ?? false,
           style: const TextStyle(fontSize: 14),
           decoration: InputDecoration(
+              counterText: counterText ?? '',
               prefixIcon: icon != null
                   ? Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -80,7 +92,8 @@ class CustomInput extends StatelessWidget {
                   borderSide: BorderSide(color: ConstantColors().primaryColor)),
               hintText: lnProvider.getString(hintText),
               contentPadding: EdgeInsets.symmetric(
-                  horizontal: paddingHorizontal, vertical: 18)),
+                horizontal: paddingHorizontal,
+              )),
         ));
   }
 }

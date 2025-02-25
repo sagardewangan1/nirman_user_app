@@ -73,7 +73,7 @@ class StateDropdownPopup extends StatelessWidget {
                   ),
                   sizedBoxCustom(10),
                   p.statesDropdownList.isNotEmpty
-                      ? p.statesDropdownList[0] != 'Select City'
+                      ? p.statesDropdownList[0] != 'Select State'
                           ? ListView.builder(
                               shrinkWrap: true,
                               scrollDirection: Axis.vertical,
@@ -84,7 +84,7 @@ class StateDropdownPopup extends StatelessWidget {
                                   onTap: () {
                                     p.setStatesValue(p.statesDropdownList[i]);
 
-                                    //                         // setting the id of selected value
+                                    // setting the id of selected value
                                     p.setSelectedStatesId(
                                         p.statesDropdownIndexList[p
                                             .statesDropdownList
@@ -99,6 +99,7 @@ class StateDropdownPopup extends StatelessWidget {
                                         context,
                                         listen: false);
                                     sProvider.setCityValue(p.selectedState);
+                                    print("object===> ${p.selectedStateId}");
                                     sProvider
                                         .setSelectedCityId(p.selectedStateId);
                                     sProvider.fetchService(context);
@@ -118,7 +119,7 @@ class StateDropdownPopup extends StatelessWidget {
                                 );
                               })
                           : CommonHelper().paragraphCommon(
-                              lnProvider.getString('No city found'),
+                              lnProvider.getString('No state found'),
                               textAlign: TextAlign.center)
                       : Row(
                           mainAxisAlignment: MainAxisAlignment.start,

@@ -26,7 +26,6 @@ class SettingsPageGrid extends StatelessWidget {
               mainAxisSpacing: 15,
               crossAxisSpacing: 15,
               height: 76),
-          padding: const EdgeInsets.only(top: 30),
           itemCount: 4,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -34,6 +33,7 @@ class SettingsPageGrid extends StatelessWidget {
             return Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
+                color: cc.white,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: cc.borderColor),
               ),

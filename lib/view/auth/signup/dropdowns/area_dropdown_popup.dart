@@ -60,7 +60,7 @@ class AreaDropdownPopup extends StatelessWidget {
                 children: [
                   sizedBoxCustom(30),
                   CustomInput(
-                    hintText: lnProvider.getString('Search area'),
+                    hintText: lnProvider.getString('Search City'),
                     paddingHorizontal: 17,
                     icon: 'assets/icons/search.png',
                     onChanged: (v) {
@@ -69,7 +69,7 @@ class AreaDropdownPopup extends StatelessWidget {
                   ),
                   sizedBoxCustom(10),
                   p.areaDropdownList.isNotEmpty
-                      ? p.areaDropdownList[0] != 'Select Area'
+                      ? p.areaDropdownList[0] != 'Select City'
                           ? ListView.builder(
                               shrinkWrap: true,
                               scrollDirection: Axis.vertical,
@@ -102,12 +102,153 @@ class AreaDropdownPopup extends StatelessWidget {
                                 );
                               })
                           : CommonHelper().paragraphCommon(
-                              lnProvider.getString('No area found'),
+                              lnProvider.getString('No city found'),
                               textAlign: TextAlign.center)
                       : Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             OthersHelper().showLoading(cc.primaryColor)
+                          ],
+                        ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// For add service
+class AreaDropdownPopup2 extends StatelessWidget {
+  const AreaDropdownPopup2({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final RefreshController refreshController =
+        RefreshController(initialRefresh: true);
+
+    final cc = ConstantColors();
+    return Scaffold(
+      body: SmartRefresher(
+        controller: refreshController,
+        enablePullUp: true,
+        enablePullDown:
+            context.watch<AreaDropdownService>().currentPage > 1 ? false : true,
+        onRefresh: () async {
+          final result =
+              await Provider.of<AreaDropdownService>(context, listen: false)
+                  .fetchArea(context);
+          if (result) {
+            refreshController.refreshCompleted();
+          } else {
+            refreshController.refreshFailed();
+          }
+        },
+        onLoading: () async {
+          final result =
+              await Provider.of<AreaDropdownService>(context, listen: false)
+                  .fetchArea(context);
+          if (result) {
+            debugPrint('loadcomplete ran');
+            refreshController.loadComplete();
+          } else {
+            debugPrint('no more data');
+            refreshController.loadNoData();
+
+            Future.delayed(const Duration(seconds: 1), () {
+              refreshController.resetNoData();
+            });
+          }
+        },
+        child: SingleChildScrollView(
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Consumer<AreaDropdownService>(
+              builder: (context, p, child) => Column(
+                children: [
+                  sizedBoxCustom(30),
+                  CustomInput(
+                    hintText: lnProvider.getString('Search City'),
+                    paddingHorizontal: 17,
+                    icon: 'assets/icons/search.png',
+                    onChanged: (v) {
+                      p.searchArea(context, v, isSearching: true);
+                    },
+                  ),
+                  sizedBoxCustom(10),
+                  p.areaDropdownList.isNotEmpty
+                      ? p.areaDropdownList[0] != 'Select City'
+                          ? ListView.builder(
+                              shrinkWrap: true,
+                              scrollDirection: Axis.vertical,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: p.areaDropdownList.length,
+                              itemBuilder: (context, i) {
+                                final cityName = p.areaDropdownList[i];
+                                final id = p.areaDropdownIndexList[i];
+                                final isSelected =
+                                    p.selectedCity.contains(cityName);
+                                return InkWell(
+                                  onTap: () {
+                                    // print("area id====> ${id}");
+                                    if (isSelected) {
+                                      p.setSelectedCity(cityName, id);
+                                    } else {
+                                      p.setSelectedCity(cityName, id);
+                                    }
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 18),
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                        bottom: BorderSide(
+                                          color: cc.greyFive,
+                                        ),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Checkbox(
+                                          value: isSelected,
+                                          onChanged: (value) {
+                                            if (value == true) {
+                                              p.setSelectedCity(cityName, id);
+                                            } else {
+                                              p.setSelectedCity(cityName, id);
+                                            }
+                                          },
+                                        ),
+                                        CommonHelper().paragraphCommon(
+                                          lnProvider.getString(cityName),
+                                          textAlign: TextAlign.left,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            )
+                          : CommonHelper().paragraphCommon(
+                              lnProvider.getString('No city found'),
+                              textAlign: TextAlign.center,
+                            )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Column(
+                              children: [
+                                Text(
+                                    textAlign: TextAlign.center,
+                                    "Select Country and State First"),
+                                SizedBox(
+                                  height: 50,
+                                ),
+                                OthersHelper().showLoading(cc.primaryColor),
+                              ],
+                            ),
                           ],
                         ),
                 ],

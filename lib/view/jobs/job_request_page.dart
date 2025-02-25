@@ -203,7 +203,7 @@ class _JobRequestPageState extends State<JobRequestPage> {
                                                                     const EdgeInsets
                                                                         .all(5),
                                                                 child: Image.asset(
-                                                                    'assets/images/icon.png'),
+                                                                    'assets/images/icon2.png'),
                                                               ),
                                                             ),
                                                           ),

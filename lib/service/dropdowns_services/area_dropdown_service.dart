@@ -14,8 +14,24 @@ import 'package:qixer/view/utils/others_helper.dart';
 class AreaDropdownService with ChangeNotifier {
   var areaDropdownList = [];
   var areaDropdownIndexList = [];
-  dynamic selectedArea = 'Select Area';
+  dynamic selectedArea = 'Select City';
   dynamic selectedAreaId = defaultId;
+
+  final List<dynamic> _selectedCity = [];
+  List<dynamic> get selectedCity => _selectedCity;
+  final List<dynamic> _selectedCityID = [];
+  List<dynamic> get selectedCityID => _selectedCityID;
+
+  setSelectedCity(value, value2) {
+    if (!_selectedCity.contains(value) && !_selectedCity.contains(value)) {
+      _selectedCity.add(value);
+      _selectedCityID.add(value2);
+    } else {
+      _selectedCity.remove(value);
+      _selectedCityID.remove(value2);
+    }
+    notifyListeners();
+  }
 
   late int totalPages;
 
@@ -99,9 +115,10 @@ class AreaDropdownService with ChangeNotifier {
     var selectedStateId =
         Provider.of<StateDropdownService>(context, listen: false)
             .selectedStateId;
-
-    var response = await http.get(Uri.parse(
-        '$baseApi/country/service-city/service-area/$selectedCountryId/$selectedStateId?page=$currentPage'));
+    var apilink = Uri.parse(
+        '$baseApi/country/service-city/service-area/$selectedCountryId/$selectedStateId?page=$currentPage');
+    print("url==> $apilink");
+    var response = await http.get(apilink);
     if ((response.statusCode == 200 || response.statusCode == 201) &&
         jsonDecode(response.body)['service_areas']['data'].isNotEmpty) {
       var data = AreaDropdownModel.fromJson(jsonDecode(response.body));
@@ -117,7 +134,7 @@ class AreaDropdownService with ChangeNotifier {
       setCurrentPage(currentPage);
       return true;
     } else {
-      areaDropdownList.add('Select Area');
+      // areaDropdownList.add('Select City');
       areaDropdownIndexList.add(defaultId);
       selectedArea = 'Select Area';
       selectedAreaId = defaultId;

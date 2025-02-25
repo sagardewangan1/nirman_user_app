@@ -33,7 +33,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   TextEditingController newPasswordController = TextEditingController();
   TextEditingController currentPasswordController = TextEditingController();
 
-  bool keepLoggedIn = true;
+  bool shashaktnirman_is_logged_in = true;
 
   @override
   Widget build(BuildContext context) {

@@ -66,7 +66,7 @@ class MyJobsService with ChangeNotifier {
       //if connection is ok
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      var token = prefs.getString('token');
+      var token = prefs.getString('shashaktnirmantoken');
 
       var header = {
         //if header type is application/json then the data should be in jsonEncode method
@@ -159,7 +159,7 @@ class MyJobsService with ChangeNotifier {
     if (connection) {
       //internet connection is on
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      var token = prefs.getString('token');
+      var token = prefs.getString('shashaktnirmantoken');
 
       var header = {
         //if header type is application/json then the data should be in jsonEncode method
@@ -196,7 +196,7 @@ class MyJobsService with ChangeNotifier {
     if (!connection) return;
     //internet connection is on
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var token = prefs.getString('token');
+    var token = prefs.getString('shashaktnirmantoken');
 
     var header = {
       "Accept": "application/json",
@@ -240,7 +240,7 @@ class MyJobsService with ChangeNotifier {
     if (!connection) return;
     //internet connection is on
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var token = prefs.getString('token');
+    var token = prefs.getString('shashaktnirmantoken');
 
     var header = {
       "Accept": "application/json",

@@ -9,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SplashService {
   loginOrGoHome(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool? keepLogin = prefs.getBool('keepLoggedIn');
+    bool? keepLogin = prefs.getBool('shashaktnirman_is_logged_in');
     String? email = prefs.getString('email');
     // Navigator.pushReplacement<void, void>(
     //   context,

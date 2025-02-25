@@ -8,11 +8,12 @@ import 'package:qixer/service/dropdowns_services/area_dropdown_service.dart';
 import 'package:qixer/service/dropdowns_services/state_dropdown_services.dart';
 import 'package:qixer/view/auth/signup/components/country_states_dropdowns.dart';
 import 'package:qixer/view/auth/signup/pages/tac_pp.dart';
-import 'package:qixer/view/auth/signup/signup_helper.dart';
+import 'package:qixer/view/home/landing_page.dart';
 import 'package:qixer/view/utils/common_helper.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:qixer/view/utils/others_helper.dart';
 import 'package:qixer/view/utils/responsive.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignupCountryStates extends StatefulWidget {
   const SignupCountryStates({
@@ -143,21 +144,43 @@ class _SignupCountryStatesState extends State<SignupCountryStates> {
                         return;
                       }
 
-                      provider.signup(
-                          widget.fullNameController.text.trim(),
-                          widget.emailController.text.trim(),
-                          widget.userNameController.text.trim(),
-                          widget.passController.text.trim(),
-                          context);
+                      //
+                      // Navigator.pushReplacement(
+                      //   context,
+                      //   MaterialPageRoute<void>(
+                      //     builder: (BuildContext context) =>
+                      //         const LandingPage(),
+                      //   ),
+                      // );
+
+                      provider
+                          .signup(
+                              widget.fullNameController.text.trim(),
+                              widget.emailController.text.trim(),
+                              widget.userNameController.text.trim(),
+                              context)
+                          .then(
+                        (value) async {
+                          print("signup value======> $value");
+                          if (value) {
+                            final prefs = await SharedPreferences.getInstance();
+                            prefs.setBool('shashaktnirman_is_logged_in', true);
+                            // Ensure the context is still valid before navigating
+                            if (context.mounted) {
+                              context.toPage(LandingPage());
+                            }
+                          }
+                        },
+                      );
                     }
                   }
                 }, isloading: provider.isloading == false ? false : true),
               ),
 
-              const SizedBox(
-                height: 25,
-              ),
-              SignupHelper().haveAccount(context),
+              // const SizedBox(
+              //   height: 25,
+              // ),
+              // SignupHelper().haveAccount(context),
 
               const SizedBox(
                 height: 30,

@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:qixer/service/all_services_service.dart';
 import 'package:qixer/service/app_string_service.dart';
-import 'package:qixer/service/booking_services/book_service.dart';
 import 'package:qixer/service/push_notification_service.dart';
 import 'package:qixer/service/service_details_service.dart';
-import 'package:qixer/view/booking/service_personalization_page.dart';
 import 'package:qixer/view/live_chat/chat_message_page.dart';
 import 'package:qixer/view/services/components/about_seller_tab.dart';
 import 'package:qixer/view/services/components/image_big.dart';
+import 'package:qixer/view/services/components/moreServicesTab.dart';
 import 'package:qixer/view/services/components/overview_tab.dart';
+import 'package:qixer/view/services/components/photosTabs.dart';
 import 'package:qixer/view/services/components/review_tab.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
-import 'package:qixer/view/utils/constant_styles.dart';
 import 'package:qixer/view/utils/others_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../service/booking_services/personalization_service.dart';
 import '../utils/common_helper.dart';
+import 'components/MemberShipTabs.dart';
 import 'components/service_details_top.dart';
 
 class ServiceDetailsPage extends StatefulWidget {
@@ -32,6 +32,16 @@ class ServiceDetailsPage extends StatefulWidget {
 
 class _ServiceDetailsPageState extends State<ServiceDetailsPage>
     with SingleTickerProviderStateMixin {
+  final String points = """
+    <ul class="pricing-content">
+        <li>&#x2713; Find Job On Portal HR Contact No./Contact Person Name</li>
+        <li>&#x2713; Job Lead From ShashaktNirman.com</li>
+        <li>&#x2713; Candidate Portal to find job</li>
+        <li>&#x2713; Sharing Job Details and contact Details by Whatsapp, Email</li>
+        <li>&#x2713; Sharing Interview & Location Details</li>
+    </ul>
+""";
+
   late TabController _tabController;
   int _tabIndex = 0;
   @override
@@ -42,11 +52,15 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage>
 
   @override
   void initState() {
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(_handleTabSelection);
 
     // Provider.of<ServiceDetailsService>(context, listen: false)
     //     .fetchServiceDetails(widget.serviceId);
+
+    Provider.of<AllServicesService>(context, listen: false)
+        .fetchCategories(context);
+
     super.initState();
   }
 
@@ -64,7 +78,7 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage>
   Widget build(BuildContext context) {
     ConstantColors cc = ConstantColors();
     return Scaffold(
-      backgroundColor: Colors.white,
+      // backgroundColor: Colors.white,
       body: Consumer<AppStringService>(
         builder: (context, asProvider, child) =>
             Consumer<ServiceDetailsService>(
@@ -81,72 +95,98 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage>
                                 children: [
                                   // Image big
                                   ImageBig(
-                                    serviceName:
-                                        asProvider.getString('Service Name'),
+                                    serviceName: provider
+                                        .serviceAllDetails.serviceDetails.title,
                                     imageLink: provider.serviceAllDetails
                                                 ?.serviceImage !=
                                             null
                                         ? provider.serviceAllDetails
                                                 .serviceImage.imgUrl ??
-                                            placeHolderUrl
-                                        : placeHolderUrl,
+                                            placeHolderUrl2
+                                        : placeHolderUrl2,
                                   ),
-
                                   const SizedBox(
-                                    height: 15,
+                                    height: 10,
                                   ),
-
                                   //Top part
                                   ServiceDetailsTop(cc: cc),
                                 ],
                               ),
-                              Container(
-                                color: Colors.white,
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 25),
-                                margin:
-                                    const EdgeInsets.only(top: 20, bottom: 20),
-                                child: Column(
-                                  children: <Widget>[
-                                    TabBar(
-                                      onTap: (value) {
-                                        setState(() {
-                                          currentTab = value;
-                                        });
-                                      },
-                                      labelColor: cc.primaryColor,
-                                      unselectedLabelColor: cc.greyFour,
-                                      indicatorColor: cc.primaryColor,
-                                      unselectedLabelStyle: TextStyle(
-                                          color: cc.greyParagraph,
-                                          fontWeight: FontWeight.normal),
-                                      controller: _tabController,
-                                      tabs: [
-                                        Tab(
-                                            text: asProvider
-                                                .getString('Overview')),
-                                        Tab(
-                                            text: asProvider
-                                                .getString('About seller')),
-                                        Tab(
-                                            text:
-                                                asProvider.getString('Review')),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(8.0)),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: <Widget>[
+                                        TabBar(
+                                          tabAlignment: TabAlignment.start,
+                                          onTap: (value) {
+                                            setState(() {
+                                              currentTab = value;
+                                            });
+                                          },
+                                          padding: EdgeInsets.zero,
+                                          labelColor: cc.primaryColor,
+                                          unselectedLabelColor: cc.greyFour,
+                                          indicatorColor: cc.primaryColor,
+                                          unselectedLabelStyle: TextStyle(
+                                              color: cc.greyParagraph,
+                                              fontWeight: FontWeight.normal),
+                                          controller: _tabController,
+                                          isScrollable: true,
+                                          tabs: [
+                                            Tab(
+                                                text: asProvider
+                                                    .getString('Overview')),
+                                            Tab(
+                                                text: asProvider
+                                                    .getString('About seller')),
+                                            // Tab(
+                                            //     text: asProvider
+                                            //         .getString('Review')),
+                                            // Tab(
+                                            //     text: asProvider
+                                            //         .getString('Price Chart')),
+                                            // Tab(
+                                            //     text: asProvider
+                                            //         .getString('Services')),
+                                            // Tab(
+                                            //     text: asProvider
+                                            //         .getString('Photos')),
+                                          ],
+                                        ),
+                                        Container(
+                                          child: [
+                                            OverviewTab(
+                                              provider: provider,
+                                            ),
+                                            AboutSellerTab(
+                                              provider: provider,
+                                            ),
+                                            // ReviewTab(
+                                            //   provider: provider,
+                                            // ),
+                                            // MemberShipTabs(
+                                            //   desc: points,
+                                            //   cc: cc,
+                                            // ),
+                                            // MoreServicesTab(
+                                            //   provider: provider,
+                                            // ),
+                                            // PhotosTabs(
+                                            //   provider: provider,
+                                            // ),
+                                          ][_tabIndex],
+                                        ),
                                       ],
                                     ),
-                                    Container(
-                                      child: [
-                                        OverviewTab(
-                                          provider: provider,
-                                        ),
-                                        AboutSellerTab(
-                                          provider: provider,
-                                        ),
-                                        ReviewTab(
-                                          provider: provider,
-                                        ),
-                                      ][_tabIndex],
-                                    ),
-                                  ],
+                                  ),
                                 ),
                               ),
                             ],
@@ -155,101 +195,177 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage>
                         //Book now button
                         CommonHelper().dividerCommon(),
                         //Button
-                        sizedBox20(),
-
-                        Container(
-                            padding:
-                                EdgeInsets.symmetric(horizontal: screenPadding),
-                            child: Column(
-                              children: [
-                                // currentTab == 2
-                                //     ? Column(
-                                //         children: [
-                                //           CommonHelper().borderButtonOrange(
-                                //               asProvider.getString(
-                                //                   'Write a review'), () {
-                                //             Navigator.push(
-                                //               context,
-                                //               MaterialPageRoute<void>(
-                                //                 builder:
-                                //                     (BuildContext context) =>
-                                //                         WriteReviewPage(
-                                //                   serviceId: provider
-                                //                       .serviceAllDetails
-                                //                       .serviceDetails
-                                //                       .id,
-                                //                 ),
-                                //               ),
-                                //             );
-                                //           }),
-                                //           const SizedBox(
-                                //             height: 14,
-                                //           ),
-                                //         ],
-                                //       )
-                                //     : Container(),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: CommonHelper().buttonOrange(
-                                          asProvider.getString(
-                                              'Book Appointment'), () {
-                                        Provider.of<BookService>(context,
-                                                listen: false)
-                                            .setData(
-                                          provider.serviceAllDetails
-                                              .serviceDetails.id,
-                                          provider.serviceAllDetails
-                                              .serviceDetails.title,
-                                          provider.serviceAllDetails
-                                              .serviceDetails.price,
-                                          provider.serviceAllDetails
-                                              .serviceDetails.sellerId,
-                                          image: provider.serviceAllDetails
-                                                      .serviceImage !=
-                                                  null
-                                              ? provider.serviceAllDetails
-                                                  .serviceImage.imgUrl
-                                              : placeHolderUrl,
-                                        );
-
-                                        //==========>
-                                        Provider.of<PersonalizationService>(
-                                                context,
-                                                listen: false)
-                                            .setDefaultPrice(
-                                                Provider.of<BookService>(
-                                                        context,
-                                                        listen: false)
-                                                    .totalPrice);
-                                        //fetch service extra
-                                        Provider.of<PersonalizationService>(
-                                                context,
-                                                listen: false)
-                                            .fetchServiceExtra(
-                                                provider.serviceAllDetails
-                                                    .serviceDetails.id,
-                                                context);
-
-                                        //=============>
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute<void>(
-                                            builder: (BuildContext context) =>
-                                                const ServicePersonalizationPage(),
-                                          ),
-                                        );
-                                      }),
-                                    ),
-
-                                    // chat icon
-                                    const ServiceDetailsChatIcon()
-                                  ],
-                                ),
-                              ],
-                            )),
-                        const SizedBox(
-                          height: 30,
+                        // sizedBox20(),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                              padding: EdgeInsets.symmetric(horizontal: 10),
+                              decoration: BoxDecoration(color: cc.white),
+                              child: Column(
+                                children: [
+                                  // currentTab == 2
+                                  //     ? Column(
+                                  //         children: [
+                                  //           CommonHelper().borderButtonOrange(
+                                  //               asProvider.getString(
+                                  //                   'Write a review'), () {
+                                  //             Navigator.push(
+                                  //               context,
+                                  //               MaterialPageRoute<void>(
+                                  //                 builder:
+                                  //                     (BuildContext context) =>
+                                  //                         WriteReviewPage(
+                                  //                   serviceId: provider
+                                  //                       .serviceAllDetails
+                                  //                       .serviceDetails
+                                  //                       .id,
+                                  //                 ),
+                                  //               ),
+                                  //             );
+                                  //           }),
+                                  //           const SizedBox(
+                                  //             height: 14,
+                                  //           ),
+                                  //         ],
+                                  //       )
+                                  //     : Container(),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: CommonHelper().buttonOrange(
+                                          "Enquiry Now",
+                                          () {
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return Dialog(
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            12.0),
+                                                  ),
+                                                  child: ConstrainedBox(
+                                                    constraints: BoxConstraints(
+                                                      maxWidth:
+                                                          400, // Set maximum width for the dialog
+                                                      maxHeight:
+                                                          300, // Set maximum height for the dialog
+                                                    ),
+                                                    child: Container(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              20.0),
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(12.0),
+                                                        color: Colors.white,
+                                                      ),
+                                                      child: Column(
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        children: [
+                                                          Text(
+                                                            'Thank You',
+                                                            style: TextStyle(
+                                                              fontSize: 16.0,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              color: Colors
+                                                                  .black87,
+                                                            ),
+                                                          ),
+                                                          const SizedBox(
+                                                              height: 10),
+                                                          Divider(
+                                                              color: Colors.grey
+                                                                  .shade300),
+                                                          Text(
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                            "Thank you for your enquiry with us, we will call you back soon.",
+                                                            style: TextStyle(
+                                                              fontSize: 14.0,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                              color: Colors
+                                                                  .black87,
+                                                            ),
+                                                          ),
+                                                          const SizedBox(
+                                                              height: 10),
+                                                          Image.network(
+                                                              height: 85,
+                                                              width: 85,
+                                                              "https://i.postimg.cc/fbKmxjYg/pngwing-com-1.png"),
+                                                          const SizedBox(
+                                                              height: 8),
+                                                          // Text(
+                                                          //   textAlign:
+                                                          //       TextAlign.center,
+                                                          //     "Tap OK to chat, or tap Cancel to dismiss.",
+                                                          //   style: TextStyle(
+                                                          //       fontSize: 14,
+                                                          //       fontWeight:
+                                                          //           FontWeight
+                                                          //               .w500),
+                                                          // ),
+                                                          Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceEvenly,
+                                                            children: [
+                                                              // ElevatedButton(
+                                                              //   onPressed: () {
+                                                              //     Navigator.pop(
+                                                              //         context);
+                                                              //   },
+                                                              //   style:
+                                                              //       ElevatedButton
+                                                              //           .styleFrom(
+                                                              //     backgroundColor:
+                                                              //         Colors
+                                                              //             .redAccent,
+                                                              //   ),
+                                                              //   child: const Text(
+                                                              //       'Cancel'),
+                                                              // ),
+                                                              ElevatedButton(
+                                                                onPressed: () {
+                                                                  Navigator.pop(
+                                                                      context);
+                                                                  // Add your additional action here
+                                                                },
+                                                                style: ElevatedButton
+                                                                    .styleFrom(
+                                                                  backgroundColor:
+                                                                      Colors
+                                                                          .blueAccent,
+                                                                ),
+                                                                child:
+                                                                    const Text(
+                                                                        'OK'),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                      // chat icon
+                                      // const ServiceDetailsChatIcon()
+                                    ],
+                                  ),
+                                ],
+                              )),
                         ),
                       ],
                     )

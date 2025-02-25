@@ -3,10 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:qixer/service/all_services_service.dart';
 import 'package:qixer/view/auth/signup/components/country_states_dropdowns.dart';
 import 'package:qixer/view/home/landing_page.dart';
-import 'package:qixer/view/services/service_details_page.dart';
 import 'package:qixer/view/utils/common_helper.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
-import 'package:qixer/view/utils/constant_styles.dart';
 
 class LocationSelectAfterLoginPage extends StatelessWidget {
   const LocationSelectAfterLoginPage({super.key});

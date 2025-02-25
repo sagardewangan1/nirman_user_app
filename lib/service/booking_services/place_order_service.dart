@@ -54,7 +54,7 @@ class PlaceOrderService with ChangeNotifier {
       {bool isManualOrCod = false, bool paytmPaymentSelected = false}) async {
     setLoadingTrue();
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var token = prefs.getString('token');
+    var token = prefs.getString('shashaktnirmantoken');
 
     List includesList = [];
     List extrasList = [];
@@ -294,7 +294,7 @@ class PlaceOrderService with ChangeNotifier {
   //make payment successfull
   makePaymentSuccess(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var token = prefs.getString('token');
+    var token = prefs.getString('shashaktnirmantoken');
 
     var connection = await checkConnection();
 

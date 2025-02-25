@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:188087765602:android:d58c7807840a7cb40cdf3b",
         "android_client_info": {
-          "package_name": "com.xgenious.qixer"
+          "package_name": "com.shashaktnirmanuserapp"
         }
       },
       "oauth_client": [
@@ -38,7 +38,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:188087765602:android:95c9956adca0a58f0cdf3b",
         "android_client_info": {
-          "package_name": "com.xgenious.qixer_seller"
+          "package_name": "com.shashaktnirmanuserapp_seller"
         }
       },
       "oauth_client": [

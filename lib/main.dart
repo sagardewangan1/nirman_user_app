@@ -8,6 +8,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_maps_flutter_android/google_maps_flutter_android.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'package:provider/provider.dart';
+import 'package:qixer/service/addServiceProvider/addServicerProvider.dart';
 import 'package:qixer/service/all_services_service.dart';
 import 'package:qixer/service/app_string_service.dart';
 import 'package:qixer/service/auth_services/apple_sign_in_sevice.dart';
@@ -19,6 +20,7 @@ import 'package:qixer/service/auth_services/google_sign_service.dart';
 import 'package:qixer/service/auth_services/login_service.dart';
 import 'package:qixer/service/auth_services/logout_service.dart';
 import 'package:qixer/service/auth_services/reset_password_service.dart';
+import 'package:qixer/service/auth_services/signUpVendorService.dart';
 import 'package:qixer/service/auth_services/signup_service.dart';
 import 'package:qixer/service/book_confirmation_service.dart';
 import 'package:qixer/service/book_steps_service.dart';
@@ -31,6 +33,7 @@ import 'package:qixer/service/country_states_service.dart';
 import 'package:qixer/service/dropdowns_services/area_dropdown_service.dart';
 import 'package:qixer/service/dropdowns_services/country_dropdown_service.dart';
 import 'package:qixer/service/dropdowns_services/state_dropdown_services.dart';
+import 'package:qixer/service/getImageController.dart';
 import 'package:qixer/service/home_services/category_service.dart';
 import 'package:qixer/service/home_services/recent_services_service.dart';
 import 'package:qixer/service/home_services/slider_service.dart';
@@ -43,6 +46,7 @@ import 'package:qixer/service/jobs_service/job_conversation_service.dart';
 import 'package:qixer/service/jobs_service/job_request_service.dart';
 import 'package:qixer/service/jobs_service/my_jobs_service.dart';
 import 'package:qixer/service/jobs_service/recent_jobs_service.dart';
+import 'package:qixer/service/leadsController/leadsController.dart';
 import 'package:qixer/service/leave_feedback_service.dart';
 import 'package:qixer/service/live_chat/chat_list_service.dart';
 import 'package:qixer/service/live_chat/chat_message_service.dart';
@@ -61,12 +65,14 @@ import 'package:qixer/service/report_services/report_service.dart';
 import 'package:qixer/service/rtl_service.dart';
 import 'package:qixer/service/saved_items_service.dart';
 import 'package:qixer/service/searchbar_with_dropdown_service.dart';
+import 'package:qixer/service/selectionRoleService/selectionRoleService.dart';
 import 'package:qixer/service/seller_all_services_service.dart';
 import 'package:qixer/service/service_details_service.dart';
 import 'package:qixer/service/serviceby_category_service.dart';
 import 'package:qixer/service/support_ticket/create_ticket_service.dart';
 import 'package:qixer/service/support_ticket/support_messages_service.dart';
 import 'package:qixer/service/support_ticket/support_ticket_service.dart';
+import 'package:qixer/service/vendorDashboardService/vendorDashboardService.dart';
 import 'package:qixer/service/wallet_service.dart';
 import 'package:qixer/themes/default_themes.dart';
 import 'package:qixer/view/home/homepage_helper.dart';
@@ -110,11 +116,12 @@ void main() async {
 
     await androidImplementation?.requestNotificationsPermission();
   }
-  await HomepageHelper().locationPermissionCheck();
+  var permission = await HomepageHelper().locationPermissionCheck();
+  print("lcoations permissions =========>$permission");
 
   runApp(const MyApp());
 
-//get user id, so that we can clear everything cached by provider when user logs out and logs in again
+  // get user id, so that we can clear everything cached by provider when user logs out and logs in again
   SharedPreferences prefs = await SharedPreferences.getInstance();
   userId = prefs.getInt('userId');
 }
@@ -196,12 +203,18 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => GoogleLocationSearch()),
         ChangeNotifierProvider(create: (_) => FilterServicesService()),
         ChangeNotifierProvider(create: (_) => FilterCategoryService()),
+        ChangeNotifierProvider(create: (_) => SelectionRoleService()),
+        ChangeNotifierProvider(create: (_) => SignupVendorService()),
+        ChangeNotifierProvider(create: (_) => AddServiceController()),
+        ChangeNotifierProvider(create: (_) => GetImageController()),
+        ChangeNotifierProvider(create: (_) => LeadsController()),
+        ChangeNotifierProvider(create: (_) => VendorDashboardService()),
       ],
       child: Consumer<RtlService>(
         builder: (context, rtlProvider, child) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
-            title: 'Qixer',
+            title: 'Shashakt Nirman',
             localizationsDelegates: const [
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
@@ -222,6 +235,7 @@ class MyApp extends StatelessWidget {
               );
             },
             theme: ThemeData(
+              scaffoldBackgroundColor: Color(0xFFFFF5F5),
               primarySwatch: Colors.blue,
               appBarTheme: DefaultThemes().appBarTheme(context),
               colorScheme: ColorScheme.fromSeed(seedColor: cc.primaryColor),

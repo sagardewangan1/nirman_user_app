@@ -7,6 +7,7 @@ import 'package:qixer/view/auth/signup/pages/signup_email_name.dart';
 import 'package:qixer/view/auth/signup/pages/signup_phone_pass.dart';
 import 'package:qixer/view/utils/common_helper.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -17,21 +18,56 @@ class SignupPage extends StatefulWidget {
 
 class _SignupPageState extends State<SignupPage> {
   ConstantColors cc = ConstantColors();
-  final PageController _pageController = PageController();
 
   TextEditingController fullNameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController userNameController = TextEditingController();
+  TextEditingController numberController = TextEditingController();
 
   TextEditingController newPasswordController = TextEditingController();
   TextEditingController repeatNewPasswordController = TextEditingController();
 
   @override
   void initState() {
+    initPassword();
     super.initState();
-    Provider.of<SignupService>(context, listen: false)
-        .setPageController(_pageController);
-    Provider.of<SignupService>(context, listen: false).setSelectedPageO(0);
+  }
+
+  bool shashaktnirman_is_logged_in = false;
+
+  initPassword() async {
+    final signUpController = Provider.of<SignupService>(context, listen: false);
+    signUpController.setPageController(signUpController.pagecontroller);
+    signUpController.setSelectedPageO(0);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    shashaktnirman_is_logged_in =
+        prefs.getBool('shashaktnirman_is_logged_in') ?? true;
+    String? email;
+    String? pass;
+    String? number;
+    if (shashaktnirman_is_logged_in) {
+      email = prefs.getString('shashaktnirmanemail');
+      pass = prefs.getString("pass");
+      number = prefs.getString("shashaktnirmanphone");
+      print("number===> $number");
+    }
+
+    if (email!.isNotEmpty) {
+      emailController.text = email ?? "";
+      signUpController.setReadOnly(true);
+    } else {
+      emailController.clear();
+      signUpController.setReadOnly(false);
+    }
+
+    if (number!.isNotEmpty) {
+      numberController.text = number ?? "";
+      signUpController.setReadOnly(true);
+      signUpController.setPhone(number);
+    } else {
+      emailController.clear();
+      signUpController.setReadOnly(false);
+    }
   }
 
   @override
@@ -44,7 +80,8 @@ class _SignupPageState extends State<SignupPage> {
             if (provider.selectedPage == 0) {
               return Future.value(true);
             } else {
-              _pageController.animateToPage(provider.selectedPage - 1,
+              context.read<SignupService>().pagecontroller.animateToPage(
+                  provider.selectedPage - 1,
                   duration: const Duration(milliseconds: 300),
                   curve: Curves.ease);
               return Future.value(false);
@@ -57,15 +94,14 @@ class _SignupPageState extends State<SignupPage> {
               if (provider.selectedPage == 0) {
                 Navigator.pop(context);
               } else {
-                _pageController.animateToPage(provider.selectedPage - 1,
+                context.read<SignupService>().pagecontroller.animateToPage(
+                    provider.selectedPage - 1,
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.ease);
               }
             }),
             body: Listener(
               onPointerDown: (_) {
-                debugPrint("Listener is working---------------------------"
-                    .toString());
                 FocusScopeNode currentFocus = FocusScope.of(context);
                 if (!currentFocus.hasPrimaryFocus) {
                   currentFocus.focusedChild?.unfocus();
@@ -80,8 +116,7 @@ class _SignupPageState extends State<SignupPage> {
 
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 25),
-                      child: CommonHelper().titleCommon(
-                          asProvider.getString("Register to join us")),
+                      child: CommonHelper().titleCommon("Add Your Details"),
                     ),
 
                     const SizedBox(
@@ -89,6 +124,7 @@ class _SignupPageState extends State<SignupPage> {
                     ),
 
                     //Page steps show =======>
+
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -150,7 +186,8 @@ class _SignupPageState extends State<SignupPage> {
                         child: SizedBox(
                           height: 750,
                           child: PageView.builder(
-                              controller: _pageController,
+                              controller:
+                                  context.read<SignupService>().pagecontroller,
                               physics: const NeverScrollableScrollPhysics(),
                               onPageChanged: (value) {
                                 provider.setSelectedPage(value);
@@ -161,14 +198,15 @@ class _SignupPageState extends State<SignupPage> {
                                 if (i == 0) {
                                   return SignupEmailName(
                                     fullNameController: fullNameController,
-                                    userNameController: userNameController,
                                     emailController: emailController,
+                                    userNameController: userNameController,
                                   );
                                 } else if (i == 1) {
                                   return SignupPhonePass(
                                     passController: newPasswordController,
                                     repeatPassController:
                                         repeatNewPasswordController,
+                                    numberController: numberController,
                                   );
                                 } else {
                                   return SignupCountryStates(

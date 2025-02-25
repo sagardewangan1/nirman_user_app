@@ -133,7 +133,7 @@ class Steps extends StatelessWidget {
                       decoration: const BoxDecoration(
                           image: DecorationImage(
                               image: AssetImage(
-                                "assets/images/app_icon.png",
+                                "assets/images/icons2.png",
                               ),
                               opacity: .5)),
                     );

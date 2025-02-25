@@ -9,10 +9,13 @@ import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:qixer/view/utils/constant_styles.dart';
 import 'package:qixer/view/utils/others_helper.dart';
 
-import '../../../service/home_services/category_service.dart';
+import '../../../service/serviceby_category_service.dart';
+import '../../services/service_by_category_page.dart';
 
 class AllCategoriesPage extends StatefulWidget {
-  const AllCategoriesPage({super.key});
+  final String? catId;
+  final String? title;
+  const AllCategoriesPage({super.key, this.catId, this.title});
 
   @override
   State<AllCategoriesPage> createState() => _AllCategoriesPageState();
@@ -24,6 +27,8 @@ class _AllCategoriesPageState extends State<AllCategoriesPage> {
     super.initState();
     Provider.of<AllServicesService>(context, listen: false)
         .fetchCategories(context);
+    Provider.of<AllServicesService>(context, listen: false)
+        .fetchSubcategory(widget.catId);
   }
 
   final RefreshController refreshController =
@@ -33,11 +38,12 @@ class _AllCategoriesPageState extends State<AllCategoriesPage> {
   Widget build(BuildContext context) {
     ConstantColors cc = ConstantColors();
     return Scaffold(
-        backgroundColor: Colors.white,
-        appBar: CommonHelper().appbarCommon('All Categories', context, () {
+        // backgroundColor: Colors.white,
+        appBar: CommonHelper()
+            .appbarCommon(widget.title ?? 'All Categories', context, () {
           Navigator.pop(context);
         }),
-        body: Consumer<CategoryService>(
+        body: Consumer<AllServicesService>(
           builder: (context, provider, child) => Container(
             padding: EdgeInsets.symmetric(horizontal: screenPadding),
             child: GridView.builder(
@@ -48,19 +54,38 @@ class _AllCategoriesPageState extends State<AllCategoriesPage> {
                   crossAxisSpacing: 19,
                   height: 100),
               padding: const EdgeInsets.only(top: 12),
-              itemCount: provider.categories.category.length,
+              itemCount: provider.subCatList.length,
               shrinkWrap: true,
               itemBuilder: (context, index) {
-                return provider.categories != null
-                    ? provider.categories != 'error'
+                final subCate = provider.subCatList[index];
+                return provider.subCatList != null
+                    ? provider.subCatList != 'error'
                         ? CategoryCard(
-                            name: provider.categories.category[index].name,
-                            id: provider.categories.category[index].id,
+                            onTap: () {
+                              final sbcProvider =
+                                  Provider.of<ServiceByCategoryService>(
+                                context,
+                                listen: false,
+                              );
+                              sbcProvider.fetchSubcategoryList(subCate.id);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute<void>(
+                                  builder: (BuildContext context) =>
+                                      ServiceCategoryPage(
+                                    categoryName: subCate.name ?? '',
+                                    categoryId: subCate.id,
+                                    subCatId: subCate.id,
+                                  ),
+                                ),
+                              );
+                            },
+                            name: subCate.name,
+                            id: subCate.id,
                             cc: cc,
                             index: index,
-                            marginRight: 0.0,
-                            imagelink:
-                                provider.categories.category[index].mobileIcon,
+                            imagelink: subCate.image ??
+                                "", // Correctly accessing the mobileIcon data
                           )
                         : const Text("Something went wrong")
                     : OthersHelper().showLoading(cc.primaryColor);

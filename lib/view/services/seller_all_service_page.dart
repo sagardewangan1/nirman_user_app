@@ -40,7 +40,6 @@ class _ServicebyCategoryPageState extends State<SellerAllServicePage> {
       appBar: CommonHelper().appbarCommon(widget.sellerName, context, () {
         Provider.of<SellerAllServicesService>(context, listen: false)
             .setEverythingToDefault();
-
         Navigator.pop(context);
       }),
       body: SmartRefresher(
@@ -151,6 +150,10 @@ class _ServicebyCategoryPageState extends State<SellerAllServicePage> {
                                           ['serviceId'],
                                       sellerId: provider.serviceMap[i]
                                           ['sellerId'],
+                                      cardFrom: 'Home',
+                                      address: "Raipur",
+                                      experience: "10 yr",
+                                      status: "1",
                                     ),
                                   ),
                                   const SizedBox(

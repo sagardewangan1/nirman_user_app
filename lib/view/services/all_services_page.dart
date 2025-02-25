@@ -75,7 +75,7 @@ class _AllServicePageState extends State<AllServicePage> {
         footer: OthersHelper().commonRefreshFooter(context),
         child: SingleChildScrollView(
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 25),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Consumer<AllServicesService>(
                 builder: (context, provider, child) => Column(
                       children: [
@@ -84,7 +84,6 @@ class _AllServicePageState extends State<AllServicePage> {
                         ),
                         //Dropdown ==========>
                         const ServiceFilterDropdowns(),
-
                         !provider.isLoading
                             ? Column(children: [
                                 // Service List ===============>
@@ -170,6 +169,10 @@ class _AllServicePageState extends State<AllServicePage> {
                                               ['serviceId'],
                                           sellerId: provider.serviceMap[i]
                                               ['sellerId'],
+                                          cardFrom: 'Home',
+                                          address: "Raipur",
+                                          experience: "10 yr",
+                                          status: "1",
                                         ),
                                       ),
                                       const SizedBox(

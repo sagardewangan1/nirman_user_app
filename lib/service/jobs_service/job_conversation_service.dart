@@ -63,7 +63,7 @@ class JobConversationService with ChangeNotifier {
       //if connection is ok
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      var token = prefs.getString('token');
+      var token = prefs.getString('shashaktnirmantoken');
       var header = {
         "Authorization": "Bearer $token",
       };
@@ -110,7 +110,7 @@ class JobConversationService with ChangeNotifier {
   sendMessage(jobRequestId, message, filePath, BuildContext context,
       {required sellerId}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var token = prefs.getString('token');
+    var token = prefs.getString('shashaktnirmantoken');
 
     var dio = Dio();
     dio.options.headers['Content-Type'] = 'multipart/form-data';

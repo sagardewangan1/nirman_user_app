@@ -131,7 +131,7 @@ class AppleSignInService with ChangeNotifier {
   saveDetailsAfterSocialLogin(String email, userName, String token, int userId,
       String userToken, bool isAppleLogin, appleId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool('keepLoggedIn', true);
+    prefs.setBool('shashaktnirman_is_logged_in', true);
 
     prefs.setString("email", email);
     prefs.setString("userName", email);

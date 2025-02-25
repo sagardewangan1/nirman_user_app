@@ -4,6 +4,7 @@ import 'package:qixer/helper/extension/context_extension.dart';
 import 'package:qixer/helper/extension/int_extension.dart';
 import 'package:qixer/model/child_category_model.dart';
 import 'package:qixer/model/sub_category_model.dart';
+import 'package:qixer/service/jobs_service/recent_jobs_service.dart';
 import 'package:qixer/view/search/service_filter_model.dart';
 import 'package:qixer/view/utils/custom_dropdown.dart';
 import 'package:qixer/view/utils/custom_future_widget.dart';
@@ -21,6 +22,7 @@ class CategorySheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final recentJobController = Provider.of<RecentJobsService>(context);
     final sfm = ServiceFilterViewModel.instance;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -60,15 +62,20 @@ class CategorySheet extends StatelessWidget {
                   16.toHeight,
                   const FieldLabel(label: "Category"),
                   CustomFutureWidget(
-                    function: fc.shouldFC ? fc.fetchCategory() : null,
+                    function: fc.shouldFC
+                        ? fc.fetchCategory(
+                            location:
+                                recentJobController.cityID.toString() ?? '')
+                        : null,
                     shimmer: OthersHelper().showLoading(cc.primaryColor),
                     child: ValueListenableBuilder<Category?>(
                         valueListenable: sfm.selectedCategory,
                         builder: (context, category, child) => CustomDropdown(
                               "Select category",
                               fc.categoryModel.category
-                                  .map((e) => e.name ?? "")
-                                  .toList(),
+                                      ?.map((e) => e.name ?? "")
+                                      .toList() ??
+                                  [],
                               (name) {
                                 sfm.selectedCategory.value = fc.getCat(name);
                                 fc.fetchSubcategory(

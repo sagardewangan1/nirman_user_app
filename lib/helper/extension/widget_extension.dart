@@ -33,6 +33,15 @@ extension PaddingExtension on Widget {
   }
 }
 
+extension PaddingExtension2 on Widget {
+  Widget get hp15 {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15),
+      child: this,
+    );
+  }
+}
+
 extension DividerExtension on Widget {
   Widget divider(BuildContext context) {
     return Column(

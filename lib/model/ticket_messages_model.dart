@@ -60,7 +60,7 @@ class AllMessage {
   factory AllMessage.fromJson(Map<String, dynamic> json) => AllMessage(
         id: json["id"],
         message: json["message"],
-        notify: json["notify"] == null ? null : json["notify"],
+        notify: json["notify"],
         attachment: json["attachment"],
         type: json["type"],
         supportTicketId: json["support_ticket_id"],
@@ -71,7 +71,7 @@ class AllMessage {
   Map<String, dynamic> toJson() => {
         "id": id,
         "message": message,
-        "notify": notify == null ? null : notify,
+        "notify": notify,
         "attachment": attachment,
         "type": type,
         "support_ticket_id": supportTicketId,

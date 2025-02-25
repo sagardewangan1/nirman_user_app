@@ -2,11 +2,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pusher_beams/pusher_beams.dart';
+import 'package:qixer/model/navigationModel.dart';
 import 'package:qixer/service/filter_services_service.dart';
 import 'package:qixer/service/push_notification_service.dart';
 import 'package:qixer/view/home/home.dart';
 import 'package:qixer/view/home/homepage_helper.dart';
 import 'package:qixer/view/notification/push_notification_helper.dart';
+import 'package:qixer/view/tabs/leads/leadsView.dart';
 import 'package:qixer/view/tabs/saved_item_page.dart';
 import 'package:qixer/view/tabs/search/search_tab.dart';
 import 'package:qixer/view/tabs/settings/menu_page.dart';
@@ -31,6 +33,7 @@ class _HomePageState extends State<LandingPage> {
     // TODO: implement initState
     super.initState();
     // initPusherBeams(context);
+    firstLoad();
     setChatSellerId(null);
   }
 
@@ -47,15 +50,48 @@ class _HomePageState extends State<LandingPage> {
     // });
   }
 
+  String? userType;
+  List<Widget>? _children;
+  List<int> _navIndexes = []; // ✅ Track indexes dynamically
+
+  firstLoad() async {
+    final pref = await SharedPreferences.getInstance();
+    userType = pref.getString("shashaktnirmanusertype");
+    print("usertype===> $userType");
+
+    _children = [];
+    _navIndexes = [];
+
+    // ✅ Home Page (Always at index 0)
+    _children?.add(const Homepage());
+    _navIndexes.add(0);
+
+    // ✅ LeadsView (Only if userType == "0")
+    if (userType == "0") {
+      _children
+          ?.add(LeadsView(navigationModel: NavigationModel(navFrom: "Home")));
+      _navIndexes.add(1);
+    }
+
+    // ✅ Saved Page
+    _children?.add(const SavedItemPage());
+    _navIndexes.add(_navIndexes.length); // Auto-adjust index
+
+    // ✅ Search Page
+    _children?.add(const SearchTab());
+    _navIndexes.add(_navIndexes.length);
+
+    // ✅ Menu Page
+    _children?.add(const MenuPage());
+    _navIndexes.add(_navIndexes.length);
+
+    print("_navIndexes===> ${_navIndexes}");
+
+    setState(() {});
+  }
+
   final int _currentIndex = 0;
   //Bottom nav pages
-  final List<Widget> _children = [
-    const Homepage(),
-    const OrdersPage(),
-    const SavedItemPage(),
-    const SearchTab(),
-    const MenuPage(),
-  ];
 
   //Notification alert
   //=================>
@@ -111,23 +147,32 @@ class _HomePageState extends State<LandingPage> {
                     now.difference(currentBackPressTime!) >
                         const Duration(seconds: 2)) {
                   currentBackPressTime = now;
-                  OthersHelper().showToast("Press again to exit", Colors.black);
+                  if (HomepageHelper.tabIndex.value != 0) {
+                    HomepageHelper.tabIndex.value = 0;
+                  } else {
+                    OthersHelper()
+                        .showToast("Press again to exit", Colors.black);
+                  }
+
                   return Future.value(false);
                 }
                 return Future.value(true);
               },
-              child: _children[value]);
+              child: _children?[value] ?? Container());
         },
       ),
       // floatingActionButton: _currentIndex != 0 ? null : const ViewTypeIcon(),
       bottomNavigationBar: ValueListenableBuilder<int>(
-          valueListenable: HomepageHelper.tabIndex,
-          builder: (context, value, child) {
-            return BottomNav(
-              currentIndex: value,
-              onTabTapped: onTabTapped,
-            );
-          }),
+        valueListenable: HomepageHelper.tabIndex,
+        builder: (context, value, child) {
+          return BottomNav(
+            currentIndex:
+                _navIndexes.indexOf(value), // ✅ Ensure correct index mapping
+            onTabTapped: onTabTapped,
+            userType: userType,
+          );
+        },
+      ),
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
+import 'package:qixer/helper/SharedPreferencesHelper.dart';
 import 'package:qixer/service/app_string_service.dart';
 import 'package:qixer/service/auth_services/delete_account_service.dart';
 import 'package:qixer/service/auth_services/logout_service.dart';
@@ -106,6 +107,7 @@ class SettingsHelper {
                               asProvider.getString('Logout'), () {
                         if (provider.isloading == false) {
                           provider.logout(context);
+                          SharedPreferencesHelper.clearData();
                           //if logged in by google then logout from it
                           GoogleSignInService().logOutFromGoogleLogin();
 

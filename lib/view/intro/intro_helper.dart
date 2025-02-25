@@ -1,12 +1,12 @@
 class IntroHelper {
   getImage(int i) {
-    return 'assets/images/intro${i + 1}.png';
+    return 'https://sashaktnirmaan.com/assets/uploads/media-uploader/intro${i + 1}.png';
   }
 
   geTitle(int i) {
     List title = [
-      "House Cleaning Service",
       "Repairing Services",
+      "House Cleaning Service",
       "Home Shifting Service"
     ];
     return title[i];
@@ -14,8 +14,8 @@ class IntroHelper {
 
   geSubTitle(int i) {
     List subTitle = [
-      "Get house cleaning services from expert cleaners",
       "Get repaired anything from our thousands of experts",
+      "Get house cleaning services from expert cleaners",
       "Take our home shifting service to get best service"
     ];
     return subTitle[i];

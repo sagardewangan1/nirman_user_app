@@ -57,7 +57,7 @@ class PaymentGatewayListService with ChangeNotifier {
       setLoadingTrue();
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      var token = prefs.getString('token');
+      var token = prefs.getString('shashaktnirmantoken');
 
       var header = {
         //if header type is application/json then the data should be in jsonEncode method

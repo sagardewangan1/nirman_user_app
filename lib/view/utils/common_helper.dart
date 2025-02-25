@@ -13,29 +13,40 @@ import '../../service/book_steps_service.dart';
 class CommonHelper {
   ConstantColors cc = ConstantColors();
   //common appbar
-  appbarCommon(String title, BuildContext context, VoidCallback pressed,
+  appbarCommon(String title, BuildContext context, VoidCallback? pressed,
       {actions}) {
     return AppBar(
-      centerTitle: true,
+      // centerTitle: true,
       surfaceTintColor: cc.white,
       iconTheme: IconThemeData(color: cc.greyPrimary),
       systemOverlayStyle: SystemUiOverlayStyle.dark,
+      // leadingWidth: 30,
       title: Consumer<AppStringService>(
-        builder: (context, asProvider, child) => Text(
-          asProvider.getString(title),
-          style: TextStyle(
-              color: cc.greyPrimary, fontSize: 16, fontWeight: FontWeight.w600),
+        builder: (context, asProvider, child) => Padding(
+          padding: const EdgeInsets.only(right: 20.0),
+          child: Text(
+            overflow: TextOverflow.visible,
+            asProvider.getString(title),
+            textAlign: TextAlign.center,
+            softWrap: true,
+            style: TextStyle(
+                color: cc.greyPrimary,
+                fontSize: 16,
+                fontWeight: FontWeight.w600),
+          ),
         ),
       ),
       backgroundColor: cc.white,
-      elevation: 0,
-      leading: InkWell(
-        onTap: pressed,
-        child: const Icon(
-          Icons.arrow_back_ios,
-          // size: 24,
-        ),
-      ),
+      // elevation: 0,
+      leading: pressed != null
+          ? InkWell(
+              onTap: pressed,
+              child: const Icon(
+                Icons.arrow_back_ios,
+                // size: 24,
+              ),
+            )
+          : null,
       actions: actions,
     );
   }
@@ -121,17 +132,60 @@ class CommonHelper {
     );
   }
 
-  labelCommon(String title, {margin}) {
+  labelCommon(String title, {margin, bool? isRequired}) {
     return Container(
       margin: margin ?? const EdgeInsets.only(bottom: 15),
-      child: Text(
-        lnProvider.getString(title),
-        style: TextStyle(
-          color: cc.greyThree,
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-        ),
+      child: Row(
+        children: [
+          Text(
+            lnProvider.getString(title),
+            style: TextStyle(
+              color: cc.greyThree,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          SizedBox(
+            width: 5,
+          ),
+          isRequired == true
+              ? Text(
+                  "*",
+                  style: TextStyle(
+                    color: cc.errorColor,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                )
+              : Offstage(),
+        ],
       ),
+    );
+  }
+
+  labelCommon2(String title, {margin, bool? isRequired}) {
+    return Row(
+      children: [
+        Text(
+          lnProvider.getString(title),
+          style: TextStyle(
+            color: cc.greyThree,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        SizedBox(width: 5),
+        isRequired == true
+            ? Text(
+                '*',
+                style: TextStyle(
+                  color: cc.errorColor,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              )
+            : Offstage(),
+      ],
     );
   }
 
@@ -173,11 +227,29 @@ class CommonHelper {
     );
   }
 
+  homeAppBarLogo(String? imageUrl, double width, double height) {
+    return CachedNetworkImage(
+      width: width,
+      height: height,
+      fit: BoxFit.contain,
+      imageUrl: imageUrl.toString(),
+      placeholder: (context, url) => Image.network(
+          width: width,
+          height: height,
+          fit: BoxFit.contain,
+          placeHolderUrl.toString()),
+      errorWidget: (context, url, error) => Icon(
+        Icons.image_not_supported_outlined,
+        size: 34,
+      ),
+    );
+  }
+
   dividerCommon() {
     return Divider(
       thickness: 1,
       height: 2,
-      color: cc.borderColor,
+      color: cc.black6,
     );
   }
 
@@ -193,28 +265,31 @@ class CommonHelper {
     );
   }
 
-  profileImage(String imageLink, double height, double width) {
+  profileImage(String imageLink, double height, double width,
+      {fit = BoxFit.cover}) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(6),
       child: CachedNetworkImage(
         imageUrl: imageLink,
         placeholder: (context, url) {
-          return Image.asset('assets/images/loading_image.png');
+          return SizedBox(
+            height: 20,
+            width: 20,
+            child: Transform.scale(
+              scale:
+                  0.7, // Scale down the size (1.0 is default, less than 1 reduces size).
+              child: CircularProgressIndicator(
+                strokeWidth: 3, // Adjust thickness if needed.
+              ),
+            ),
+          );
         },
         errorWidget: (_, string, obj) {
-          return Container(
-            margin: const EdgeInsets.all(12),
-            decoration: const BoxDecoration(
-                image: DecorationImage(
-                    image: AssetImage(
-                      "assets/images/app_icon.png",
-                    ),
-                    opacity: .5)),
-          );
+          return Image.network(fit: BoxFit.cover, placeHolderUrl2);
         },
         height: height,
         width: width,
-        fit: BoxFit.cover,
+        fit: fit,
       ),
     );
   }

@@ -63,7 +63,7 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
                           errorWidget: (context, url, error) => Padding(
                             padding: const EdgeInsets.all(24),
                             child: Image.asset(
-                              'assets/images/icon.png',
+                              'assets/images/icons2.png',
                               color: Colors.white.withOpacity(.5),
                               colorBlendMode: BlendMode.lighten,
                             ),

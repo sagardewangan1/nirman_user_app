@@ -49,7 +49,9 @@ class ProfileEditService with ChangeNotifier {
       return false;
     }
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var token = prefs.getString('token');
+    var token = prefs.getString('shashaktnirmantoken');
+
+    print("Token profile===> $token");
 
     var dio = Dio();
     // dio.options.headers['Accept'] = 'application/json';
@@ -117,7 +119,7 @@ class ProfileEditService with ChangeNotifier {
   //   setLoadingTrue();
 
   //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   var token = prefs.getString('token');
+  //   var token = prefs.getString('shashaktnirmantoken');
 
   //   ///MultiPart request
   //   var request = http.MultipartRequest(
