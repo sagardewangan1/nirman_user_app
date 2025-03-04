@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:qixer/model/MyLeadsDataModel.dart';
 import 'package:qixer/service/common_service.dart';
 import 'package:qixer/view/utils/others_helper.dart';
@@ -15,14 +18,17 @@ class LeadsController extends ChangeNotifier {
     _isNew = value;
   }
 
-  int _count = 1;
-  int get count => _count;
+  Timer? _timer; // ✅ Timer for auto-fetching
+  bool _isFetching = false;
 
-  Stream<int> countStream() async* {
-    for (int i = 1; i <= 5; i++) {
-      await Future.delayed(const Duration(seconds: 1));
-      yield _count = i; // Emit the current count
-    }
+  LeadsController() {
+    _startAutoFetch(); // ✅ Start auto-fetch when Provider initializes
+  }
+
+  void _startAutoFetch() {
+    _timer = Timer.periodic(Duration(seconds: 5), (timer) {
+      getMyLeads(autoFetch: true); // ✅ Fetch new leads every 5 sec
+    });
   }
 
   String _selectedDateFilter = 'today';
@@ -41,39 +47,27 @@ class LeadsController extends ChangeNotifier {
 
   final StreamController<MyLeadsDataModel> _leadsStreamController =
       StreamController<MyLeadsDataModel>.broadcast();
+
   Stream<MyLeadsDataModel> get leadsStream => _leadsStreamController.stream;
 
-  /// Fetch My Leads and emit data through stream
-  Future<void> fetchLeadsStream() async {
-    while (true) {
-      bool success = await getMyLeads();
-      if (success) {
-        _leadsStreamController.sink.add(_myLeadsDataModel);
-      } else {
-        _leadsStreamController.sink.addError("Failed to fetch leads");
-      }
-      await Future.delayed(const Duration(seconds: 10)); // Fetch every 10 sec
-    }
-  }
-
-  Future<bool> getMyLeads() async {
-    _isLoading = true;
+  Future<bool> getMyLeads({bool autoFetch = false}) async {
+    if (_isFetching && !autoFetch) return false;
+    _isFetching = true;
     notifyListeners();
-
     var connection = await checkConnection();
     if (!connection) {
       _isLoading = false;
+      _isFetching = false;
       return false;
     }
-
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var token = prefs.getString('shashaktnirmantoken');
     if (token == null) {
-      print("❌ Token not found. User not authenticated.");
       _isLoading = false;
+      _isFetching = false;
+
       return false;
     }
-
     try {
       String url = "$baseApi/seller/leads/list";
       var headers = {
@@ -81,25 +75,24 @@ class LeadsController extends ChangeNotifier {
         "Authorization": "Bearer $token",
       };
       var response = await http.get(Uri.parse(url), headers: headers);
-
-      print("🔗 Request URL: $url");
-      print("📩 Request Headers: $headers");
-      print("📡 Response Status Code: ${response.statusCode}");
-      print("📜 Response Body: ${response.body}");
-
       if (response.statusCode == 200 || response.statusCode == 201) {
         _myLeadsDataModel =
             MyLeadsDataModel.fromJson(jsonDecode(response.body));
-        print("📜 Leads data length: ${_myLeadsDataModel.data?.length}");
+        _leadsStreamController.add(_myLeadsDataModel);
         _isLoading = false;
         notifyListeners();
         return true;
       }
+    } on SocketException catch (_) {
+      OthersHelper()
+          .showToast("No internet connection. Please try again!", Colors.red);
     } catch (e, stackTrace) {
-      print("❌ Exception: $e");
-      print("🔍 Stack Trace: $stackTrace");
+      if (!_leadsStreamController.isClosed) {
+        _leadsStreamController
+            .addError("Something went wrong. Please try again later.");
+      }
     }
-
+    _isFetching = false;
     _isLoading = false;
     notifyListeners();
     return false;
@@ -107,7 +100,64 @@ class LeadsController extends ChangeNotifier {
 
   @override
   void dispose() {
-    _leadsStreamController.close();
+    _timer?.cancel(); // ✅ Stop Timer when Provider is disposed
     super.dispose();
+  }
+
+  bool _isLoading2 = false;
+  bool get isLoading2 => _isLoading2;
+  Future<bool> updateLeadStatus({String? leadId}) async {
+    _isLoading2 = true;
+    notifyListeners();
+
+    var connection = await checkConnection();
+    if (!connection) {
+      _isLoading2 = false;
+      notifyListeners();
+      return false;
+    }
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var token = prefs.getString('shashaktnirmantoken');
+    if (token == null) {
+      _isLoading = false;
+      _isFetching = false;
+
+      return false;
+    }
+
+    try {
+      String url = "$baseApi/seller/leads/list/update-status/$leadId";
+      var headers = {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $token",
+      };
+
+      var response =
+          await http.get(Uri.parse(url), headers: headers); // Changed from GET
+
+      if (kDebugMode) {
+        print("📡 Response url: $url");
+        print("📡 Response Status Code: ${response.statusCode}");
+        print("📜 Response Body: ${response.body}");
+        print("📜 Response Headers: $headers");
+      }
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        getMyLeads(autoFetch: true);
+        _isLoading2 = false;
+        notifyListeners();
+        return true;
+      }
+    } catch (e, stackTrace) {
+      if (kDebugMode) {
+        print("❌ Exception: $e");
+        print("🔍 Stack Trace: $stackTrace");
+      }
+    }
+
+    _isLoading2 = false; // Ensure loading is turned off even in failure
+    notifyListeners();
+    return false;
   }
 }

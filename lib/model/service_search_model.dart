@@ -44,21 +44,26 @@ class ServiceSearchModel {
 class MainService {
   Service? service;
   String? imageUrl;
+  List<ServiceAreas>? serviceAreas;
 
-  MainService({
-    this.service,
-    this.imageUrl,
-  });
+  MainService({this.service, this.imageUrl, this.serviceAreas});
 
   factory MainService.fromJson(Map<String, dynamic> json) => MainService(
         service:
             json["service"] == null ? null : Service.fromJson(json["service"]),
         imageUrl: json["image_url"],
+        serviceAreas: json["serviceAreas"] == null
+            ? []
+            : List<ServiceAreas>.from(
+                json["serviceAreas"]!.map((x) => ServiceAreas.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
         "service": service?.toJson(),
         "image_url": imageUrl,
+        "serviceAreas": serviceAreas == null
+            ? []
+            : List<dynamic>.from(serviceAreas!.map((x) => x.toJson())),
       };
 }
 
@@ -70,6 +75,7 @@ class Service {
   dynamic sellerId;
   dynamic serviceCityId;
   dynamic serviceAreaId;
+  dynamic experience;
   String? title;
   String? slug;
   String? description;
@@ -94,6 +100,7 @@ class Service {
   DateTime? updatedAt;
   SellerForMobile? sellerForMobile;
   List<ReviewsForMobile>? reviewsForMobile;
+  List<ServiceAreas>? serviceAreas;
   ServiceCity? serviceCity;
 
   Service({
@@ -104,6 +111,7 @@ class Service {
     this.sellerId,
     this.serviceCityId,
     this.serviceAreaId,
+    this.experience,
     this.title,
     this.slug,
     this.description,
@@ -128,6 +136,7 @@ class Service {
     this.updatedAt,
     this.sellerForMobile,
     this.reviewsForMobile,
+    this.serviceAreas,
     this.serviceCity,
   });
 
@@ -139,6 +148,7 @@ class Service {
         sellerId: json["seller_id"],
         serviceCityId: json["service_city_id"],
         serviceAreaId: json["service_area_id"],
+        experience: json["experience"],
         title: json["title"],
         slug: json["slug"],
         description: json["description"],
@@ -172,6 +182,10 @@ class Service {
             ? []
             : List<ReviewsForMobile>.from(json["reviews_for_mobile"]!
                 .map((x) => ReviewsForMobile.fromJson(x))),
+        serviceAreas: json["serviceAreas"] == null
+            ? []
+            : List<ServiceAreas>.from(
+                json["serviceAreas"]!.map((x) => ServiceAreas.fromJson(x))),
         serviceCity: json["service_city"] == null
             ? null
             : ServiceCity.fromJson(json["service_city"]),
@@ -185,6 +199,7 @@ class Service {
         "seller_id": sellerId,
         "service_city_id": serviceCityId,
         "service_area_id": serviceAreaId,
+        "experience": experience,
         "title": title,
         "slug": slug,
         "description": description,
@@ -211,6 +226,9 @@ class Service {
         "reviews_for_mobile": reviewsForMobile == null
             ? []
             : List<dynamic>.from(reviewsForMobile!.map((x) => x.toJson())),
+        "serviceAreas": serviceAreas == null
+            ? []
+            : List<dynamic>.from(serviceAreas!.map((x) => x.toJson())),
         "service_city": serviceCity?.toJson(),
       };
 }
@@ -253,6 +271,7 @@ class SellerForMobile {
   String? name;
   String? image;
   dynamic countryId;
+  dynamic phone;
   double lat;
   double lng;
 
@@ -261,6 +280,7 @@ class SellerForMobile {
     this.name,
     this.image,
     this.countryId,
+    this.phone,
     required this.lat,
     required this.lng,
   });
@@ -273,6 +293,7 @@ class SellerForMobile {
         lat: json["latitude"].toString().tryToParse.toDouble(),
         lng: json["longitude"].toString().tryToParse.toDouble(),
         countryId: json["country_id"],
+        phone: json["phone"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -280,6 +301,7 @@ class SellerForMobile {
         "name": name,
         "image": image,
         "country_id": countryId,
+        "phone": phone,
       };
 }
 
@@ -320,5 +342,45 @@ class ServiceCity {
         "status": status,
         "created_at": createdAt?.toIso8601String(),
         "updated_at": updatedAt?.toIso8601String(),
+      };
+}
+
+class ServiceAreas {
+  dynamic id;
+  dynamic serviceArea;
+  dynamic serviceCityId;
+  dynamic countryID;
+  dynamic status;
+  dynamic createdAt;
+  dynamic updatedAt;
+
+  ServiceAreas({
+    this.id,
+    this.serviceArea,
+    this.serviceCityId,
+    this.countryID,
+    this.status,
+    this.createdAt,
+    this.updatedAt,
+  });
+
+  factory ServiceAreas.fromJson(Map<String, dynamic> json) => ServiceAreas(
+        id: json["id"],
+        serviceArea: json["service_area"],
+        serviceCityId: json["service_city_id"].toString().tryToParse,
+        countryID: json["country_id"],
+        status: json["status"],
+        createdAt: json["created_at"],
+        updatedAt: json["updated_at"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "service_area": serviceArea,
+        "service_city_id": serviceCityId,
+        "country_id": countryID,
+        "status": status,
+        "created_at": createdAt,
+        "updated_at": updatedAt,
       };
 }

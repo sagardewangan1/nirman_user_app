@@ -2,8 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:qixer/helper/contactFeatures.dart';
 import 'package:qixer/helper/extension/int_extension.dart';
+import 'package:qixer/helper/extension/string_extension.dart';
 import 'package:qixer/helper/extension/widget_extension.dart';
+import 'package:qixer/model/dropdown_models/area_dropdown_model.dart';
 import 'package:qixer/service/app_string_service.dart';
 import 'package:qixer/service/common_service.dart';
 import 'package:qixer/service/filter_services_service.dart';
@@ -127,6 +130,12 @@ class SearchBar extends StatelessWidget {
                               padding: EdgeInsets.zero,
                               separatorBuilder: (context, index) => 0.toHeight,
                               itemBuilder: (context, i) {
+                                var serviceAreaList =
+                                    provider.serviceMap[i]["serviceArea"];
+                                var areas = (serviceAreaList != null &&
+                                        serviceAreaList.isNotEmpty)
+                                    ? serviceAreaList.join(", ")
+                                    : "NA"; // Default message when empty
                                 return Padding(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 15, vertical: 5),
@@ -167,20 +176,23 @@ class SearchBar extends StatelessWidget {
                                           marginRight: 5.0,
                                           pressed: () {
                                             provider.saveOrUnsave(
-                                                provider.serviceMap[i]
-                                                    ['serviceId'],
-                                                provider.serviceMap[i]['title'],
-                                                provider.serviceMap[i]['image'],
-                                                provider.serviceMap[i]['price']
-                                                    .round(),
-                                                provider.serviceMap[i]
-                                                    ['sellerName'],
-                                                twoDouble(provider.serviceMap[i]
-                                                    ['rating']),
-                                                i,
-                                                context,
-                                                provider.serviceMap[i]
-                                                    ['sellerId']);
+                                              provider.serviceMap[i]
+                                                  ['serviceId'],
+                                              provider.serviceMap[i]['title'],
+                                              provider.serviceMap[i]['image'],
+                                              provider.serviceMap[i]['price']
+                                                  .round(),
+                                              provider.serviceMap[i]
+                                                  ['sellerName'],
+                                              twoDouble(provider.serviceMap[i]
+                                                  ['rating']),
+                                              i,
+                                              context,
+                                              provider.serviceMap[i]
+                                                  ['sellerId'],
+                                              provider.serviceMap[i]
+                                                  ['experience'],
+                                            );
                                           },
                                           isSaved: provider.serviceMap[i]
                                                       ['isSaved'] ==
@@ -192,9 +204,39 @@ class SearchBar extends StatelessWidget {
                                           sellerId: provider.serviceMap[i]
                                               ['sellerId'],
                                           cardFrom: 'Home',
-                                          address: "Raipur",
-                                          experience: "10 yr",
-                                          status: "1",
+                                          address: areas.toString().capitalize,
+                                          // experience: "8 year",
+                                          experience: provider.serviceMap[i]
+                                                      ['experience'] ==
+                                                  null
+                                              ? ''
+                                              : (RegExp(r'^\d+$').hasMatch(
+                                                      provider.serviceMap[i]
+                                                              ['experience']
+                                                          .toString())
+                                                  ? "${provider.serviceMap[i]['experience']} year"
+                                                  : "${provider.serviceMap[i]['experience']}"),
+
+                                          status: provider.serviceMap[i]
+                                                  ['status']
+                                              .toString(),
+                                          onTapCall: () {
+                                            ContactFeatures().launchCalling(
+                                                context,
+                                                provider.serviceMap[i]
+                                                    ['callNumber']);
+                                            print(
+                                                "on Tap Call ====> ${provider.serviceMap[i]['callNumber']}");
+                                          },
+                                          onTapWhatsapp: () {
+                                            ContactFeatures().launchWhatsapp(
+                                                context,
+                                                provider.serviceMap[i]
+                                                    ['callNumber'],
+                                                "Hello Sir,How can i help you ?");
+                                            print(
+                                                "on Tap Whatsapp ====> ${provider.serviceMap[i]['callNumber']}");
+                                          },
                                         ),
                                       ),
                                       // if (i < provider.serviceMap.length - 1)

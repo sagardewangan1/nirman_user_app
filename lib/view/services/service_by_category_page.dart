@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:qixer/helper/contactFeatures.dart';
 import 'package:qixer/service/common_service.dart';
 import 'package:qixer/service/service_details_service.dart';
 import 'package:qixer/service/serviceby_category_service.dart';
@@ -30,8 +31,9 @@ class ServiceCategoryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final sbcProvider =
         Provider.of<ServiceByCategoryService>(context, listen: false);
-    debugPrint("page auto loading".toString());
+    debugPrint("page auto loading");
     ConstantColors cc = ConstantColors();
+
     return Scaffold(
       appBar: CommonHelper().appbarCommon(categoryName, context, () {
         sbcProvider.setEverythingToDefault();
@@ -58,14 +60,11 @@ class ServiceCategoryPage extends StatelessWidget {
               context, categoryId, subCatId);
           if (result) {
             debugPrint('loadcomplete ran');
-            //loadcomplete function loads the data again
             refreshController.loadComplete();
           } else {
             debugPrint('no more data');
             refreshController.loadNoData();
-
             Future.delayed(const Duration(seconds: 1), () {
-              //it will reset footer no data state to idle and will let us load again
               refreshController.resetNoData();
             });
           }
@@ -78,30 +77,31 @@ class ServiceCategoryPage extends StatelessWidget {
           },
           child: SingleChildScrollView(
             child: Container(
-              // padding: const EdgeInsets.symmetric(horizontal: 25),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Consumer<ServiceByCategoryService>(
                 builder: (context, provider, child) => Column(
                   children: [
-                    // const SizedBox(
-                    //   height: 15,
-                    // ),
-                    // CustomDropdown(
-                    //   lnProvider.getString('Select Subcategory'),
-                    //   provider.subCatList.map((e) => e.name).toList(),
-                    //   (newValue) {
-                    //     provider.selectSubCategory(
-                    //         context, categoryId, newValue);
-                    //   },
-                    //   value: provider.selectedSubCat?.name,
-                    // ),
-                    provider.hasError != true
+                    /// **Service List**
+                    !provider.hasError
                         ? provider.serviceMap.isNotEmpty
-                            ? Column(children: [
-                                // Service List ===============>
-                                for (int i = 0;
-                                    i < provider.serviceMap.length;
-                                    i++)
-                                  Column(
+                            ? ListView.builder(
+                                physics: const NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                itemCount: provider.serviceMap.length,
+                                itemBuilder: (context, i) {
+                                  final service = provider.serviceMap[i];
+
+                                  /// Extract service area names
+                                  List<String> serviceAreas =
+                                      (service["serviceArea"] != null &&
+                                              service["serviceArea"].isNotEmpty)
+                                          ? (service["serviceArea"]
+                                                  as List<dynamic>)
+                                              .map((area) => area.toString())
+                                              .toList()
+                                          : ["NA"];
+
+                                  return Column(
                                     children: [
                                       InkWell(
                                         splashColor: Colors.transparent,
@@ -117,66 +117,76 @@ class ServiceCategoryPage extends StatelessWidget {
                                           Provider.of<ServiceDetailsService>(
                                                   context,
                                                   listen: false)
-                                              .fetchServiceDetails(provider
-                                                  .serviceMap[i]['serviceId']);
+                                              .fetchServiceDetails(
+                                                  service['serviceId']);
                                         },
                                         child: Padding(
                                           padding: const EdgeInsets.all(5.0),
                                           child: ServiceCard(
                                             cc: cc,
-                                            imageLink: provider.serviceMap[i]
-                                                    ['image'] ??
+                                            imageLink: service['image'] ??
                                                 placeHolderUrl,
-                                            rating: twoDouble(provider
-                                                .serviceMap[i]['rating']),
-                                            title: provider.serviceMap[i]
-                                                ['title'],
-                                            sellerName: provider.serviceMap[i]
-                                                ['sellerName'],
-                                            price: provider.serviceMap[i]
-                                                ['price'],
+                                            rating:
+                                                twoDouble(service['rating']),
+                                            title: service['title'],
+                                            sellerName: service['name'],
+                                            price: service['price'],
                                             buttonText: 'Book Now',
                                             width: double.infinity,
                                             marginRight: 0.0,
                                             pressed: () {
                                               provider.saveOrUnsave(
-                                                  provider.serviceMap[i]
-                                                      ['serviceId'],
-                                                  provider.serviceMap[i]
-                                                      ['title'],
-                                                  provider.serviceMap[i]
-                                                      ['image'],
-                                                  provider.serviceMap[i]
-                                                          ['price']
-                                                      .round(),
-                                                  provider.serviceMap[i]
-                                                      ['sellerName'],
-                                                  twoDouble(provider
-                                                      .serviceMap[i]['rating']),
-                                                  i,
+                                                service['serviceId'],
+                                                service['title'],
+                                                service['image'],
+                                                service['price'].round(),
+                                                service['sellerName'],
+                                                twoDouble(service['rating']),
+                                                i,
+                                                context,
+                                                service['sellerId'],
+                                                service['experience'],
+                                              );
+                                            },
+                                            isSaved: service['isSaved'] == true,
+                                            serviceId: service['serviceId'],
+                                            sellerId: service['sellerId'],
+                                            address: serviceAreas.join(', '),
+                                            experience: service['experience'] ==
+                                                    null
+                                                ? ''
+                                                : (RegExp(r'^\d+$').hasMatch(
+                                                        service['experience']
+                                                            .toString())
+                                                    ? "${service['experience']} year"
+                                                    : "${service['experience']}"),
+                                            status:
+                                                service['status'].toString(),
+                                            cardFrom: "Home",
+                                            onTapCall: () {
+                                              ContactFeatures().launchCalling(
                                                   context,
                                                   provider.serviceMap[i]
-                                                      ['sellerId']);
+                                                      ['callNumber']);
+                                              print(
+                                                  "on Tap Call ====> ${provider.serviceMap[i]['callNumber']}");
                                             },
-                                            isSaved: provider.serviceMap[i]
-                                                        ['isSaved'] ==
-                                                    true
-                                                ? true
-                                                : false,
-                                            serviceId: provider.serviceMap[i]
-                                                ['serviceId'],
-                                            sellerId: provider.serviceMap[i]
-                                                ['sellerId'],
-                                            address: "Raipur",
-                                            experience: '10 yr',
-                                            status: '1',
-                                            cardFrom: "Home",
+                                            onTapWhatsapp: () {
+                                              ContactFeatures().launchWhatsapp(
+                                                  context,
+                                                  provider.serviceMap[i]
+                                                      ['callNumber'],
+                                                  "Hello Sir,How can i help you ?");
+                                              print(
+                                                  "on Tap Whatsapp ====> ${provider.serviceMap[i]['callNumber']}");
+                                            },
                                           ),
                                         ),
                                       ),
                                     ],
-                                  ),
-                              ])
+                                  );
+                                },
+                              )
                             : Container(
                                 alignment: Alignment.center,
                                 height: screenHeight - 140,
@@ -188,7 +198,7 @@ class ServiceCategoryPage extends StatelessWidget {
                             height: screenHeight - 140,
                             child: Text(
                                 lnProvider.getString("No service available")),
-                          )
+                          ),
                   ],
                 ),
               ),

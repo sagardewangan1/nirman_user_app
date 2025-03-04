@@ -6,6 +6,7 @@ class SaveItemModel {
   late var price;
   late String sellerName;
   late double rating;
+  late String experience;
 
   itemMap() {
     // ignore: unused_local_variable, prefer_collection_literals
@@ -17,6 +18,7 @@ class SaveItemModel {
     mapping['sellerName'] = sellerName;
     mapping['rating'] = rating;
     mapping['sellerId'] = sellerId;
+    mapping['experience'] = experience;
     return mapping;
   }
 }

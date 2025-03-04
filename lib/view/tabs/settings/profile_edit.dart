@@ -197,8 +197,9 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             //Name ============>
-                            CommonHelper()
-                                .labelCommon(asProvider.getString('Full name')),
+                            CommonHelper().labelCommon(
+                                asProvider.getString('Full name'),
+                                isRequired: true),
 
                             CustomInput(
                               controller: fullNameController,
@@ -219,8 +220,9 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                             ),
 
                             //Email ============>
-                            CommonHelper()
-                                .labelCommon(asProvider.getString('Email')),
+                            CommonHelper().labelCommon(
+                                asProvider.getString('Email'),
+                                isRequired: true),
 
                             CustomInput(
                               controller: emailController,
@@ -247,8 +249,9 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            CommonHelper()
-                                .labelCommon(asProvider.getString('Phone')),
+                            CommonHelper().labelCommon(
+                                asProvider.getString('Phone'),
+                                isRequired: true),
                             Consumer<RtlService>(
                               builder: (context, rtlP, child) => IntlPhoneField(
                                 searchText:
@@ -269,23 +272,23 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                               ),
                             ),
                             sizedBoxCustom(20),
-                            CommonHelper()
-                                .labelCommon(asProvider.getString('Post code')),
-                            CustomInput(
-                              controller: postCodeController,
-                              validation: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return asProvider
-                                      .getString('Please enter post code');
-                                }
-                                return null;
-                              },
-                              isNumberField: true,
-                              hintText:
-                                  asProvider.getString('Enter your post code'),
-                              icon: 'assets/icons/user.png',
-                              textInputAction: TextInputAction.next,
-                            ),
+                            // CommonHelper()
+                            //     .labelCommon(asProvider.getString('Post code'),isRequired: true),
+                            // CustomInput(
+                            //   controller: postCodeController,
+                            //   validation: (value) {
+                            //     if (value == null || value.isEmpty) {
+                            //       return asProvider
+                            //           .getString('Please enter post code');
+                            //     }
+                            //     return null;
+                            //   },
+                            //   isNumberField: true,
+                            //   hintText:
+                            //       asProvider.getString('Enter your post code'),
+                            //   icon: 'assets/icons/user.png',
+                            //   textInputAction: TextInputAction.next,
+                            // ),
                           ],
                         ),
                         const SizedBox(
@@ -302,7 +305,8 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                               height: 25,
                             ),
                             CommonHelper().labelCommon(
-                                asProvider.getString('Your Address')),
+                                asProvider.getString('Your Address'),
+                                isRequired: true),
                             TextareaField(
                               hintText: asProvider.getString('Address'),
                               notesController: addressController,
@@ -317,8 +321,9 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                             const SizedBox(
                               height: 25,
                             ),
-                            CommonHelper()
-                                .labelCommon(asProvider.getString('About')),
+                            CommonHelper().labelCommon(
+                                asProvider.getString('About'),
+                                isRequired: true),
                             TextareaField(
                               hintText: asProvider.getString('About'),
                               notesController: aboutController,
@@ -361,18 +366,20 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                                   Colors.black);
                               return;
                             }
-                            showTopSnackBar(
-                                Overlay.of(context),
-                                CustomSnackBar.success(
-                                  message: asProvider.getString(
-                                      'Updating profile...It may take few seconds'),
-                                ),
-                                persistent: true,
-                                onAnimationControllerInit: (controller) =>
-                                    localAnimationController = controller,
-                                onTap: () {
-                                  // localAnimationController.reverse();
-                                });
+                            OthersHelper().showToast(
+                                "Successfully Updated", cc.successColor);
+                            // showTopSnackBar(
+                            //     Overlay.of(context),
+                            //     CustomSnackBar.success(
+                            //       message: asProvider.getString(
+                            //           'Updating profile...It may take few seconds'),
+                            //     ),
+                            //     persistent: true,
+                            //     onAnimationControllerInit: (controller) =>
+                            //         localAnimationController = controller,
+                            //     onTap: () {
+                            //       // localAnimationController.reverse();
+                            //     });
 
                             //update profile
                             var result = await provider.updateProfile(

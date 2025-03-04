@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:qixer/data/network/network_api_services.dart';
 import 'package:qixer/model/recent_service_model.dart';
+import 'package:qixer/model/service_search_model.dart';
 import 'package:qixer/model/serviceby_category_model.dart';
 import 'package:qixer/model/sub_category_model.dart';
 import 'package:qixer/service/common_service.dart';
@@ -250,16 +251,28 @@ class ServiceByCategoryService with ChangeNotifier {
       // print(
       //     "\nnew data printing ==========> ${data[i].title} && ${seller.toJson()} <============");
       // //
+      List processedServiceAreas = data[i].serviceAreas is List<ServiceAreas>
+          ? data[i]
+              .serviceAreas
+              .map((area) => area.serviceArea ?? "Unknown")
+              .toList()
+          : [];
       serviceMap.add({
         'serviceId': data[i].id,
         'title': data[i].title,
-        'name': seller
+        'name': data[i]
+            .sellerForMobile
             .name, // Assuming sellerForMobile is a List and using first seller
         'price': data[i].price,
         'rating': averageRateList[i],
         'image': imageList[i],
         'isSaved': false,
         'sellerId': data[i].sellerId,
+        'experience': data[i].experience,
+        'status': data[i].status,
+        'whatsappNumber': data[i].sellerForMobile.phone,
+        'callNumber': data[i].sellerForMobile.phone,
+        "serviceArea": processedServiceAreas
       });
       checkIfAlreadySaved(
           data[i].id, data[i].title, seller.name, serviceMap.length - 1);
@@ -275,10 +288,18 @@ class ServiceByCategoryService with ChangeNotifier {
   }
 
   saveOrUnsave(int serviceId, String title, image, int price, String sellerName,
-      double rating, int index, BuildContext context, sellerId) async {
+      double rating, int index, BuildContext context, sellerId, exp) async {
     var newListMap = serviceMap;
-    alreadySaved = await DbService().saveOrUnsave(serviceId, title,
-        image ?? placeHolderUrl, price, sellerName, rating, context, sellerId);
+    alreadySaved = await DbService().saveOrUnsave(
+        serviceId,
+        title,
+        image ?? placeHolderUrl,
+        price,
+        sellerName,
+        rating,
+        context,
+        sellerId,
+        exp);
     newListMap[index]['isSaved'] = alreadySaved;
     serviceMap = newListMap;
     notifyListeners();

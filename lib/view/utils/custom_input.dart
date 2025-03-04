@@ -21,7 +21,7 @@ class CustomInput extends StatelessWidget {
   final int? maxLines;
   final counterText;
 
-  TextEditingController? controller;
+  final TextEditingController? controller;
 
   CustomInput(
       {super.key,

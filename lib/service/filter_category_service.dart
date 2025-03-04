@@ -1,10 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:qixer/model/CategoryDataModel.dart';
 import 'package:qixer/model/categoryModel.dart';
 import 'package:qixer/model/child_category_model.dart';
 import 'package:qixer/model/sub_category_model.dart';
 import 'package:qixer/view/utils/others_helper.dart';
+import 'package:http/http.dart' as http;
 
 import '../data/network/network_api_services.dart';
 
@@ -27,17 +29,18 @@ class FilterCategoryService with ChangeNotifier {
   bool subCatLoading = false;
   bool childCatLoading = false;
 
+  CategoryDataModel _categoryDataModel = CategoryDataModel();
+  CategoryDataModel get categoryDataModel => _categoryDataModel;
+
   fetchCategory({String? location}) async {
-    var url = "$baseApi/category?cat_area_id=$location";
     try {
-      final responseData = await NetworkApiServices().getApi(url, "Category");
+      var response = await http.get(
+          Uri.parse('$baseApi/category?cat_area_id=${location.toString()}'));
 
-      if (responseData != null) {
-        var decodedData = jsonDecode(responseData['body']);
-
-        if (decodedData != null && decodedData["category"] != null) {
-          var tempData = CategoryModel.fromJson(decodedData);
-          _categoryModel = tempData;
+      if (response != null) {
+        var decodedData = jsonDecode(response.body);
+        if (decodedData != null && decodedData["categories"] != null) {
+          _categoryDataModel = CategoryDataModel.fromJson(decodedData);
           return true;
         } else {
           debugPrint("Category data is null or invalid.");
@@ -82,9 +85,9 @@ class FilterCategoryService with ChangeNotifier {
     notifyListeners();
   }
 
-  Category? getCat(name) {
+  Categories? getCat(name) {
     try {
-      return categoryModel.category
+      return categoryDataModel.categories
           ?.firstWhere((element) => element.name == name);
     } catch (e) {}
     return null;

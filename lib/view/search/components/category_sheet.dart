@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qixer/helper/extension/context_extension.dart';
 import 'package:qixer/helper/extension/int_extension.dart';
+import 'package:qixer/model/CategoryDataModel.dart';
 import 'package:qixer/model/child_category_model.dart';
 import 'package:qixer/model/sub_category_model.dart';
 import 'package:qixer/service/jobs_service/recent_jobs_service.dart';
@@ -68,22 +69,24 @@ class CategorySheet extends StatelessWidget {
                                 recentJobController.cityID.toString() ?? '')
                         : null,
                     shimmer: OthersHelper().showLoading(cc.primaryColor),
-                    child: ValueListenableBuilder<Category?>(
-                        valueListenable: sfm.selectedCategory,
-                        builder: (context, category, child) => CustomDropdown(
-                              "Select category",
-                              fc.categoryModel.category
-                                      ?.map((e) => e.name ?? "")
-                                      .toList() ??
-                                  [],
-                              (name) {
-                                sfm.selectedCategory.value = fc.getCat(name);
-                                fc.fetchSubcategory(
-                                    sfm.selectedCategory.value?.id);
-                                sfm.selectedSubcategory.value = null;
-                              },
-                              value: category?.name,
-                            )),
+                    child: ValueListenableBuilder<Categories?>(
+                        valueListenable: sfm.selectedCategories,
+                        builder: (context, category, child) {
+                          return CustomDropdown(
+                            hintText: "Select Category",
+                            listData: fc.categoryDataModel.categories
+                                    ?.map((e) => e.name ?? "")
+                                    .toList() ??
+                                [],
+                            onChanged: (name) {
+                              sfm.selectedCategories.value = fc.getCat(name);
+                              fc.fetchSubcategory(
+                                  sfm.selectedCategories.value?.id);
+                              sfm.selectedSubcategory.value = null;
+                            },
+                            value: category?.name,
+                          );
+                        }),
                   ),
                   12.toHeight,
                   const FieldLabel(label: "Subcategory"),
@@ -94,11 +97,11 @@ class CategorySheet extends StatelessWidget {
                         valueListenable: sfm.selectedSubcategory,
                         builder: (context, subcategory, child) =>
                             CustomDropdown(
-                              "Select subcategory",
-                              fc.subcategoryModel.subCategories
-                                  .map((e) => e.name ?? "")
+                              hintText: "Select subcategory",
+                              listData: fc.subcategoryModel.subCategories
+                                  ?.map((e) => e.name ?? "")
                                   .toList(),
-                              (name) {
+                              onChanged: (name) {
                                 sfm.selectedSubcategory.value =
                                     fc.getSubCat(name);
                                 fc.fetchChildCategory(
@@ -109,25 +112,30 @@ class CategorySheet extends StatelessWidget {
                             )),
                   ),
                   12.toHeight,
-                  const FieldLabel(label: "Child-category"),
-                  CustomFutureWidget(
-                    shimmer: OthersHelper().showLoading(cc.primaryColor),
-                    isLoading: fc.childCatLoading,
-                    child: ValueListenableBuilder<ChildCategory?>(
-                        valueListenable: sfm.selectedChildCategory,
-                        builder: (context, childCategory, child) =>
-                            CustomDropdown(
-                              "Select child-category",
-                              fc.childCategoryModel.childCategory
-                                  .map((e) => e.name ?? "")
-                                  .toList(),
-                              (name) {
-                                sfm.selectedChildCategory.value =
-                                    fc.getChildCat(name);
-                              },
-                              value: childCategory?.name,
-                            )),
-                  ),
+                  fc.childCategoryModel.childCategory.length == 0
+                      ? Offstage()
+                      : const FieldLabel(label: "Child-category"),
+                  fc.childCategoryModel.childCategory.length == 0
+                      ? Offstage()
+                      : CustomFutureWidget(
+                          shimmer: OthersHelper().showLoading(cc.primaryColor),
+                          isLoading: fc.childCatLoading,
+                          child: ValueListenableBuilder<ChildCategory?>(
+                              valueListenable: sfm.selectedChildCategory,
+                              builder: (context, childCategory, child) =>
+                                  CustomDropdown(
+                                    hintText: "Select child-category",
+                                    listData: fc
+                                        .childCategoryModel.childCategory
+                                        .map((e) => e.name ?? "")
+                                        .toList(),
+                                    onChanged: (name) {
+                                      sfm.selectedChildCategory.value =
+                                          fc.getChildCat(name);
+                                    },
+                                    value: childCategory?.name,
+                                  )),
+                        ),
 
                   // ====================>
 
@@ -153,8 +161,7 @@ class CategorySheet extends StatelessWidget {
                               Provider.of<FilterServicesService>(context,
                                       listen: false)
                                   .setCategoryFilters(
-                                      selectedCategory:
-                                          sfm.selectedCategory.value,
+                                      categories: sfm.selectedCategories.value,
                                       selectedSubcategory:
                                           sfm.selectedSubcategory.value,
                                       selectedChildCategory:

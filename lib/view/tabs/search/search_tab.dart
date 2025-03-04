@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:qixer/helper/extension/context_extension.dart';
 import 'package:qixer/helper/extension/string_extension.dart';
 import 'package:qixer/service/app_string_service.dart';
+import 'package:qixer/service/filter_services_service.dart';
 import 'package:qixer/view/home_map_view/home_map_view.dart';
 import 'package:qixer/view/search/components/search_bar.dart' as sb;
 import 'package:qixer/view/utils/common_helper.dart';
@@ -21,6 +22,7 @@ class _SearchTabState extends State<SearchTab> {
   @override
   void initState() {
     super.initState();
+    Provider.of<FilterServicesService>(context, listen: false).resetFilters();
   }
 
   @override

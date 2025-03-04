@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:qixer/model/CategoryDataModel.dart';
 import 'package:qixer/model/categoryModel.dart';
 import 'package:qixer/model/child_category_model.dart';
 import 'package:qixer/model/google_places_model.dart';
@@ -21,6 +22,7 @@ class ServiceFilterViewModel {
   ValueNotifier<String?> serviceType = ValueNotifier("All");
 
   ValueNotifier<Category?> selectedCategory = ValueNotifier(null);
+  ValueNotifier<Categories?> selectedCategories = ValueNotifier(null);
   ValueNotifier<SubCategory?> selectedSubcategory = ValueNotifier(null);
   ValueNotifier<ChildCategory?> selectedChildCategory = ValueNotifier(null);
 
@@ -70,6 +72,7 @@ class ServiceFilterViewModel {
     final fsProvider =
         Provider.of<FilterServicesService>(context, listen: false);
     selectedCategory.value = fsProvider.selectedCategory;
+    selectedCategories.value = fsProvider.selectedCategories;
     selectedSubcategory.value = fsProvider.selectedSubcategory;
     selectedChildCategory.value = fsProvider.selectedChildCategory;
   }

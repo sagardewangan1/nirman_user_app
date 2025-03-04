@@ -51,6 +51,45 @@ class CommonHelper {
     );
   }
 
+  //common appbar
+  appbarCommon2(String title, BuildContext context,
+      {actions, VoidCallback? pressed}) {
+    return AppBar(
+      // centerTitle: true,
+      surfaceTintColor: cc.white,
+      iconTheme: IconThemeData(color: cc.greyPrimary),
+      systemOverlayStyle: SystemUiOverlayStyle.dark,
+      // leadingWidth: 30,
+      title: Consumer<AppStringService>(
+        builder: (context, asProvider, child) => Padding(
+          padding: const EdgeInsets.only(right: 20.0),
+          child: Text(
+            overflow: TextOverflow.visible,
+            asProvider.getString(title),
+            textAlign: TextAlign.center,
+            softWrap: true,
+            style: TextStyle(
+                color: cc.greyPrimary,
+                fontSize: 16,
+                fontWeight: FontWeight.w600),
+          ),
+        ),
+      ),
+      backgroundColor: cc.white,
+      // elevation: 0,
+      leading: pressed != null
+          ? InkWell(
+              onTap: pressed,
+              child: const Icon(
+                Icons.arrow_back_ios,
+                // size: 24,
+              ),
+            )
+          : null,
+      actions: actions,
+    );
+  }
+
   appbarForBookingPages(String title, BuildContext context,
       {bool isPersonalizatioPage = false, VoidCallback? extraFunction}) {
     return AppBar(
@@ -239,7 +278,7 @@ class CommonHelper {
           fit: BoxFit.contain,
           placeHolderUrl.toString()),
       errorWidget: (context, url, error) => Icon(
-        Icons.image_not_supported_outlined,
+        Icons.image_outlined,
         size: 34,
       ),
     );

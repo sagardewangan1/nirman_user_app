@@ -12,8 +12,8 @@ var defaultId = '0';
 class CountryDropdownService with ChangeNotifier {
   var countryDropdownList = [];
   var countryDropdownIndexList = [];
-  dynamic selectedCountry = 'Select Country';
-  dynamic selectedCountryId = defaultId;
+  dynamic selectedCountry = 'India';
+  dynamic selectedCountryId = "6";
 
   bool isLoading = false;
   late int totalPages;

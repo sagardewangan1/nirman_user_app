@@ -54,37 +54,37 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     startInitialization(context);
     return Scaffold(
-        backgroundColor: Colors.white,
+        // backgroundColor: Colors.white,
         body: Container(
-          height: MediaQuery.of(context).size.height,
-          width: double.infinity,
-          alignment: Alignment.center,
-          decoration: const BoxDecoration(
-            color: Colors.white,
+      height: MediaQuery.of(context).size.height,
+      width: double.infinity,
+      alignment: Alignment.center,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+      ),
+      // color: ConstantColors().primaryColor,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            height: 250,
+            width: double.infinity,
+            decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: AssetImage(appLogoIcon), fit: BoxFit.fitHeight)),
           ),
-          // color: ConstantColors().primaryColor,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                height: 80,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage(appLogoIcon), fit: BoxFit.fitHeight)),
-              ),
-              const SizedBox(height: 24),
-              OthersHelper().showLoading(ConstantColors().primaryColor),
-              const SizedBox(height: 24),
-              Text(
-                appVersion,
-                style: TextStyle(
-                    fontSize: 14,
-                    color: ConstantColors().greyFour,
-                    fontWeight: FontWeight.w600),
-              )
-            ],
-          ),
-        ));
+          // const SizedBox(height: 24),
+          // OthersHelper().showLoading(ConstantColors().primaryColor),
+          // const SizedBox(height: 24),
+          // Text(
+          //   appVersion,
+          //   style: TextStyle(
+          //       fontSize: 14,
+          //       color: ConstantColors().greyFour,
+          //       fontWeight: FontWeight.w600),
+          // )
+        ],
+      ),
+    ));
   }
 }

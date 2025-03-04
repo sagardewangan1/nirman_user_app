@@ -214,13 +214,6 @@ class _SignUpVendorViewState extends State<SignUpVendorView> {
                               );
                             } else {
                               return SignupVendorBusinessDetails(
-                                businessName: businessNameController,
-                                businessMobileNumber:
-                                    businessMobileNumberController,
-                                businessEmailNumber: businessEmailController,
-                                businessAddress: businessAddressController,
-                                gstNumber: gstNumberController,
-                                businessDescription: businessDescription,
                                 state: businessStateController,
                                 city: businessCityController,
                                 fullNameController: fullNameController,

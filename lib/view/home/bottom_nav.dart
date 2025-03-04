@@ -8,8 +8,11 @@ import '../utils/constant_colors.dart';
 
 import 'dart:io'; // ✅ For Platform check
 
+import 'dart:io'; // ✅ For Platform check
+
 class BottomNav extends StatelessWidget {
   final int currentIndex;
+  final List<int> navIndexes;
   final String? userType;
   final Function(int) onTabTapped;
 
@@ -17,6 +20,7 @@ class BottomNav extends StatelessWidget {
     super.key,
     required this.currentIndex,
     required this.onTabTapped,
+    required this.navIndexes,
     this.userType,
   });
 
@@ -100,14 +104,10 @@ class BottomNav extends StatelessWidget {
         selectedItemColor: ConstantColors().primaryColor,
         unselectedItemColor: ConstantColors().greyFour,
         onTap: (index) {
-          // ✅ Convert UI index to actual index using _navIndexes
-          int adjustedIndex = currentIndex;
-
-          // ✅ Prevent out of range error
-          if (adjustedIndex < currentIndex) {
-            onTabTapped(adjustedIndex);
+          if (index < navIndexes.length) {
+            onTabTapped(navIndexes[index]); // ✅ Correct index mapping
           } else {
-            print("❌ Invalid index: $adjustedIndex");
+            print("❌ Invalid index: $index");
           }
         },
         currentIndex: currentIndex,

@@ -20,9 +20,9 @@ class OrderSort extends StatelessWidget {
           Expanded(
             flex: 1,
             child: CustomDropdown(
-              lnProvider.getString("Select status"),
-              moProvider.orderStatusOptions,
-              (p0) {
+              hintText: lnProvider.getString("Select status"),
+              listData: moProvider.orderStatusOptions,
+              onChanged: (p0) {
                 moProvider.setOrderSort(p0);
               },
               value: moProvider.selectedOrderSort,
@@ -34,9 +34,9 @@ class OrderSort extends StatelessWidget {
           Expanded(
             flex: 1,
             child: CustomDropdown(
-              lnProvider.getString("Select status"),
-              moProvider.paymentStatusOptions,
-              (p0) {
+              hintText: lnProvider.getString("Select status"),
+              listData: moProvider.paymentStatusOptions,
+              onChanged: (p0) {
                 moProvider.setPaymentSort(p0);
               },
               value: moProvider.selectedPaymentSort,

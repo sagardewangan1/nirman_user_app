@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:qixer/view/services/components/desc_from_html.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
 
-
 class OverviewTab extends StatelessWidget {
   const OverviewTab({super.key, required this.provider});
 
@@ -32,20 +31,6 @@ class OverviewTab extends StatelessWidget {
               height: 10,
             ),
             Text(
-              "Availability",
-              style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500),
-            ),
-            DescInHtml(
-              cc: cc,
-              desc: provider.serviceAllDetails.serviceDetails.description,
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Text(
               "Office Address",
               style: TextStyle(
                   color: Colors.black,
@@ -57,7 +42,9 @@ class OverviewTab extends StatelessWidget {
               child: Text(
                   textAlign: TextAlign.left,
                   overflow: TextOverflow.visible,
-                  "OFC 06, 3rd Floor Magneto Mall Raipur (C.G) 492001",
+                  provider.serviceAllDetails.serviceDetails.seller.address
+                          .toString() ??
+                      "",
                   style: TextStyle(
                       color: cc.black3,
                       fontSize: 12,

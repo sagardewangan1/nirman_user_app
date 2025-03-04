@@ -3,6 +3,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:qixer/helper/contactFeatures.dart';
 import 'package:qixer/service/rtl_service.dart';
 import 'package:qixer/service/service_details_service.dart';
 import 'package:qixer/view/services/components/desc_from_html.dart';
@@ -110,7 +111,9 @@ class ServiceDetailsTop extends StatelessWidget {
                         child: Text(
                             textAlign: TextAlign.left,
                             overflow: TextOverflow.ellipsis,
-                            "OFC 06, 3rd Floor Magneto Mall Raipur (C.G) 492001",
+                            provider.serviceAllDetails.serviceDetails.seller
+                                    .address ??
+                                '',
                             style: TextStyle(
                                 color: cc.black3,
                                 fontSize: 12,
@@ -119,19 +122,34 @@ class ServiceDetailsTop extends StatelessWidget {
                     ],
                   ),
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Work Type : ",
+                      Text(
+                        "Work Type : ",
+                        style: TextStyle(
+                          color: cc.black3,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                      SizedBox(width: 5), // Adds small spacing between text
+                      Flexible(
+                        // Ensures text does not overflow
+                        child: Text(
+                          "${provider.serviceAllDetails.serviceDetails.category.name ?? ''},\n${provider.serviceAllDetails.serviceDetails.subcategory.name ?? ''}",
                           style: TextStyle(
-                              color: cc.black3,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w400)),
-                      Text("Unisex Salon",
-                          style: TextStyle(
-                              color: cc.black3,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w400)),
+                            color: cc.black3,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                          ),
+                          maxLines: 2, // Restrict to 2 lines if needed
+                          overflow: TextOverflow
+                              .ellipsis, // Add "..." if text is too long
+                        ),
+                      ),
                     ],
                   ),
+
                   Row(
                     children: [
                       Text("Experience : ",
@@ -139,67 +157,78 @@ class ServiceDetailsTop extends StatelessWidget {
                               color: cc.black3,
                               fontSize: 12,
                               fontWeight: FontWeight.w400)),
-                      Text("5+ Year Experience In Business",
+                      Text(
+                          provider.serviceAllDetails.serviceDetails
+                                      .experience ==
+                                  null
+                              ? ''
+                              : (RegExp(r'^\d+$').hasMatch(provider
+                                      .serviceAllDetails
+                                      .serviceDetails
+                                      .experience
+                                      .toString())
+                                  ? "${provider.serviceAllDetails.serviceDetails.experience} year"
+                                  : "${provider.serviceAllDetails.serviceDetails.experience}"),
                           style: TextStyle(
                               color: cc.black3,
                               fontSize: 12,
                               fontWeight: FontWeight.w400)),
                     ],
                   ),
-                  InkWell(
-                    onTap: () => showBottomSheetWithListView(desc, context),
-                    child: Row(
-                      children: [
-                        // Static label for Open Time
-                        Text(
-                          "Open Time : ",
-                          style: TextStyle(
-                            color: cc.black3,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                        RichText(
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: "9:00 AM",
-                                style: TextStyle(
-                                  color: cc.primaryColor,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                              TextSpan(
-                                text: " - ",
-                                style: TextStyle(
-                                  color: cc.black3,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                              TextSpan(
-                                text: "5:00 PM",
-                                style: TextStyle(
-                                  color: cc.primaryColor,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                              TextSpan(
-                                text: " Tap To Know More",
-                                style: TextStyle(
-                                  color: Color(0xFF0000EE),
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  // InkWell(
+                  //   onTap: () => showBottomSheetWithListView(desc, context),
+                  //   child: Row(
+                  //     children: [
+                  //       // Static label for Open Time
+                  //       Text(
+                  //         "Open Time : ",
+                  //         style: TextStyle(
+                  //           color: cc.black3,
+                  //           fontSize: 12,
+                  //           fontWeight: FontWeight.w400,
+                  //         ),
+                  //       ),
+                  //       RichText(
+                  //         text: TextSpan(
+                  //           children: [
+                  //             TextSpan(
+                  //               text: "9:00 AM",
+                  //               style: TextStyle(
+                  //                 color: cc.primaryColor,
+                  //                 fontSize: 12,
+                  //                 fontWeight: FontWeight.w400,
+                  //               ),
+                  //             ),
+                  //             TextSpan(
+                  //               text: " - ",
+                  //               style: TextStyle(
+                  //                 color: cc.black3,
+                  //                 fontSize: 12,
+                  //                 fontWeight: FontWeight.w400,
+                  //               ),
+                  //             ),
+                  //             TextSpan(
+                  //               text: "5:00 PM",
+                  //               style: TextStyle(
+                  //                 color: cc.primaryColor,
+                  //                 fontSize: 12,
+                  //                 fontWeight: FontWeight.w400,
+                  //               ),
+                  //             ),
+                  //             TextSpan(
+                  //               text: " Tap To Know More",
+                  //               style: TextStyle(
+                  //                 color: Color(0xFF0000EE),
+                  //                 fontSize: 12,
+                  //                 fontWeight: FontWeight.w500,
+                  //               ),
+                  //             ),
+                  //           ],
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
                   SizedBox(
                     height: 10,
                   ),
@@ -207,13 +236,24 @@ class ServiceDetailsTop extends StatelessWidget {
                     children: [
                       Icon(
                         Icons.check_circle,
-                        color: cc.successColor,
+                        color:
+                            provider.serviceAllDetails.serviceDetails.status ==
+                                    1
+                                ? cc.successColor
+                                : cc.errorColor,
                         size: 14,
                       ),
                       SizedBox(width: 7),
-                      Text("Available",
+                      Text(
+                          provider.serviceAllDetails.serviceDetails.status == 1
+                              ? 'Available'
+                              : 'UnAvailable',
                           style: TextStyle(
-                              color: cc.successColor,
+                              color: provider.serviceAllDetails.serviceDetails
+                                          .status ==
+                                      1
+                                  ? cc.successColor
+                                  : cc.errorColor,
                               fontSize: 12,
                               fontWeight: FontWeight.w500)),
                     ],
@@ -280,7 +320,11 @@ class ServiceDetailsTop extends StatelessWidget {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        // Handle tap event here
+                        ContactFeatures().launchWhatsapp(
+                            context,
+                            provider
+                                .serviceAllDetails.serviceDetails.seller.phone,
+                            "Hello sir, How can i help you ?");
                       },
                       child: Container(
                         alignment: Alignment.center,
@@ -318,7 +362,10 @@ class ServiceDetailsTop extends StatelessWidget {
                     ),
                     GestureDetector(
                       onTap: () {
-                        // Handle tap event here
+                        ContactFeatures().launchCalling(
+                            context,
+                            provider
+                                .serviceAllDetails.serviceDetails.seller.phone);
                       },
                       child: Container(
                         alignment: Alignment.center,
@@ -357,9 +404,7 @@ class ServiceDetailsTop extends StatelessWidget {
                       width: 20,
                     ),
                     GestureDetector(
-                      onTap: () {
-                        // Handle tap event here
-                      },
+                      onTap: () {},
                       child: Container(
                         alignment: Alignment.center,
                         decoration: BoxDecoration(

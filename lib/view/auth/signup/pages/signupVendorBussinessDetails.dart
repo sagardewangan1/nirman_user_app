@@ -15,33 +15,22 @@ import '../../../utils/others_helper.dart';
 import '../components/country_states_dropdowns.dart';
 
 class SignupVendorBusinessDetails extends StatefulWidget {
-  final TextEditingController businessName;
-  final TextEditingController gstNumber;
-  final TextEditingController businessAddress;
   final TextEditingController state;
   final TextEditingController city;
-  final TextEditingController businessMobileNumber;
-  final TextEditingController businessEmailNumber;
-  final TextEditingController businessDescription;
-  final TextEditingController fullNameController;
-  final TextEditingController userNameController;
-  final TextEditingController phoneController;
-  final TextEditingController emailController;
+
+  final TextEditingController? fullNameController;
+  final TextEditingController? userNameController;
+  final TextEditingController? phoneController;
+  final TextEditingController? emailController;
 
   const SignupVendorBusinessDetails({
     super.key,
-    required this.businessName,
-    required this.gstNumber,
-    required this.businessAddress,
-    required this.businessMobileNumber,
-    required this.businessEmailNumber,
-    required this.businessDescription,
     required this.state,
     required this.city,
-    required this.fullNameController,
-    required this.userNameController,
-    required this.phoneController,
-    required this.emailController,
+    this.fullNameController,
+    this.userNameController,
+    this.phoneController,
+    this.emailController,
   });
 
   @override
@@ -51,9 +40,87 @@ class SignupVendorBusinessDetails extends StatefulWidget {
 
 class _SignupVendorBusinessDetailsState
     extends State<SignupVendorBusinessDetails> {
-  final _formKey = GlobalKey<FormState>();
+  final TextEditingController businessNameController = TextEditingController();
+  final TextEditingController gstNumberController = TextEditingController();
+  final TextEditingController businessAddressController =
+      TextEditingController();
+  final TextEditingController businessMobileNumberController =
+      TextEditingController();
+  final TextEditingController businessEmailController = TextEditingController();
+  final TextEditingController businessDescriptionController =
+      TextEditingController();
 
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool termsAgree = false;
+
+  void _submit(BuildContext context, SignupVendorService provider) {
+    if (_formKey.currentState == null || !_formKey.currentState!.validate()) {
+      return;
+    }
+    if (!termsAgree) {
+      OthersHelper().showToast(
+        "You must agree with the terms and conditions to register",
+        Colors.black,
+      );
+      return;
+    }
+    if (businessNameController.text.isEmpty) {
+      OthersHelper()
+          .showToast('Please Enter Business Name Required', cc.warningColor);
+    }
+    // Check each field and show a toast if it's empty
+    if (businessNameController.text.isEmpty) {
+      OthersHelper()
+          .showToast('Please Enter Business Name Required', cc.warningColor);
+      return;
+    }
+
+    if (gstNumberController.text.isEmpty) {
+      OthersHelper()
+          .showToast('Please Enter GST Number Required', cc.warningColor);
+      return;
+    }
+
+    if (businessAddressController.text.isEmpty) {
+      OthersHelper()
+          .showToast('Please Enter Business Address Required', cc.warningColor);
+      return;
+    }
+
+    if (businessMobileNumberController.text.isEmpty) {
+      OthersHelper().showToast(
+          'Please Enter Business Mobile Number Required', cc.warningColor);
+      return;
+    }
+
+    if (businessEmailController.text.isEmpty) {
+      OthersHelper()
+          .showToast('Please Enter Business Email Required', cc.warningColor);
+      return;
+    }
+
+    if (businessDescriptionController.text.isEmpty) {
+      OthersHelper().showToast(
+          'Please Enter Business Description Required', cc.warningColor);
+      return;
+    }
+
+    // Proceed with signup if all fields are filled
+    if (!provider.isloading) {
+      provider.signupvendor(
+        widget.fullNameController?.text ?? '',
+        widget.emailController?.text ?? '',
+        widget.phoneController?.text ?? '',
+        businessNameController.text,
+        gstNumberController.text,
+        businessMobileNumberController.text,
+        businessEmailController.text,
+        businessAddressController.text,
+        businessDescriptionController.text,
+        context,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,17 +137,17 @@ class _SignupVendorBusinessDetailsState
             // crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Title
+
               CommonHelper().titleCommon(
                 asProvider.getString("Fill your business details"),
               ),
               const SizedBox(height: 18),
 
               // Business Name
-              CommonHelper().labelCommon(
-                asProvider.getString("Business Name"),
-              ),
+              CommonHelper().labelCommon(asProvider.getString("Business Name"),
+                  isRequired: true),
               CustomInput(
-                controller: widget.businessName,
+                controller: businessNameController,
                 validation: (value) {
                   if (value == null || value.isEmpty) {
                     return asProvider
@@ -96,16 +163,18 @@ class _SignupVendorBusinessDetailsState
 
               // GST Number
               CommonHelper().labelCommon(
-                asProvider.getString("Business GST Number"),
-              ),
+                  asProvider.getString("Business GST Number"),
+                  isRequired: true),
               CustomInput(
-                controller: widget.gstNumber,
+                controller: gstNumberController,
                 validation: (value) {
                   if (value == null || value.isEmpty) {
-                    return asProvider.getString("Please enter your GST number");
+                    return "Please enter GST Number";
                   }
                   return null;
                 },
+                maxLength: 20,
+                counterText: "",
                 hintText: asProvider.getString("Enter your GST Number"),
                 icon: 'assets/icons/gstn.png',
                 textInputAction: TextInputAction.next,
@@ -114,10 +183,10 @@ class _SignupVendorBusinessDetailsState
 
               // Phone Number
               CommonHelper().labelCommon(
-                asProvider.getString("Business Phone Number"),
-              ),
+                  asProvider.getString("Business Phone Number"),
+                  isRequired: true),
               CustomInput(
-                controller: widget.businessMobileNumber,
+                controller: businessMobileNumberController,
                 isNumberField: true,
                 inputType: [FilteringTextInputFormatter.digitsOnly],
                 maxLength: 10,
@@ -135,11 +204,10 @@ class _SignupVendorBusinessDetailsState
               const SizedBox(height: 18),
 
               // Email Number
-              CommonHelper().labelCommon(
-                asProvider.getString("Business Email"),
-              ),
+              CommonHelper().labelCommon(asProvider.getString("Business Email"),
+                  isRequired: true),
               CustomInput(
-                controller: widget.businessEmailNumber,
+                controller: businessEmailController,
                 validation: (value) {
                   if (value == null || value.isEmpty) {
                     return asProvider
@@ -155,10 +223,10 @@ class _SignupVendorBusinessDetailsState
 
               // Address
               CommonHelper().labelCommon(
-                asProvider.getString("Business Address"),
-              ),
+                  asProvider.getString("Business Address"),
+                  isRequired: true),
               CustomInput(
-                controller: widget.businessAddress,
+                controller: businessAddressController,
                 validation: (value) {
                   if (value == null || value.isEmpty) {
                     return asProvider
@@ -222,18 +290,22 @@ class _SignupVendorBusinessDetailsState
 
               // Description
               CommonHelper().labelCommon(
-                asProvider.getString("Business Description"),
-              ),
+                  asProvider.getString("Business Description"),
+                  isRequired: true),
               Consumer<SignupVendorService>(
                 builder: (context, sginupProvider, child) {
                   return CustomInput(
-                    controller: widget.businessDescription,
+                    controller: businessDescriptionController,
                     // maxLines: 5,
                     maxLength: 500,
                     validation: (value) {
                       if (value == null || value.isEmpty) {
                         return asProvider.getString(
                             "Please enter your Business Description");
+                      }
+                      if (value.length < 150) {
+                        return asProvider.getString(
+                            "Business Description must be at \nleast 150 characters long");
                       }
                       return null;
                     },
@@ -312,34 +384,7 @@ class _SignupVendorBusinessDetailsState
               Consumer<SignupVendorService>(
                 builder: (context, provider, child) => CommonHelper()
                     .buttonOrange(asProvider.getString("Continue"), () {
-                  if (_formKey.currentState!.validate()) {
-                    if (termsAgree == false) {
-                      OthersHelper().showToast(
-                          asProvider.getString(
-                              "You must agree with the terms and conditions to register"),
-                          Colors.black);
-                    } else {
-                      if (provider.isloading == false) {
-                        provider.signupvendor(
-                            widget.fullNameController.text.toString(),
-                            widget.emailController.text.toString(),
-                            widget.phoneController.text.toString(),
-                            widget.businessName.text.toString(),
-                            widget.gstNumber.text.toString(),
-                            widget.businessMobileNumber.text.toString(),
-                            widget.businessEmailNumber.text.toString(),
-                            widget.businessAddress.text.toString(),
-                            widget.businessDescription.text.toString(),
-                            context);
-                        context.toPage(ChooseCategoryView(),
-                            arguments: NavigationModel(
-                              navFrom: "SignUp",
-                              roleType: "Vendor",
-                              pageName: "Choose Category",
-                            ));
-                      }
-                    }
-                  }
+                  _submit(context, provider);
                 }, isloading: provider.isloading == false ? false : true),
               ),
               const SizedBox(height: 80),

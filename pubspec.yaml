@@ -85,6 +85,7 @@ dependencies:
   google_maps_flutter_platform_interface: any
   flutter_inappwebview: any
   path: any
+  phonepe_payment_sdk: ^3.0.0
 
 #dev-dependencies
 dev_dependencies:

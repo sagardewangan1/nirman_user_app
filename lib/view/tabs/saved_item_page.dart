@@ -94,25 +94,28 @@ class _SavedItemPageState extends State<SavedItemPage> {
                                     marginRight: 0.0,
                                     pressed: () {
                                       provider.remove(
-                                          provider.savedItemList[i]
-                                              ['serviceId'],
-                                          provider.savedItemList[i]['title'],
-                                          provider.savedItemList[i]['image'],
-                                          provider.savedItemList[i]['price'],
-                                          provider.savedItemList[i]
-                                              ['sellerName'],
-                                          twoDouble(provider.savedItemList[i]
-                                              ['rating']),
-                                          i,
-                                          context,
-                                          provider.savedItemList[i]
-                                              ['sellerId']);
+                                        provider.savedItemList[i]['serviceId'],
+                                        provider.savedItemList[i]['title'],
+                                        provider.savedItemList[i]['image'],
+                                        provider.savedItemList[i]['price'],
+                                        provider.savedItemList[i]['sellerName'],
+                                        twoDouble(provider.savedItemList[i]
+                                            ['rating']),
+                                        i,
+                                        context,
+                                        provider.savedItemList[i]['sellerId'],
+                                        provider.savedItemList[i]['experience'],
+                                      );
                                     },
                                     isSaved: true,
                                     serviceId: provider.savedItemList[i]
                                         ['serviceId'],
                                     sellerId: provider.savedItemList[i]
                                         ['sellerId'],
+                                    cardFrom: 'Home',
+                                    experience: "5 year",
+                                    status: "",
+                                    address: "",
                                   ),
                                 ),
                             ],

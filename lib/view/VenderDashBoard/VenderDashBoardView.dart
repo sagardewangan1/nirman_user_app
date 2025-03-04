@@ -4,6 +4,7 @@ import 'package:qixer/helper/extension/context_extension.dart';
 import 'package:qixer/model/navigationModel.dart';
 import 'package:qixer/service/app_string_service.dart';
 import 'package:qixer/service/profile_service.dart';
+import 'package:qixer/view/VenderDashBoard/AddRequestForPoster.dart';
 import 'package:qixer/view/VenderDashBoard/allVendorServiceList/allVendorServiceList.dart';
 import 'package:qixer/view/VenderDashBoard/createSchedule.dart';
 import 'package:qixer/view/VenderDashBoard/helpSupport.dart';
@@ -68,28 +69,32 @@ class _VendorDashBoardViesState extends State<VendorDashBoardVies> {
               },
               child: Scaffold(
                   backgroundColor: Colors.white,
-                  appBar: CommonHelper()
-                      .appbarCommon('Vendor Dashboard', context, () {
-                    if (widget.navigationModel?.navFrom == "Direct") {
-                      context.toPage(LandingPage());
-                    } else {
-                      Navigator.of(context).pop(true);
-                    }
-                  }, actions: [
-                    Padding(
-                        padding: const EdgeInsets.only(right: 8.0),
-                        child: Badge(
-                          label: Text(
-                            "5",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w400, fontSize: 8),
-                          ),
-                          child: Icon(
-                            Icons.notifications_outlined,
-                            size: 22,
-                          ),
-                        )),
-                  ]),
+                  appBar: CommonHelper().appbarCommon(
+                    'Vendor Dashboard',
+                    context,
+                    () {
+                      if (widget.navigationModel?.navFrom == "Direct") {
+                        context.toPage(LandingPage());
+                      } else {
+                        Navigator.of(context).pop(true);
+                      }
+                    },
+                    //     actions: [
+                    //   Padding(
+                    //       padding: const EdgeInsets.only(right: 8.0),
+                    //       child: Badge(
+                    //         label: Text(
+                    //           "5",
+                    //           style: TextStyle(
+                    //               fontWeight: FontWeight.w400, fontSize: 8),
+                    //         ),
+                    //         child: Icon(
+                    //           Icons.notifications_outlined,
+                    //           size: 22,
+                    //         ),
+                    //       )),
+                    // ]
+                  ),
                   body: ListView(
                     children: [
                       // Consumer<ProfileService>(builder: (context, profileProvider, child) {
@@ -188,11 +193,11 @@ class _VendorDashBoardViesState extends State<VendorDashBoardVies> {
                                       context.toPage(AllVendroServiceList()),
                                   size: size,
                                   gradientColors: [
-                                    Colors.blue.shade200,
-                                    Colors.blue.shade400
+                                    Color(0xffFF6B2C),
+                                    Color(0xffffa500)
                                   ],
                                   icon: Icons.miscellaneous_services,
-                                  iconColor: Colors.blue.shade400,
+                                  iconColor: Color(0xffffa500),
                                   iconBgColor: cc.white,
                                   title: "My Service",
                                 ),
@@ -201,11 +206,11 @@ class _VendorDashBoardViesState extends State<VendorDashBoardVies> {
                                       context.toPage(SubscriptionModule()),
                                   size: size,
                                   gradientColors: [
-                                    Colors.orange.shade200,
-                                    Colors.orange.shade400
+                                    Color(0xffFF6B2C),
+                                    Color(0xffffa500)
                                   ],
                                   icon: Icons.subscriptions,
-                                  iconColor: Colors.orange.shade400,
+                                  iconColor: Color(0xffffa500),
                                   iconBgColor: cc.white,
                                   title: "Subscriptions",
                                 ),
@@ -228,11 +233,11 @@ class _VendorDashBoardViesState extends State<VendorDashBoardVies> {
                                   },
                                   size: size,
                                   gradientColors: [
-                                    Colors.green.shade200,
-                                    Colors.green.shade400
+                                    Color(0xffFF6B2C),
+                                    Color(0xffffa500)
                                   ],
                                   icon: Icons.category,
-                                  iconColor: Colors.green.shade400,
+                                  iconColor: Color(0xffffa500),
                                   iconBgColor: cc.white,
                                   title: "Select Category",
                                 ),
@@ -252,11 +257,11 @@ class _VendorDashBoardViesState extends State<VendorDashBoardVies> {
                                   },
                                   size: size,
                                   gradientColors: [
-                                    Colors.purple.shade200,
-                                    Colors.purple.shade400
+                                    Color(0xffFF6B2C),
+                                    Color(0xffffa500)
                                   ],
                                   icon: Icons.miscellaneous_services,
-                                  iconColor: Colors.purple.shade400,
+                                  iconColor: Color(0xffffa500),
                                   iconBgColor: cc.white,
                                   title: "Add Service",
                                 ),
@@ -268,32 +273,53 @@ class _VendorDashBoardViesState extends State<VendorDashBoardVies> {
                               children: [
                                 buildCustomCard(
                                   onTap: () {
-                                    context.toPage(CreateSchedule());
+                                    context.toPage(AddRequestForPosterAdd());
                                   },
                                   size: size,
                                   gradientColors: [
-                                    Colors.purple.shade200,
-                                    Colors.pink.shade400
+                                    Color(0xffFF6B2C),
+                                    Color(0xffffa500)
                                   ],
-                                  icon: Icons.schedule,
-                                  iconColor: Colors.pink.shade400,
+                                  icon: Icons.signpost_rounded,
+                                  iconColor: Color(0xffffa500),
                                   iconBgColor: cc.white,
-                                  title: "Create Opening Schedule",
-                                ),
-                                buildCustomCard(
-                                  onTap: () => context.toPage(HelpSupport()),
-                                  size: size,
-                                  gradientColors: [
-                                    Colors.tealAccent.shade200,
-                                    Colors.teal.shade400
-                                  ],
-                                  icon: Icons.support,
-                                  iconColor: Colors.teal.shade400,
-                                  iconBgColor: cc.white,
-                                  title: "Help & Support",
+                                  title: "Promotion",
                                 ),
                               ],
                             ),
+
+                            // SizedBox(height: 15),
+                            // Row(
+                            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            //   children: [
+                            //     buildCustomCard(
+                            //       onTap: () {
+                            //         context.toPage(CreateSchedule());
+                            //       },
+                            //       size: size,
+                            //       gradientColors: [
+                            //         Colors.purple.shade200,
+                            //         Colors.pink.shade400
+                            //       ],
+                            //       icon: Icons.schedule,
+                            //       iconColor: Colors.pink.shade400,
+                            //       iconBgColor: cc.white,
+                            //       title: "Create Opening Schedule",
+                            //     ),
+                            //     buildCustomCard(
+                            //       onTap: () => context.toPage(HelpSupport()),
+                            //       size: size,
+                            //       gradientColors: [
+                            //         Colors.tealAccent.shade200,
+                            //         Colors.teal.shade400
+                            //       ],
+                            //       icon: Icons.support,
+                            //       iconColor: Colors.teal.shade400,
+                            //       iconBgColor: cc.white,
+                            //       title: "Help & Support",
+                            //     ),
+                            //   ],
+                            // ),
                           ],
                         ),
                       )
@@ -351,7 +377,7 @@ class _VendorDashBoardViesState extends State<VendorDashBoardVies> {
               style: TextStyle(
                 fontWeight: FontWeight.w500,
                 fontSize: 14,
-                color: Colors.black87,
+                color: cc.white,
               ),
             ),
             if (subtitle != null) ...[

@@ -5,6 +5,7 @@
 import 'dart:convert';
 
 import 'package:qixer/helper/extension/string_extension.dart';
+import 'package:qixer/model/service_search_model.dart';
 
 RecentServiceModel recentServiceModelFromJson(String str) =>
     RecentServiceModel.fromJson(json.decode(str));
@@ -53,7 +54,10 @@ class LatestService {
     this.image,
     this.price,
     this.sellerId,
+    this.status,
+    this.experience,
     required this.reviewsForMobile,
+    required this.serviceAreas,
     required this.sellerForMobile,
   });
 
@@ -62,7 +66,10 @@ class LatestService {
   String? image;
   var price;
   int? sellerId;
+  int? status;
+  String? experience;
   List<ReviewsForMobile> reviewsForMobile;
+  List<ServiceAreas>? serviceAreas;
   SellerForMobile? sellerForMobile;
 
   factory LatestService.fromJson(Map<String, dynamic> json) => LatestService(
@@ -71,8 +78,14 @@ class LatestService {
         image: json["image"],
         price: json["price"],
         sellerId: json["seller_id"].toString().tryToParse.toInt(),
+        status: json["status"].toString().tryToParse.toInt(),
+        experience: json["experience"].toString(),
         reviewsForMobile: List<ReviewsForMobile>.from(json["reviews_for_mobile"]
             .map((x) => ReviewsForMobile.fromJson(x))),
+        serviceAreas: json["service_areas"] == null
+            ? []
+            : List<ServiceAreas>.from(
+                json["service_areas"]!.map((x) => ServiceAreas.fromJson(x))),
         sellerForMobile: json["seller_for_mobile"] == null
             ? null
             : SellerForMobile.fromJson(json["seller_for_mobile"]),
@@ -84,8 +97,13 @@ class LatestService {
         "image": image,
         "price": price,
         "seller_id": sellerId,
+        "status": status,
+        "String": experience,
         "reviews_for_mobile":
             List<dynamic>.from(reviewsForMobile.map((x) => x.toJson())),
+        "serviceAreas": serviceAreas == null
+            ? []
+            : List<dynamic>.from(serviceAreas!.map((x) => x.toJson())),
         "seller_for_mobile": sellerForMobile?.toJson(),
       };
 }
@@ -153,19 +171,50 @@ class SellerForMobile {
     this.name,
     this.image,
     this.countryId,
+    this.phone,
+    this.serviceCity,
+    this.serviceArea,
+    this.address,
+    this.latitude,
+    this.longitude,
+    this.sellerAddress,
+    this.postCode,
+    this.username,
   });
 
   int? id;
   String? name;
   String? image;
   int? countryId;
+  String? phone;
+  String? serviceCity;
+  String? serviceArea;
+  String? address;
+  double? latitude;
+  double? longitude;
+  String? sellerAddress;
+  String? postCode;
+  String? username;
 
   factory SellerForMobile.fromJson(Map<String, dynamic> json) =>
       SellerForMobile(
-        id: json["id"].toString().tryToParse.toInt(),
+        id: json["id"]?.toString().tryToParse.toInt(),
         name: json["name"],
         image: json["image"],
-        countryId: json["country_id"].toString().tryToParse.toInt(),
+        countryId: json["country_id"]?.toString().tryToParse.toInt(),
+        phone: json["phone"],
+        serviceCity: json["service_city"]?.toString(),
+        serviceArea: json["service_area"]?.toString(),
+        address: json["address"],
+        latitude: json["latitude"] != null
+            ? double.tryParse(json["latitude"].toString())
+            : null,
+        longitude: json["longitude"] != null
+            ? double.tryParse(json["longitude"].toString())
+            : null,
+        sellerAddress: json["seller_address"],
+        postCode: json["post_code"],
+        username: json["username"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -173,6 +222,15 @@ class SellerForMobile {
         "name": name,
         "image": image,
         "country_id": countryId,
+        "phone": phone,
+        "service_city": serviceCity,
+        "service_area": serviceArea,
+        "address": address,
+        "latitude": latitude,
+        "longitude": longitude,
+        "seller_address": sellerAddress,
+        "post_code": postCode,
+        "username": username,
       };
 }
 

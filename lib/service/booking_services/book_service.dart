@@ -55,17 +55,17 @@ class BookService with ChangeNotifier {
     name = Provider.of<ProfileService>(context, listen: false)
             .profileDetails
             .userDetails
-            .name ??
+            ?.name ??
         'test';
     phone = Provider.of<ProfileService>(context, listen: false)
             .profileDetails
             .userDetails
-            .phone ??
+            ?.phone ??
         '111111111';
     email = Provider.of<ProfileService>(context, listen: false)
             .profileDetails
             .userDetails
-            .email ??
+            ?.email ??
         'test@test.com';
     notifyListeners();
   }

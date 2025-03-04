@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:qixer/helper/extension/context_extension.dart';
+import 'package:qixer/helper/extension/string_extension.dart';
+import 'package:qixer/service/auth_services/change_pass_service.dart';
 import 'package:qixer/service/profile_service.dart';
 import 'package:qixer/view/VenderDashBoard/VenderDashBoardView.dart';
 import 'package:qixer/view/tabs/settings/components/settings_page_grid.dart';
@@ -70,9 +72,11 @@ class MenuNameImageSection extends StatelessWidget {
                         ),
 
                         //user name
-                        CommonHelper().titleCommon(
-                            profileProvider.profileDetails.userDetails.name ??
-                                ''),
+                        CommonHelper().titleCommon(profileProvider
+                                .profileDetails.userDetails.name
+                                .toString()
+                                .capitalize ??
+                            ''),
                         const SizedBox(
                           height: 5,
                         ),
@@ -180,7 +184,7 @@ class MenuNameImageSection extends StatelessWidget {
               //
             ]),
           ),
-          SettingsHelper().borderBold(30, 20),
+          SettingsHelper().borderBold(15, 10),
         ],
       ),
     );

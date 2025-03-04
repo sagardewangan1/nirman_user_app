@@ -6,7 +6,7 @@ import 'dart:convert';
 
 import 'package:qixer/view/utils/others_helper.dart';
 
-import 'recent_service_model.dart';
+import 'service_search_model.dart';
 
 ServiceByFilterModel serviceByFilterModelFromJson(String str) =>
     ServiceByFilterModel.fromJson(json.decode(str));
@@ -72,6 +72,8 @@ class AllServices {
   dynamic prevPageUrl;
   int? to;
   int? total;
+  int? status;
+  int? experienece;
 
   factory AllServices.fromJson(Map<String, dynamic> json) => AllServices(
         data: List<Datum>.from(json["data"].map((x) => Datum.fromJson(x))),
@@ -98,19 +100,21 @@ class AllServices {
 }
 
 class Datum {
-  Datum({
-    this.id,
-    this.sellerId,
-    this.title,
-    this.imageUrl,
-    this.sellerName,
-    this.price,
-    this.image,
-    this.isServiceOnline,
-    this.serviceCityId,
-    required this.sellerForMobile,
-    required this.reviewsForMobile,
-  });
+  Datum(
+      {this.id,
+      this.sellerId,
+      this.title,
+      this.imageUrl,
+      this.sellerName,
+      this.price,
+      this.image,
+      this.isServiceOnline,
+      this.serviceCityId,
+      required this.sellerForMobile,
+      required this.reviewsForMobile,
+      this.status,
+      this.experience,
+      this.serviceAreas});
 
   int? id;
   int? sellerId;
@@ -123,12 +127,16 @@ class Datum {
   int? serviceCityId;
   SellerForMobile? sellerForMobile;
   List<ReviewsForMobile> reviewsForMobile;
+  int? status;
+  String? experience;
+  List<ServiceAreas>? serviceAreas;
 
   factory Datum.fromJson(Map<String, dynamic> json) => Datum(
         id: json["id"].toString().tryToParse.toInt(),
         sellerId: json["seller_id"].toString().tryToParse.toInt(),
         title: json["title"],
-        sellerName: json["seller_name"],
+        status: json["status"],
+        experience: json["experience"],
         imageUrl: json["image_url"],
         price: json["price"].toString().tryToParse.toDouble(),
         image: json["image"],
@@ -138,6 +146,10 @@ class Datum {
         sellerForMobile: json["seller_for_mobile"] == null
             ? null
             : SellerForMobile.fromJson(json["seller_for_mobile"]),
+        serviceAreas: json["service_areas"] == null
+            ? []
+            : List<ServiceAreas>.from(
+                json["service_areas"]!.map((x) => ServiceAreas.fromJson(x))),
         reviewsForMobile: List<ReviewsForMobile>.from(json["reviews_for_mobile"]
             .map((x) => ReviewsForMobile.fromJson(x))),
       );
@@ -146,11 +158,16 @@ class Datum {
         "id": id,
         "seller_id": sellerId,
         "title": title,
+        "status": status,
+        "experience": experience,
         "price": price,
         "image": image,
         "is_service_online": isServiceOnline,
         "service_city_id": serviceCityId,
         "seller_for_mobile": sellerForMobile?.toJson(),
+        "serviceAreas": serviceAreas == null
+            ? []
+            : List<dynamic>.from(serviceAreas!.map((x) => x.toJson())),
         "reviews_for_mobile":
             List<dynamic>.from(reviewsForMobile.map((x) => x.toJson())),
       };

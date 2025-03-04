@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:qixer/helper/contactFeatures.dart';
 import 'package:qixer/service/all_services_service.dart';
 import 'package:qixer/service/common_service.dart';
 import 'package:qixer/service/service_details_service.dart';
@@ -21,15 +22,15 @@ class AllServicePage extends StatefulWidget {
 }
 
 class _AllServicePageState extends State<AllServicePage> {
+  final RefreshController refreshController =
+      RefreshController(initialRefresh: true);
+
   @override
   void initState() {
     super.initState();
     Provider.of<AllServicesService>(context, listen: false)
         .fetchCategories(context);
   }
-
-  final RefreshController refreshController =
-      RefreshController(initialRefresh: true);
 
   @override
   Widget build(BuildContext context) {
@@ -60,14 +61,11 @@ class _AllServicePageState extends State<AllServicePage> {
                   .fetchServiceByFilter(context);
           if (result) {
             debugPrint('loadcomplete ran');
-            //loadcomplete function loads the data again
             refreshController.loadComplete();
           } else {
             debugPrint('no more data');
             refreshController.loadNoData();
-
             Future.delayed(const Duration(seconds: 1), () {
-              //it will reset footer no data state to idle and will let us load again
               refreshController.resetNoData();
             });
           }
@@ -77,38 +75,41 @@ class _AllServicePageState extends State<AllServicePage> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Consumer<AllServicesService>(
-                builder: (context, provider, child) => Column(
-                      children: [
-                        const SizedBox(
-                          height: 14,
-                        ),
-                        //Dropdown ==========>
-                        const ServiceFilterDropdowns(),
-                        !provider.isLoading
-                            ? Column(children: [
-                                // Service List ===============>
-                                const SizedBox(
-                                  height: 35,
+              builder: (context, provider, child) => Column(
+                children: [
+                  const SizedBox(height: 14),
+
+                  /// **Dropdown Filters**
+                  const ServiceFilterDropdowns(),
+
+                  /// **Service List**
+                  !provider.isLoading
+                      ? provider.serviceMap.isEmpty
+                          ? Center(
+                              child: Container(
+                                margin: const EdgeInsets.only(top: 20),
+                                child: Text(
+                                  "No result found",
+                                  style: TextStyle(color: cc.greyPrimary),
                                 ),
-                                if (provider.serviceMap.isEmpty)
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        margin: const EdgeInsets.only(top: 20),
-                                        child: Text(
-                                          lnProvider
-                                              .getString("No result found"),
-                                          style:
-                                              TextStyle(color: cc.greyPrimary),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                for (int i = 0;
-                                    i < provider.serviceMap.length;
-                                    i++)
-                                  Column(
+                              ),
+                            )
+                          : Padding(
+                              padding: const EdgeInsets.only(top: 35),
+                              child: ListView.builder(
+                                physics: const NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                itemCount: provider.serviceMap.length,
+                                itemBuilder: (context, i) {
+                                  final service = provider.serviceMap[i];
+                                  var serviceAreaList =
+                                      provider.serviceMap[i]["serviceArea"];
+                                  var areas = (serviceAreaList != null &&
+                                          serviceAreaList.isNotEmpty)
+                                      ? serviceAreaList.join(", ")
+                                      : "NA"; // Default message when empty
+                                  print("area==> $areas");
+                                  return Column(
                                     children: [
                                       InkWell(
                                         splashColor: Colors.transparent,
@@ -124,71 +125,85 @@ class _AllServicePageState extends State<AllServicePage> {
                                           Provider.of<ServiceDetailsService>(
                                                   context,
                                                   listen: false)
-                                              .fetchServiceDetails(provider
-                                                  .serviceMap[i]['serviceId']);
+                                              .fetchServiceDetails(
+                                                  service['serviceId']);
                                         },
                                         child: ServiceCard(
                                           cc: cc,
-                                          imageLink: provider.serviceMap[i]
-                                                  ['image'] ??
+                                          imageLink: service['image'] ??
                                               placeHolderUrl,
-                                          rating: twoDouble(
-                                              provider.serviceMap[i]['rating']),
-                                          title: provider.serviceMap[i]
-                                              ['title'],
-                                          sellerName: provider.serviceMap[i]
-                                              ['sellerName'],
-                                          price: provider.serviceMap[i]
-                                              ['price'],
+                                          rating: twoDouble(service['rating']),
+                                          title: service['title'],
+                                          sellerName: service['sellerName'],
+                                          price: service['price'],
                                           buttonText: 'Book Now',
                                           width: double.infinity,
                                           marginRight: 0.0,
                                           pressed: () {
                                             provider.saveOrUnsave(
-                                                provider.serviceMap[i]
-                                                    ['serviceId'],
-                                                provider.serviceMap[i]['title'],
-                                                provider.serviceMap[i]['image'],
-                                                provider.serviceMap[i]['price']
-                                                    .round(),
-                                                provider.serviceMap[i]
-                                                    ['sellerName'],
-                                                twoDouble(provider.serviceMap[i]
-                                                    ['rating']),
-                                                i,
+                                              service['serviceId'],
+                                              service['title'],
+                                              service['image'],
+                                              service['price'].round(),
+                                              service['sellerName'],
+                                              twoDouble(service['rating']),
+                                              i,
+                                              context,
+                                              service['sellerId'],
+                                              service['experience'],
+                                            );
+                                          },
+                                          isSaved: service['isSaved'] == true,
+                                          serviceId: service['serviceId'],
+                                          sellerId: service['sellerId'],
+                                          cardFrom: 'Home',
+                                          address: areas,
+                                          experience: provider.serviceMap[i]
+                                                      ['experience'] ==
+                                                  null
+                                              ? ''
+                                              : (RegExp(r'^\d+$').hasMatch(
+                                                      provider.serviceMap[i]
+                                                              ['experience']
+                                                          .toString())
+                                                  ? "${provider.serviceMap[i]['experience']} year"
+                                                  : "${provider.serviceMap[i]['experience']}"),
+                                          status: provider.serviceMap[i]
+                                                  ['status']
+                                              .toString(),
+                                          onTapCall: () {
+                                            ContactFeatures().launchCalling(
                                                 context,
                                                 provider.serviceMap[i]
-                                                    ['sellerId']);
+                                                    ['callNumber']);
+                                            print(
+                                                "on Tap Call ====> ${provider.serviceMap[i]['callNumber']}");
                                           },
-                                          isSaved: provider.serviceMap[i]
-                                                      ['isSaved'] ==
-                                                  true
-                                              ? true
-                                              : false,
-                                          serviceId: provider.serviceMap[i]
-                                              ['serviceId'],
-                                          sellerId: provider.serviceMap[i]
-                                              ['sellerId'],
-                                          cardFrom: 'Home',
-                                          address: "Raipur",
-                                          experience: "10 yr",
-                                          status: "1",
+                                          onTapWhatsapp: () {
+                                            ContactFeatures().launchWhatsapp(
+                                                context,
+                                                provider.serviceMap[i]
+                                                    ['callNumber'],
+                                                "Hello Sir,How can i help you ?");
+                                            print(
+                                                "on Tap Whatsapp ====> ${provider.serviceMap[i]['callNumber']}");
+                                          },
                                         ),
                                       ),
-                                      const SizedBox(
-                                        height: 25,
-                                      ),
+                                      const SizedBox(height: 25),
                                     ],
-                                  )
-                              ])
-                            : Container(
-                                alignment: Alignment.center,
-                                margin: const EdgeInsets.only(top: 60),
-                                child:
-                                    OthersHelper().showLoading(cc.primaryColor),
+                                  );
+                                },
                               ),
-                      ],
-                    )),
+                            )
+                      : Container(
+                          alignment: Alignment.center,
+                          margin: const EdgeInsets.only(top: 60),
+                          child: OthersHelper().showLoading(cc.primaryColor),
+                        ),
+                ],
+              ),
+            ),
           ),
         ),
       ),

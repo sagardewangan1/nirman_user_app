@@ -65,11 +65,10 @@ class LeadsDetailItemCard extends StatelessWidget {
                 children: [
                   Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5.0),
-                      color: isNew
-                          ? cc.primaryColor.withOpacity(0.2)
-                          : cc.successColor,
-                    ),
+                        borderRadius: BorderRadius.circular(5.0),
+                        color: isNew
+                            ? cc.successColor
+                            : cc.primaryColor.withOpacity(0.2)),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 4.0, vertical: 2.0),
@@ -81,16 +80,16 @@ class LeadsDetailItemCard extends StatelessWidget {
                           Icon(
                             isNew
                                 ? Icons.local_fire_department_rounded
-                                : Icons.circle,
+                                : Icons.check_circle,
                             size: 10,
-                            color: isNew ? cc.primaryColor : cc.white,
+                            color: isNew ? cc.white : cc.primaryColor,
                           ),
                           Gap(3),
                           Text(
-                            isNew ? "New Lead" : "Read",
+                            isNew ? "NEW LEAD" : "OPENED LEAD",
                             style: TextStyle(
                                 fontWeight: FontWeight.w400,
-                                color: isNew ? cc.primaryColor : cc.white,
+                                color: isNew ? cc.white : cc.primaryColor,
                                 fontSize: 10),
                           ),
                         ],
@@ -162,6 +161,20 @@ class LeadsDetailItemCard extends StatelessWidget {
                           fontSize: 12,
                           fontWeight: FontWeight.w400),
                     ),
+                  ),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  Text(
+                    textAlign: TextAlign.center,
+                    // "12hr",
+                    leftTime ?? '',
+                    overflow: TextOverflow.visible,
+                    maxLines: 2,
+                    style: TextStyle(
+                        color: cc.black5,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w400),
                   ),
                   SizedBox(
                     height: 5,
@@ -245,42 +258,42 @@ class LeadsDetailItemCard extends StatelessWidget {
                             ),
                           ),
                         ),
-                        SizedBox(width: 10),
-                        GestureDetector(
-                          onTap: onTapMessage,
-                          child: Container(
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              border: Border.all(width: 1, color: cc.black6),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 5.0, vertical: 3),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.message,
-                                    size: 16,
-                                    color: Colors.black,
-                                  ),
-                                  SizedBox(width: 5),
-                                  Text(
-                                    'Message',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
+                        // SizedBox(width: 10),
+                        // GestureDetector(
+                        //   onTap: onTapMessage,
+                        //   child: Container(
+                        //     alignment: Alignment.center,
+                        //     decoration: BoxDecoration(
+                        //       border: Border.all(width: 1, color: cc.black6),
+                        //       borderRadius: BorderRadius.circular(8),
+                        //     ),
+                        //     child: Padding(
+                        //       padding: const EdgeInsets.symmetric(
+                        //           horizontal: 5.0, vertical: 3),
+                        //       child: Row(
+                        //         mainAxisAlignment:
+                        //             MainAxisAlignment.spaceEvenly,
+                        //         crossAxisAlignment: CrossAxisAlignment.center,
+                        //         children: [
+                        //           Icon(
+                        //             Icons.message,
+                        //             size: 16,
+                        //             color: Colors.black,
+                        //           ),
+                        //           SizedBox(width: 5),
+                        //           Text(
+                        //             'Message',
+                        //             style: TextStyle(
+                        //               color: Colors.black,
+                        //               fontSize: 12,
+                        //               fontWeight: FontWeight.w500,
+                        //             ),
+                        //           ),
+                        //         ],
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     ),
                   )
@@ -314,23 +327,19 @@ class LeadsDetailItemCard extends StatelessWidget {
                   //   ),
                   // ),
                   // Gap(10),
-                  Text(
-                    textAlign: TextAlign.center,
-                    // "12hr",
-                    leftTime ?? '',
-                    style: TextStyle(
-                        color: cc.black5,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w400),
-                  ),
+
                   Gap(10),
-                  InkWell(
-                    onTap: onTapFav,
-                    child: Icon(
-                      isFav ? Icons.bookmark_rounded : Icons.bookmark_border,
-                      color: isFav ? Colors.deepOrange : cc.black6,
-                    ),
-                  )
+                  onTapFav == null
+                      ? Offstage()
+                      : InkWell(
+                          onTap: onTapFav,
+                          child: Icon(
+                            isFav
+                                ? Icons.bookmark_rounded
+                                : Icons.bookmark_border,
+                            color: isFav ? Colors.deepOrange : cc.black6,
+                          ),
+                        )
                 ],
               )
             ],

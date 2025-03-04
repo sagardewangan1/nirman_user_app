@@ -69,8 +69,11 @@ class HomeAppBar extends StatelessWidget {
                             );
                           },
                           child: profileProvider.profileImage != null
-                              ? CommonHelper().profileImage(
-                                  profileProvider.profileImage, 52, 52)
+                              ? ClipRRect(
+                                  borderRadius: BorderRadius.circular(100),
+                                  child: CommonHelper().profileImage(
+                                      profileProvider.profileImage, 38, 38),
+                                )
                               : ClipRRect(
                                   borderRadius: BorderRadius.circular(100),
                                   child: Image.asset(
@@ -136,7 +139,7 @@ class GuestAppBar extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          CommonHelper().homeAppBarLogo('https://ibb.co/LzN7CqNH', 40, 40),
+          CommonHelper().homeAppBarLogo(appIconUrl, 40, 40),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -158,16 +161,16 @@ class GuestAppBar extends StatelessWidget {
           ),
           Spacer(),
           //profile image
-          InkWell(
-            onTap: () {
-              SharedPreferencesHelper.clearData();
-              context.toPage(SelectionRoleView(hasBackButton: false));
-            },
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(100),
-              child: CommonHelper().profileImage(appIconUrl, 38, 38),
-            ),
-          ),
+          // InkWell(
+          //   onTap: () {
+          //     SharedPreferencesHelper.clearData();
+          //     context.toPage(SelectionRoleView(hasBackButton: false));
+          //   },
+          //   child: ClipRRect(
+          //     borderRadius: BorderRadius.circular(100),
+          //     child: CommonHelper().profileImage(appIconUrl, 38, 38),
+          //   ),
+          // ),
         ],
       ),
     );

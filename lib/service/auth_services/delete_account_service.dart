@@ -50,9 +50,8 @@ class DeleteAccountService with ChangeNotifier {
         // "Content-Type": "application/json",
         "Authorization": "Bearer $token",
       };
-
       setLoadingTrue();
-      if (baseApi == 'https://qixer.bytesed.com/api/v1') {
+      if (baseApi == 'https://sashaktnirmaan.com/api/v1') {
         await Future.delayed(const Duration(seconds: 1));
         OthersHelper()
             .showToast('This feature is turned off in test mode', Colors.black);

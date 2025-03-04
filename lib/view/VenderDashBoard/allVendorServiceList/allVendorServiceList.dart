@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qixer/helper/extension/context_extension.dart';
 import 'package:qixer/model/navigationModel.dart';
+import 'package:qixer/service/addServiceProvider/addServicerProvider.dart';
 import 'package:qixer/service/app_string_service.dart';
 import 'package:qixer/service/vendorDashboardService/vendorDashboardService.dart';
 import 'package:qixer/view/VenderDashBoard/VenderDashBoardView.dart';
 import 'package:qixer/view/VenderDashBoard/allVendorServiceList/components/myServiceCard.dart';
 import 'package:qixer/view/addService/addServiceView.dart';
+import 'package:qixer/view/tabs/settings/settings_helper.dart';
 import 'package:qixer/view/utils/common_helper.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:qixer/view/utils/others_helper.dart';
@@ -82,6 +84,7 @@ class _AllVendroServiceListState extends State<AllVendroServiceList> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    final addServiceController = Provider.of<AddServiceController>(context);
     return Consumer<AppStringService>(
       builder: (context, asProvider, child) {
         return Scaffold(
@@ -92,9 +95,10 @@ class _AllVendroServiceListState extends State<AllVendroServiceList> {
             ),
             body: Consumer<VendorDashboardService>(
               builder: (context, vendorProvider, child) {
-                return Stack(
-                  children: [
-                    vendorProvider.myServiceListDataModel.myServices?.length !=
+                return vendorProvider.isLoading
+                    ? Center(child: OthersHelper().showLoading(cc.primaryColor))
+                    : vendorProvider
+                                .myServiceListDataModel.myServices?.length !=
                             0
                         ? ListView.builder(
                             itemCount: vendorProvider
@@ -125,7 +129,7 @@ class _AllVendroServiceListState extends State<AllVendroServiceList> {
                                           navigationModel: NavigationModel(
                                             pageName: "Update Service",
                                             navFrom: "Dashboard",
-                                            roleType: "Vendor",
+                                            roleType: service?.id.toString(),
                                             isLoggedIn: pref.getBool(
                                                 "shashaktnirman_is_logged_in"),
                                           ),
@@ -134,7 +138,16 @@ class _AllVendroServiceListState extends State<AllVendroServiceList> {
                                     }
                                   },
                                   onDelete: () {
-                                    // print("Delete ${service.serviceName}");
+                                    SettingsHelper()
+                                        .deleteServicePopup(
+                                            context, service?.id.toString())
+                                        .then(
+                                      (value) {
+                                        if (value) {
+                                          firstLoad();
+                                        }
+                                      },
+                                    );
                                   },
                                   onToggleActive: () {
                                     // print("${service.isActive ? 'Deactivate' : 'Activate'} ${service.serviceName}");
@@ -143,13 +156,15 @@ class _AllVendroServiceListState extends State<AllVendroServiceList> {
                               );
                             },
                           )
-                        : Offstage(),
-                    vendorProvider.isLoading
-                        ? Center(
-                            child: OthersHelper().showLoading(cc.primaryColor))
-                        : Offstage(),
-                  ],
-                );
+                        : Center(
+                            child: Text(
+                              "No Service Added Here",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          );
               },
             ));
       },

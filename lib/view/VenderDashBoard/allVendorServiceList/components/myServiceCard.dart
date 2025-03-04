@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:qixer/data/network/network_api_services.dart';
+import 'package:qixer/helper/extension/string_extension.dart';
 import 'package:qixer/view/utils/common_helper.dart';
+import 'package:qixer/view/utils/constant_colors.dart';
+import 'package:qixer/view/utils/others_helper.dart';
 
 class MyServiceCard extends StatelessWidget {
   final String featureImage;
@@ -11,7 +15,6 @@ class MyServiceCard extends StatelessWidget {
   final VoidCallback onEdit;
   final VoidCallback onDelete;
   final VoidCallback onToggleActive;
-
   const MyServiceCard({
     super.key,
     required this.featureImage,
@@ -27,6 +30,7 @@ class MyServiceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ConstantColors cc = ConstantColors();
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8.0),
@@ -61,7 +65,7 @@ class MyServiceCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        serviceName,
+                        serviceName.capitalize,
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,

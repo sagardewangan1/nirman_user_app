@@ -30,8 +30,8 @@ class FilterSheet extends StatelessWidget {
           color: cc.white,
           border: Border.all(color: cc.black7)),
       constraints: BoxConstraints(
-          maxHeight: context.height / 2.5 +
-              (MediaQuery.of(context).viewInsets.bottom)),
+          maxHeight:
+              context.height / 3 + (MediaQuery.of(context).viewInsets.bottom)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -58,9 +58,9 @@ class FilterSheet extends StatelessWidget {
                   valueListenable: sfm.selectedSorting,
                   builder: (context, sort, child) {
                     return CustomDropdown(
-                      "",
-                      sfm.sortList.map((e) => e.name).toList(),
-                      (name) {
+                      hintText: "",
+                      listData: sfm.sortList.map((e) => e.name).toList(),
+                      onChanged: (name) {
                         try {
                           sfm.selectedSorting.value = sfm.sortList
                               .firstWhere((element) => element.name == name);
@@ -70,32 +70,32 @@ class FilterSheet extends StatelessWidget {
                     );
                   },
                 ),
-                const FieldLabel(label: "Price"),
-                Row(
-                  children: [
-                    Expanded(
-                      flex: 1,
-                      child: TextFormField(
-                        controller: sfm.minPriceController,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          hintText: lnProvider.getString("Min"),
-                        ),
-                      ),
-                    ),
-                    16.toWidth,
-                    Expanded(
-                      flex: 1,
-                      child: TextFormField(
-                        controller: sfm.maxPriceController,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          hintText: lnProvider.getString("Max"),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                // const FieldLabel(label: "Price"),
+                // Row(
+                //   children: [
+                //     Expanded(
+                //       flex: 1,
+                //       child: TextFormField(
+                //         controller: sfm.minPriceController,
+                //         keyboardType: TextInputType.number,
+                //         decoration: InputDecoration(
+                //           hintText: lnProvider.getString("Min"),
+                //         ),
+                //       ),
+                //     ),
+                //     16.toWidth,
+                //     Expanded(
+                //       flex: 1,
+                //       child: TextFormField(
+                //         controller: sfm.maxPriceController,
+                //         keyboardType: TextInputType.number,
+                //         decoration: InputDecoration(
+                //           hintText: lnProvider.getString("Max"),
+                //         ),
+                //       ),
+                //     ),
+                //   ],
+                // ),
                 16.toHeight,
                 // const FieldLabel(label: "Ratings"),
                 // Row(

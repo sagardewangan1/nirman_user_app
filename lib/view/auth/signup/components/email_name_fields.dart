@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:provider/provider.dart';
 import 'package:qixer/service/app_string_service.dart';
@@ -40,7 +41,7 @@ class EmailNameFields extends StatelessWidget {
                   height: 18,
                 ),
                 //Name ============>
-                CommonHelper().labelCommon("Full name"),
+                CommonHelper().labelCommon("Full name", isRequired: true),
 
                 CustomInput(
                   controller: fullNameController,
@@ -84,7 +85,9 @@ class EmailNameFields extends StatelessWidget {
                 ),
 
                 //Email ============>
-                CommonHelper().labelCommon(lnProvider.getString("Email")),
+                CommonHelper().labelCommon(
+                  lnProvider.getString("Email"),
+                ),
 
                 CustomInput(
                   controller: emailController,
@@ -99,7 +102,8 @@ class EmailNameFields extends StatelessWidget {
 
                 //Phonehh  ============>
                 type == "Vendor"
-                    ? CommonHelper().labelCommon(lnProvider.getString("Phone"))
+                    ? CommonHelper().labelCommon(lnProvider.getString("Phone"),
+                        isRequired: true)
                     : Offstage(),
 
                 type == "Vendor"
@@ -113,10 +117,22 @@ class EmailNameFields extends StatelessWidget {
                           textAlign: rtlP.direction == 'ltr'
                               ? TextAlign.left
                               : TextAlign.right,
+                          inputFormatters: [
+                            LengthLimitingTextInputFormatter(
+                                10), // Set max length to 10
+                            FilteringTextInputFormatter
+                                .digitsOnly, // Allow only numbers
+                          ],
                           onChanged: (phone) {
                             provider.setCountryCode(phone.countryISOCode);
 
                             provider.setPhone(phone.completeNumber);
+                          },
+                          validator: (p0) {
+                            if (p0?.number.length != 10) {
+                              return "Please Enter Valid Mobile Number";
+                            }
+                            return null;
                           },
                         ),
                       )

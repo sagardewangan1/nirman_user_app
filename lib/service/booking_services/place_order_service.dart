@@ -394,7 +394,7 @@ class PlaceOrderService with ChangeNotifier {
     var username = Provider.of<ProfileService>(context, listen: false)
             .profileDetails
             .userDetails
-            .name ??
+            ?.name ??
         '';
     PushNotificationService().sendNotificationToSeller(context,
         sellerId: sellerId,

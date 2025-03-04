@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:qixer/service/app_string_service.dart';
 import 'package:qixer/service/permissions_service.dart';
 import 'package:qixer/service/profile_service.dart';
+import 'package:qixer/view/tabs/settings/businessProfileEdit.dart';
 import 'package:qixer/view/tabs/settings/components/menu_name_image_section.dart';
 import 'package:qixer/view/tabs/settings/components/menu_personal_info_section.dart';
 import 'package:qixer/view/tabs/settings/profile_edit.dart';
@@ -13,6 +14,7 @@ import 'package:qixer/view/utils/constant_styles.dart';
 import 'package:qixer/view/utils/others_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../auth/delete_account_page.dart';
+import '../../home/homepage_helper.dart';
 import '../../utils/login_or_register.dart';
 
 class MenuPage extends StatefulWidget {
@@ -209,15 +211,45 @@ class _MenuPageState extends State<MenuPage> {
                                                       'assets/svg/profile-edit.svg',
                                                       asProvider.getString(
                                                           "Edit Profile"), () {
-                                                    Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute<void>(
-                                                        builder: (BuildContext
-                                                                context) =>
-                                                            const ProfileEditPage(),
-                                                      ),
-                                                    );
+                                                    userType == '0'
+                                                        ? Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute<
+                                                                void>(
+                                                              builder: (BuildContext
+                                                                      context) =>
+                                                                  const ProfileEditPage(),
+                                                            ),
+                                                          )
+                                                        : Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute<
+                                                                void>(
+                                                              builder: (BuildContext
+                                                                      context) =>
+                                                                  const ProfileEditPage(),
+                                                            ),
+                                                          );
                                                   }),
+
+                                                  // Edit Business Profile
+                                                  userType == '0'
+                                                      ? SettingsHelper().settingOption(
+                                                          'assets/svg/profile-edit.svg',
+                                                          "Edit Business Profile",
+                                                          () {
+                                                          Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute<
+                                                                void>(
+                                                              builder: (BuildContext
+                                                                      context) =>
+                                                                  const BusinessProfileEdit(),
+                                                            ),
+                                                          );
+                                                        })
+                                                      : Offstage(),
+
                                                   // CommonHelper()
                                                   //     .dividerCommon(),
                                                   // SettingsHelper().settingOption(

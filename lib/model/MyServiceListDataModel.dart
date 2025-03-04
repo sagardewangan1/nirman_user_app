@@ -66,7 +66,7 @@ class MyServices {
     Image? image,
     dynamic sellerId,
     dynamic serviceCityId,
-    String? serviceAreaId,
+    dynamic serviceAreaId,
     dynamic status,
     dynamic isServiceAllCities,
     dynamic experience,
@@ -150,7 +150,8 @@ class MyServices {
   Image? _image;
   dynamic _sellerId;
   dynamic _serviceCityId;
-  String? _serviceAreaId;
+  dynamic _serviceAreaId;
+
   dynamic _status;
   dynamic _isServiceAllCities;
   dynamic _experience;
@@ -173,7 +174,7 @@ class MyServices {
     Image? image,
     dynamic sellerId,
     dynamic serviceCityId,
-    String? serviceAreaId,
+    dynamic serviceAreaId,
     dynamic status,
     dynamic isServiceAllCities,
     dynamic experience,
@@ -220,7 +221,7 @@ class MyServices {
   Image? get image => _image;
   dynamic get sellerId => _sellerId;
   dynamic get serviceCityId => _serviceCityId;
-  String? get serviceAreaId => _serviceAreaId;
+  dynamic get serviceAreaId => _serviceAreaId;
   dynamic get status => _status;
   dynamic get isServiceAllCities => _isServiceAllCities;
   dynamic get experience => _experience;

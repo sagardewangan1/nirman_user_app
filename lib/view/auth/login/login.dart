@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
@@ -196,7 +197,7 @@ class _LoginPageState extends State<LoginPage> {
                     );
                   }
                 });
-                Navigator.pop(context);
+                // Navigator.pop(context);
               }
             },
           ),
@@ -211,28 +212,33 @@ class _LoginPageState extends State<LoginPage> {
     final loginController = Provider.of<LoginService>(context);
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: CommonHelper().appbarCommon(
+        "Login",
+        context,
+        () => Navigator.pop(context),
+      ),
       body: CustomScrollView(
         physics: physicsCommon,
         slivers: [
-          SliverAppBar.large(
-            leading: IconButton(
-              onPressed: () {
-                debugPrint("Pressed back".toString());
-                context.popFalse;
-              },
-              icon: const Icon(Icons.arrow_back_ios_new_rounded),
-            ),
-            flexibleSpace: Container(
-              height: 230.0,
-              width: double.infinity,
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/images/loginImageNirman.jpg'),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-          ),
+          // SliverAppBar.large(
+          //   leading: IconButton(
+          //     onPressed: () {
+          //       debugPrint("Pressed back".toString());
+          //       context.popFalse;
+          //     },
+          //     icon: const Icon(Icons.arrow_back_ios_new_rounded),
+          //   ),
+          //   flexibleSpace: Container(
+          //     height: 230.0,
+          //     width: double.infinity,
+          //     decoration: const BoxDecoration(
+          //       image: DecorationImage(
+          //         image: AssetImage('assets/images/loginImageNirman.jpg'),
+          //         fit: BoxFit.cover,
+          //       ),
+          //     ),
+          //   ),
+          // ),
           Consumer<AppStringService>(
             builder: (context, asprovider, child) {
               return Consumer<SignupService>(
@@ -264,6 +270,8 @@ class _LoginPageState extends State<LoginPage> {
                                 controller: numberController,
                                 decoration:
                                     SignupHelper().phoneFieldDecoration(),
+                                keyboardType: TextInputType.number,
+                                textInputAction: TextInputAction.done,
                                 searchText:
                                     asprovider.getString("Search country"),
                                 initialCountryCode:
@@ -272,10 +280,22 @@ class _LoginPageState extends State<LoginPage> {
                                 textAlign: rtlP.direction == 'ltr'
                                     ? TextAlign.left
                                     : TextAlign.right,
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(
+                                      10), // Set max length to 10
+                                  FilteringTextInputFormatter
+                                      .digitsOnly, // Allow only numbers
+                                ],
                                 onChanged: (phone) {
                                   provider.setCountryCode(phone.countryISOCode);
 
                                   provider.setPhone(phone.completeNumber);
+                                },
+                                validator: (p0) {
+                                  if (p0?.number.length != 10) {
+                                    return "Please Enter Valid Mobile Number";
+                                  }
+                                  return null;
                                 },
                               ),
                             ),

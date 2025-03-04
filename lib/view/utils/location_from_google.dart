@@ -68,21 +68,22 @@ class LocationFromGoogle extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 20, vertical: 10),
                           child: CustomInput(
-                              textInputAction: TextInputAction.done,
-                              hintText: "Search Location",
-                              icon: "assets/icons/search.png",
-                              onChanged: (value) {
-                                scheduleTimeout?.cancel();
-                                scheduleTimeout =
-                                    Timer(const Duration(seconds: 1), () {
-                                  glsProvider.fetchLocations(
-                                    location: value,
-                                    // region: Provider.of<PostTaskService>(context,
-                                    //         listen: false)
-                                    //     .selectedCountryCode,
-                                  );
-                                });
-                              }),
+                            textInputAction: TextInputAction.done,
+                            hintText: "Search Location",
+                            icon: "assets/icons/search.png",
+                            onChanged: (value) {
+                              scheduleTimeout?.cancel();
+                              scheduleTimeout =
+                                  Timer(const Duration(seconds: 1), () {
+                                glsProvider.fetchLocations(
+                                  location: value,
+                                  // region: Provider.of<PostTaskService>(context,
+                                  //         listen: false)
+                                  //     .selectedCountryCode,
+                                );
+                              });
+                            },
+                          ),
                         ),
                         // GestureDetector(
                         //   onTap: () async {

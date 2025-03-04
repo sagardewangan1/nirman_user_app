@@ -139,7 +139,9 @@ class _ServicebyCategoryPageState extends State<SellerAllServicePage> {
                                                 ['rating']),
                                             i,
                                             context,
-                                            provider.serviceMap[i]['sellerId']);
+                                            provider.serviceMap[i]['sellerId'],
+                                            provider.serviceMap[i]['experience']
+                                        );
                                       },
                                       isSaved: provider.serviceMap[i]
                                                   ['isSaved'] ==

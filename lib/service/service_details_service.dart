@@ -27,41 +27,48 @@ class ServiceDetailsService with ChangeNotifier {
 
   fetchServiceDetails(serviceId) async {
     setLoadingTrue();
-    var connection = await checkConnection();
-    if (connection) {
-      // reviewList = [];
-      //internet connection is on
-      var header = {
-        //if header type is application/json then the data should be in jsonEncode method
-        "Accept": "application/json",
-        // "Content-Type": "application/json"
-      };
+    try {
+      var connection = await checkConnection();
+      if (connection) {
+        // reviewList = [];
+        //internet connection is on
+        var header = {
+          //if header type is application/json then the data should be in jsonEncode method
+          "Accept": "application/json",
+          // "Content-Type": "application/json"
+        };
 
-      var response = await http.get(
-          Uri.parse('$baseApi/service-details/$serviceId'),
-          headers: header);
+        var response = await http.get(
+            Uri.parse('$baseApi/service-details/$serviceId'),
+            headers: header);
 
-      debugPrint(response.body.toString());
-      if (response.statusCode == 201) {
-        // serviceAllDetails =
-        //     ServiceDetailsModel.fromJson(jsonDecode(response.body));
-        var data = ServiceDetailsModel.fromJson(jsonDecode(response.body));
+        debugPrint(
+            "Actual service details data===> ${response.body.toString()}\n");
+        if (response.statusCode == 201) {
+          // serviceAllDetails =
+          //     ServiceDetailsModel.fromJson(jsonDecode(response.body));
+          var data = ServiceDetailsModel.fromJson(jsonDecode(response.body));
 
-        serviceAllDetails = data;
-        sellerId = jsonDecode(response.body)['service_details']
-            ['seller_for_mobile']['id'];
-        // for (int i = 0; i < data.serviceReviews.length; i++) {
-        //   reviewList.add({'rating': data.serviceReviews[i].rating, 'message':data.serviceReviews[i].message,});
-        // }
-        notifyListeners();
-        setLoadingFalse();
-      } else {
-        serviceAllDetails = 'error';
+          serviceAllDetails = data;
+          sellerId = jsonDecode(response.body)['service_details']
+              ['seller_for_mobile']['id'];
+          // for (int i = 0; i < data.serviceReviews.length; i++) {
+          //   reviewList.add({'rating': data.serviceReviews[i].rating, 'message':data.serviceReviews[i].message,});
+          // }
+          print(
+              "service details ==> ${serviceAllDetails.serviceDetails.seller.about}");
+          notifyListeners();
+          setLoadingFalse();
+        } else {
+          serviceAllDetails = 'error';
 
-        setLoadingFalse();
-        OthersHelper().showToast('Something went wrong', Colors.black);
-        notifyListeners();
+          setLoadingFalse();
+          OthersHelper().showToast('Something went wrong', Colors.black);
+          notifyListeners();
+        }
       }
+    } catch (e, stackTrace) {
+      print("error $stackTrace");
     }
   }
 }

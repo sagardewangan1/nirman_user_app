@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:qixer/model/CategoryDataModel.dart';
 import 'package:qixer/model/service_by_filter_model.dart';
+import 'package:qixer/model/service_search_model.dart';
 import 'package:qixer/model/sub_category_model.dart';
 import 'package:qixer/service/common_service.dart';
 import 'package:qixer/service/db/db_service.dart';
@@ -256,14 +257,20 @@ class AllServicesService with ChangeNotifier {
     var connection = await checkConnection();
     if (connection) {
       //if connection is ok
-      var response = await http.get(Uri.parse(
-          "$baseApi/service-list/category-subcategory-rating-sort-by-search/?cat=$selectedCategoryId&subcat=$selectedSubcatId&rating=$selectedRatingId&sortby=$selectedSortbyId&page=$currentPage"));
+      String url =
+          "$baseApi/service-list/category-subcategory-rating-sort-by-search/?cat=$selectedCategoryId&subcat=$selectedSubcatId&rating=$selectedRatingId&sortby=$selectedSortbyId&page=$currentPage";
+      var response = await http.get(Uri.parse(url));
+
+      print("URL =====> $url");
 
       if (response.statusCode == 201) {
         var data = ServiceByFilterModel.fromJson(jsonDecode(response.body));
+        print(
+            "data from model ===> ${data.allServices.data[0].serviceAreas?.map(
+          (e) => e.serviceArea,
+        )}");
 
         setTotalPage(data.allServices.lastPage);
-
         for (int i = 0; i < data.allServices.data.length; i++) {
           String? serviceImage;
 
@@ -313,7 +320,12 @@ class AllServicesService with ChangeNotifier {
     }
   }
 
-  setServiceList(data, averageRateList, imageList, bool addnewData) {
+  setServiceList(
+    data,
+    averageRateList,
+    imageList,
+    bool addnewData,
+  ) {
     if (addnewData == false) {
       //make the list empty first so that existing data doesn't stay
       serviceMap = [];
@@ -321,6 +333,14 @@ class AllServicesService with ChangeNotifier {
     }
 
     for (int i = 0; i < data.length; i++) {
+      /// ✅ Convert `List<ServiceAreas>` to `List<String>` (Extract `service_area`)
+      List processedServiceAreas = data[i].serviceAreas is List<ServiceAreas>
+          ? data[i]
+              .serviceAreas
+              .map((area) => area.serviceArea ?? "Unknown")
+              .toList()
+          : [];
+
       serviceMap.add({
         'serviceId': data[i].id,
         'title': data[i].title,
@@ -330,7 +350,14 @@ class AllServicesService with ChangeNotifier {
         'image': imageList[i],
         'isSaved': false,
         'sellerId': data[i].sellerId,
+        'experience': data[i].experience,
+        'status': data[i].status,
+        'whatsappNumber': data[i].sellerForMobile.phone,
+        'callNumber': data[i].sellerForMobile.phone,
+        "serviceArea": processedServiceAreas
       });
+      // print("✅ Processed service areas: ${serviceMap.last["serviceArea"]}");
+
       checkIfAlreadySaved(data[i].id, data[i].title,
           data[i].sellerForMobile.name, serviceMap.length - 1);
     }
@@ -345,10 +372,18 @@ class AllServicesService with ChangeNotifier {
   }
 
   saveOrUnsave(int serviceId, String title, image, int price, String sellerName,
-      double rating, int index, BuildContext context, sellerId) async {
+      double rating, int index, BuildContext context, sellerId, exp) async {
     var newListMap = serviceMap;
-    alreadySaved = await DbService().saveOrUnsave(serviceId, title,
-        image ?? placeHolderUrl, price, sellerName, rating, context, sellerId);
+    alreadySaved = await DbService().saveOrUnsave(
+        serviceId,
+        title,
+        image ?? placeHolderUrl,
+        price,
+        sellerName,
+        rating,
+        context,
+        sellerId,
+        exp);
     newListMap[index]['isSaved'] = alreadySaved;
     serviceMap = newListMap;
     notifyListeners();

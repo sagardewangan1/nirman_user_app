@@ -134,7 +134,9 @@ class _TopAllServicePageState extends State<TopAllServicePage> {
                                                 i,
                                                 context,
                                                 provider.serviceMap[i]
-                                                    ['sellerId']);
+                                                    ['sellerId'],
+                                                provider.serviceMap[i]
+                                                    ['experience']);
                                           },
                                           isSaved: provider.serviceMap[i]
                                                       ['isSaved'] ==

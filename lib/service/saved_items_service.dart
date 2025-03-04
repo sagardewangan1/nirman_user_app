@@ -21,9 +21,9 @@ class SavedItemService with ChangeNotifier {
       double rating,
       int index,
       BuildContext context,
-      sellerId) async {
+      sellerId,exp) async {
     await DbService().saveOrUnsave(
-        serviceId, title, image, price, sellerName, rating, context, sellerId);
+        serviceId, title, image, price, sellerName, rating, context, sellerId,exp);
     fetchSavedItem();
     Provider.of<TopRatedServicesSerivce>(context, listen: false)
         .topServiceSaveUnsaveFromOtherPage(serviceId, title, sellerName);

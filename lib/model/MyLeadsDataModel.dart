@@ -73,6 +73,7 @@ class Data {
     String? userContact,
     String? status,
     String? createdAt,
+    String? createdTime,
     String? updatedAt,
     BuyerModel? buyer,
     Seller? seller,
@@ -85,6 +86,7 @@ class Data {
     _userContact = userContact;
     _status = status;
     _createdAt = createdAt;
+    _createdTime = createdTime;
     _updatedAt = updatedAt;
     _buyer = buyer;
     _seller = seller;
@@ -99,6 +101,7 @@ class Data {
     _userContact = json['user_contact'];
     _status = json['status'];
     _createdAt = json['created_at'];
+    _createdTime = json['created_time'];
     _updatedAt = json['updated_at'];
     _buyer = json['buyer'] != null ? BuyerModel.fromJson(json['buyer']) : null;
     _seller = json['seller'] != null ? Seller.fromJson(json['seller']) : null;
@@ -111,6 +114,7 @@ class Data {
   String? _userContact;
   String? _status;
   String? _createdAt;
+  String? _createdTime;
   String? _updatedAt;
   BuyerModel? _buyer;
   Seller? _seller;
@@ -123,6 +127,7 @@ class Data {
     String? userContact,
     String? status,
     String? createdAt,
+    String? createdTime,
     String? updatedAt,
     BuyerModel? buyer,
     Seller? seller,
@@ -136,6 +141,7 @@ class Data {
         userContact: userContact ?? _userContact,
         status: status ?? _status,
         createdAt: createdAt ?? _createdAt,
+        createdTime: createdTime ?? _createdTime,
         updatedAt: updatedAt ?? _updatedAt,
         buyer: buyer ?? _buyer,
         seller: seller ?? _seller,
@@ -148,6 +154,7 @@ class Data {
   String? get userContact => _userContact;
   String? get status => _status;
   String? get createdAt => _createdAt;
+  String? get createdTime => _createdTime;
   String? get updatedAt => _updatedAt;
   BuyerModel? get buyer => _buyer;
   Seller? get seller => _seller;
@@ -162,6 +169,7 @@ class Data {
     map['user_contact'] = _userContact;
     map['status'] = _status;
     map['created_at'] = _createdAt;
+    map['created_time'] = _createdTime;
     map['updated_at'] = _updatedAt;
     if (_buyer != null) {
       map['buyer'] = _buyer?.toJson();
@@ -743,6 +751,7 @@ class BuyerModel {
   String? latitude;
   String? longitude;
   String? sellerAddress;
+  Area? area;
 
   BuyerModel({
     this.id,
@@ -800,6 +809,7 @@ class BuyerModel {
     this.latitude,
     this.longitude,
     this.sellerAddress,
+    this.area,
   });
 
   /// **JSON से Model बनाना**
@@ -860,6 +870,9 @@ class BuyerModel {
       latitude: json['latitude'],
       longitude: json['longitude'],
       sellerAddress: json['seller_address'],
+      area: json['area'] != null && json['area'] is Map<String, dynamic>
+          ? Area.fromJson(json['area'])
+          : null, // ✅ Area को null होने पर भी handle किया
     );
   }
 
@@ -921,6 +934,51 @@ class BuyerModel {
       'latitude': latitude,
       'longitude': longitude,
       'seller_address': sellerAddress,
+      'area': area?.toJson(),
+    };
+  }
+}
+
+class Area {
+  int? id;
+  String? serviceArea;
+  int? serviceCityId;
+  int? countryId;
+  int? status;
+  String? createdAt;
+  String? updatedAt;
+
+  Area({
+    this.id,
+    this.serviceArea,
+    this.serviceCityId,
+    this.countryId,
+    this.status,
+    this.createdAt,
+    this.updatedAt,
+  });
+
+  factory Area.fromJson(Map<String, dynamic> json) {
+    return Area(
+      id: json["id"],
+      serviceArea: json["service_area"],
+      serviceCityId: json["service_city_id"],
+      countryId: json["country_id"],
+      status: json["status"],
+      createdAt: json["created_at"],
+      updatedAt: json["updated_at"],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "id": id,
+      "service_area": serviceArea,
+      "service_city_id": serviceCityId,
+      "country_id": countryId,
+      "status": status,
+      "created_at": createdAt,
+      "updated_at": updatedAt,
     };
   }
 }

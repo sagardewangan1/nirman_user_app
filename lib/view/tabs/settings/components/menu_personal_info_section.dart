@@ -32,24 +32,30 @@ class MenuPersonalInfoSection extends StatelessWidget {
                           asProvider.getString("Email"),
                           profileProvider.profileDetails.userDetails.email ??
                               ''),
-                      BookingHelper().bRow(
-                          'null',
-                          asProvider.getString("City"),
-                          profileProvider.profileDetails.userDetails.city
-                                  .serviceCity ??
-                              ''),
-                      BookingHelper().bRow(
-                          'null',
-                          asProvider.getString("Area"),
-                          profileProvider.profileDetails.userDetails.area
-                                  .serviceArea ??
-                              ''),
-                      BookingHelper().bRow(
-                          'null',
-                          asProvider.getString("Country"),
-                          profileProvider
-                                  .profileDetails.userDetails.country.country ??
-                              ''),
+                      profileProvider.profileDetails.userDetails.city == null
+                          ? Offstage()
+                          : BookingHelper().bRow(
+                              'null',
+                              asProvider.getString("City"),
+                              profileProvider.profileDetails.userDetails.city
+                                      .serviceCity ??
+                                  ''),
+                      profileProvider.profileDetails.userDetails.area == null
+                          ? Offstage()
+                          : BookingHelper().bRow(
+                              'null',
+                              asProvider.getString("Area"),
+                              profileProvider.profileDetails.userDetails.area
+                                      .serviceArea ??
+                                  ''),
+                      profileProvider.profileDetails.userDetails.country == null
+                          ? Offstage()
+                          : BookingHelper().bRow(
+                              'null',
+                              asProvider.getString("Country"),
+                              profileProvider.profileDetails.userDetails.country
+                                      .country ??
+                                  ''),
                       // BookingHelper().bRow(
                       //     'null',
                       //     asProvider.getString("Post Code"),

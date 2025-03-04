@@ -80,12 +80,11 @@ removeDollar(value) {
 runAtstart(BuildContext context) async {
   Provider.of<RtlService>(context, listen: false).fetchCurrency();
   //language direction (ltr or rtl)
-
   await Provider.of<RtlService>(context, listen: false).fetchDirection(context);
   await Provider.of<ProfileService>(context, listen: false).fetchData();
 //fetch translated strings
   // Provider.of<AppStringService>(context, listen: false)
-  //     .fetchTranslatedStrings();
+  //     .fetchTranslatedStrings();243|IRU2ztxfHA51Vkk8uCTYgPAQG6uvSWcbqsGZkYBQ36d4bdff
 }
 
 Future<void> runAtHome(BuildContext context) async {

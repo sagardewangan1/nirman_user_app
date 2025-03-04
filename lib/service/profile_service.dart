@@ -28,7 +28,7 @@ class ProfileService with ChangeNotifier {
     profileDetails = null;
     profileImage = null;
     ordersList = [0, 0, 0, 0];
-    notifyListeners();
+    // notifyListeners();
   }
 
   Future<bool> getProfileDetails({bool isFromProfileupdatePage = false}) async {
@@ -36,11 +36,14 @@ class ProfileService with ChangeNotifier {
       //if from update profile page then load it anyway
 
       setEverythingToDefault();
+      print("calling profile service");
       await fetchData();
       return true;
     } else {
       //not from profile page. check if data already loaded
+
       if (profileDetails == null) {
+        print("calling profile service2222");
         fetchData();
         return true;
       } else {
@@ -68,10 +71,10 @@ class ProfileService with ChangeNotifier {
 
     var response =
         await http.get(Uri.parse('$baseApi/user/profile'), headers: header);
+    print("headers====> $header");
     if (response.statusCode == 201) {
       var data = ProfileModel.fromJson(jsonDecode(response.body));
       profileDetails = data;
-
       ordersList[0] = profileDetails.pendingOrder;
       ordersList[1] = profileDetails.activeOrder;
       ordersList[2] = profileDetails.completeOrder;

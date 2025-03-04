@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:qixer/model/MyServiceListDataModel.dart';
+
 ServiceDetailsModel serviceDetailsModelFromJson(String str) =>
     ServiceDetailsModel.fromJson(json.decode(str));
 
@@ -168,6 +170,7 @@ class ServiceDetails {
     this.image,
     this.video,
     this.status,
+    this.experience,
     this.isServiceOn,
     this.price,
     this.tax,
@@ -175,6 +178,9 @@ class ServiceDetails {
     this.soldCount,
     this.featured,
     required this.sellerForMobile,
+    required this.seller,
+    required this.category,
+    required this.subcategory,
     required this.reviewsForMobile,
     required this.serviceFaq,
   });
@@ -190,6 +196,7 @@ class ServiceDetails {
   String? image;
   String? video;
   int? status;
+  String? experience;
   int? isServiceOn;
   var price;
   var tax;
@@ -197,6 +204,9 @@ class ServiceDetails {
   int? soldCount;
   int? featured;
   SellerForMobile sellerForMobile;
+  Seller seller;
+  Category category;
+  Subcategory subcategory;
   List<ServiceReview> reviewsForMobile;
   List<ServiceFaq> serviceFaq;
 
@@ -212,6 +222,7 @@ class ServiceDetails {
         image: json["image"],
         video: json["video"],
         status: json["status"],
+        experience: json["experience"],
         isServiceOn: json["is_service_on"],
         price: json["price"],
         tax: json["tax"],
@@ -219,6 +230,9 @@ class ServiceDetails {
         soldCount: json["sold_count"],
         featured: json["featured"],
         sellerForMobile: SellerForMobile.fromJson(json["seller_for_mobile"]),
+        seller: Seller.fromJson(json["seller"]),
+        category: Category.fromJson(json["category"]),
+        subcategory: Subcategory.fromJson(json["subcategory"]),
         reviewsForMobile: List<ServiceReview>.from(
             json["reviews_for_mobile"].map((x) => ServiceReview.fromJson(x))),
         serviceFaq: List<ServiceFaq>.from(
@@ -237,6 +251,7 @@ class ServiceDetails {
         "image": image,
         "video": video,
         "status": status,
+        "experience": experience,
         "is_service_on": isServiceOn,
         "price": price,
         "tax": tax,
@@ -244,6 +259,9 @@ class ServiceDetails {
         "sold_count": soldCount,
         "featured": featured,
         "seller_for_mobile": sellerForMobile.toJson(),
+        "seller": seller.toJson(),
+        "category": category.toJson(),
+        "subcategory": subcategory.toJson(),
         "reviews_for_mobile":
             List<dynamic>.from(reviewsForMobile.map((x) => x.toJson())),
       };
@@ -420,5 +438,244 @@ class ServiceInclude {
         "id": id,
         "service_id": serviceId,
         "include_service_title": includeServiceTitle,
+      };
+}
+
+class Seller {
+  Seller({
+    this.id,
+    this.name,
+    this.email,
+    this.username,
+    this.phone,
+    this.businessName,
+    this.businessGstNumber,
+    this.businessPhoneNumber,
+    this.businessEmail,
+    this.businessFullAddress,
+    this.businessDescription,
+    this.workingCategories,
+    this.otpCode,
+    this.otpVerified,
+    this.image,
+    this.profileBackground,
+    this.serviceCity,
+    this.serviceArea,
+    this.userType,
+    this.sellerType,
+    this.isNew,
+    this.userStatus,
+    this.termsCondition,
+    this.address,
+    this.state,
+    this.about,
+    this.taxNumber,
+    this.businessRegistration,
+    this.postCode,
+    this.countryId,
+    this.emailVerified,
+    this.emailVerifyToken,
+    this.facebookId,
+    this.appleId,
+    this.googleId,
+    this.countryCode,
+    this.createdAt,
+    this.updatedAt,
+    this.passwordChangedAt,
+    this.fbUrl,
+    this.twUrl,
+    this.goUrl,
+    this.liUrl,
+    this.yoUrl,
+    this.inUrl,
+    this.twiUrl,
+    this.piUrl,
+    this.drUrl,
+    this.reUrl,
+    this.lastSeen,
+    this.otpExpireAt,
+    this.zoneId,
+    this.latitude,
+    this.longitude,
+    this.sellerAddress,
+  });
+
+  int? id;
+  String? name;
+  String? email;
+  String? username;
+  String? phone;
+  String? businessName;
+  String? businessGstNumber;
+  String? businessPhoneNumber;
+  String? businessEmail;
+  String? businessFullAddress;
+  String? businessDescription;
+  List<String>? workingCategories;
+  String? otpCode;
+  int? otpVerified;
+  String? image;
+  String? profileBackground;
+  String? serviceCity;
+  String? serviceArea;
+  int? userType;
+  int? sellerType;
+  int? isNew;
+  int? userStatus;
+  int? termsCondition;
+  String? address;
+  String? state;
+  String? about;
+  String? taxNumber;
+  String? businessRegistration;
+  String? postCode;
+  int? countryId;
+  int? emailVerified;
+  String? emailVerifyToken;
+  String? facebookId;
+  String? appleId;
+  String? googleId;
+  String? countryCode;
+  String? createdAt;
+  String? updatedAt;
+  String? passwordChangedAt;
+  String? fbUrl;
+  String? twUrl;
+  String? goUrl;
+  String? liUrl;
+  String? yoUrl;
+  String? inUrl;
+  String? twiUrl;
+  String? piUrl;
+  String? drUrl;
+  String? reUrl;
+  String? lastSeen;
+  String? otpExpireAt;
+  String? zoneId;
+  double? latitude;
+  double? longitude;
+  String? sellerAddress;
+
+  factory Seller.fromJson(Map<String, dynamic> json) => Seller(
+        id: json["id"],
+        name: json["name"],
+        email: json["email"],
+        username: json["username"],
+        phone: json["phone"],
+        businessName: json["businessName"],
+        businessGstNumber: json["businessGstNumber"],
+        businessPhoneNumber: json["businessPhoneNumber"],
+        businessEmail: json["businessEmail"],
+        businessFullAddress: json["businessFullAddress"],
+        businessDescription: json["businessDescription"],
+        workingCategories: json["working_categories"] != null
+            ? List<String>.from(jsonDecode(json["working_categories"]))
+            : [],
+        otpCode: json["otp_code"],
+        otpVerified: json["otp_verified"],
+        image: json["image"],
+        profileBackground: json["profile_background"],
+        serviceCity: json["service_city"],
+        serviceArea: json["service_area"],
+        userType: json["user_type"],
+        sellerType: json["seller_type"],
+        isNew: json["isNew"],
+        userStatus: json["user_status"],
+        termsCondition: json["terms_condition"],
+        address: json["address"],
+        state: json["state"],
+        about: json["about"],
+        taxNumber: json["tax_number"],
+        businessRegistration: json["business_registration"],
+        postCode: json["post_code"],
+        countryId: json["country_id"],
+        emailVerified: json["email_verified"],
+        emailVerifyToken: json["email_verify_token"],
+        facebookId: json["facebook_id"],
+        appleId: json["apple_id"],
+        googleId: json["google_id"],
+        countryCode: json["country_code"],
+        createdAt: json["created_at"],
+        updatedAt: json["updated_at"],
+        passwordChangedAt: json["password_changed_at"],
+        fbUrl: json["fb_url"],
+        twUrl: json["tw_url"],
+        goUrl: json["go_url"],
+        liUrl: json["li_url"],
+        yoUrl: json["yo_url"],
+        inUrl: json["in_url"],
+        twiUrl: json["twi_url"],
+        piUrl: json["pi_url"],
+        drUrl: json["dr_url"],
+        reUrl: json["re_url"],
+        lastSeen: json["last_seen"],
+        otpExpireAt: json["otp_expire_at"],
+        zoneId: json["zone_id"],
+        latitude: json["latitude"] != null
+            ? double.tryParse(json["latitude"].toString())
+            : null,
+        longitude: json["longitude"] != null
+            ? double.tryParse(json["longitude"].toString())
+            : null,
+        sellerAddress: json["seller_address"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "name": name,
+        "email": email,
+        "username": username,
+        "phone": phone,
+        "businessName": businessName,
+        "businessGstNumber": businessGstNumber,
+        "businessPhoneNumber": businessPhoneNumber,
+        "businessEmail": businessEmail,
+        "businessFullAddress": businessFullAddress,
+        "businessDescription": businessDescription,
+        "working_categories":
+            workingCategories != null ? jsonEncode(workingCategories) : null,
+        "otp_code": otpCode,
+        "otp_verified": otpVerified,
+        "image": image,
+        "profile_background": profileBackground,
+        "service_city": serviceCity,
+        "service_area": serviceArea,
+        "user_type": userType,
+        "seller_type": sellerType,
+        "isNew": isNew,
+        "user_status": userStatus,
+        "terms_condition": termsCondition,
+        "address": address,
+        "state": state,
+        "about": about,
+        "tax_number": taxNumber,
+        "business_registration": businessRegistration,
+        "post_code": postCode,
+        "country_id": countryId,
+        "email_verified": emailVerified,
+        "email_verify_token": emailVerifyToken,
+        "facebook_id": facebookId,
+        "apple_id": appleId,
+        "google_id": googleId,
+        "country_code": countryCode,
+        "created_at": createdAt,
+        "updated_at": updatedAt,
+        "password_changed_at": passwordChangedAt,
+        "fb_url": fbUrl,
+        "tw_url": twUrl,
+        "go_url": goUrl,
+        "li_url": liUrl,
+        "yo_url": yoUrl,
+        "in_url": inUrl,
+        "twi_url": twiUrl,
+        "pi_url": piUrl,
+        "dr_url": drUrl,
+        "re_url": reUrl,
+        "last_seen": lastSeen,
+        "otp_expire_at": otpExpireAt,
+        "zone_id": zoneId,
+        "latitude": latitude,
+        "longitude": longitude,
+        "seller_address": sellerAddress,
       };
 }

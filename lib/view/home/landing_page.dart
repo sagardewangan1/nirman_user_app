@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:pusher_beams/pusher_beams.dart';
 import 'package:qixer/model/navigationModel.dart';
@@ -40,14 +43,19 @@ class _HomePageState extends State<LandingPage> {
   DateTime? currentBackPressTime;
 
   void onTabTapped(int index) {
-    if (index == 3) {
+    if (index >= _navIndexes.length) {
+      print("⚠️ Invalid index: $index, resetting to 0");
+      index = 0; // ✅ Ensure valid index
+    }
+
+    int actualIndex = _navIndexes[index]; // ✅ Correct index mapping
+
+    if (userType == '0' ? actualIndex == 2 : actualIndex == 3) {
       Provider.of<FilterServicesService>(context, listen: false).resetFilters();
       ServiceFilterViewModel.instance.searchTextController.text = "";
     }
-    HomepageHelper.tabIndex.value = index;
-    // setState(() {
-    //   _currentIndex = index;
-    // });
+
+    HomepageHelper.tabIndex.value = actualIndex; // ✅ Corrected index
   }
 
   String? userType;
@@ -85,7 +93,7 @@ class _HomePageState extends State<LandingPage> {
     _children?.add(const MenuPage());
     _navIndexes.add(_navIndexes.length);
 
-    print("_navIndexes===> ${_navIndexes}");
+    print("_navIndexes===> $_navIndexes");
 
     setState(() {});
   }
@@ -153,8 +161,10 @@ class _HomePageState extends State<LandingPage> {
                     OthersHelper()
                         .showToast("Press again to exit", Colors.black);
                   }
-
                   return Future.value(false);
+                }
+                if (Platform.isAndroid) {
+                  SystemNavigator.pop();
                 }
                 return Future.value(true);
               },
@@ -165,11 +175,17 @@ class _HomePageState extends State<LandingPage> {
       bottomNavigationBar: ValueListenableBuilder<int>(
         valueListenable: HomepageHelper.tabIndex,
         builder: (context, value, child) {
+          int adjustedIndex =
+              _navIndexes.indexOf(value); // ✅ Ensure correct mapping
+          if (adjustedIndex == -1) {
+            print("⚠️ Invalid adjustedIndex: $value, resetting to 0");
+            adjustedIndex = 0;
+            HomepageHelper.tabIndex.value = 0; // ✅ Ensure it syncs immediately
+          }
           return BottomNav(
-            currentIndex:
-                _navIndexes.indexOf(value), // ✅ Ensure correct index mapping
+            currentIndex: adjustedIndex, // ✅ Ensure correct index mapping
             onTabTapped: onTabTapped,
-            userType: userType,
+            userType: userType, navIndexes: _navIndexes,
           );
         },
       ),

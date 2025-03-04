@@ -16,7 +16,7 @@ class DbService {
 
   _dbOnCreate(Database database, int version) async {
     await database.execute(
-        "CREATE TABLE savedItem_table(id INTEGER PRIMARY KEY AUTOINCREMENT, serviceId INTEGER, sellerId INTEGER, title TEXT, image TEXT, price INTEGER, sellerName TEXT, rating REAL)");
+        "CREATE TABLE savedItem_table(id INTEGER PRIMARY KEY AUTOINCREMENT, serviceId INTEGER, sellerId INTEGER, title TEXT, image TEXT, price INTEGER, sellerName TEXT, rating REAL,experience TEXT)");
   }
 
   Future<Database> get getdatabase async {
@@ -51,7 +51,8 @@ class DbService {
       String sellerName,
       double rating,
       BuildContext context,
-      int sellerId) async {
+      int sellerId,
+      String experience) async {
     var connection = await getdatabase;
     var result = await connection.rawQuery(
         "SELECT * FROM savedItem_table WHERE serviceId=? and title =? and sellerName=?",
@@ -66,6 +67,7 @@ class DbService {
       itemObj.sellerName = sellerName;
       itemObj.rating = rating;
       itemObj.sellerId = sellerId;
+      itemObj.experience = experience;
 
       await connection.insert('savedItem_table', itemObj.itemMap());
 

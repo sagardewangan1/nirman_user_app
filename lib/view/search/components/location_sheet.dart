@@ -62,9 +62,9 @@ class LocationSheet extends StatelessWidget {
                   valueListenable: sfm.serviceType,
                   builder: (context, type, child) {
                     return CustomDropdown(
-                      "",
-                      const ["All", "Offline", "Online"],
-                      (p0) {
+                      hintText: "",
+                      listData: const ["All", "Offline", "Online"],
+                      onChanged: (p0) {
                         sfm.serviceType.value = p0;
                       },
                       value: type,

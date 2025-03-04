@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:qixer/model/CategoryDataModel.dart';
 import 'package:qixer/model/service_search_model.dart';
 import 'package:qixer/view/utils/others_helper.dart';
 
@@ -28,10 +29,19 @@ class FilterServicesService with ChangeNotifier {
   num? rating;
 
   int distance = 50;
+  String? _cityId;
+  String? get cityId => _cityId;
+
+  setCityId(String? cityId) {
+    _cityId = cityId;
+    notifyListeners();
+  }
+
   Prediction? prediction;
   String? serviceType = "All";
 
   Category? selectedCategory;
+  Categories? selectedCategories;
   SubCategory? selectedSubcategory;
   ChildCategory? selectedChildCategory;
 
@@ -69,9 +79,11 @@ class FilterServicesService with ChangeNotifier {
 
   setCategoryFilters({
     Category? selectedCategory,
+    Categories? categories,
     SubCategory? selectedSubcategory,
     ChildCategory? selectedChildCategory,
-  }) {
+  }) async {
+    selectedCategories = categories;
     this.selectedCategory = selectedCategory;
     this.selectedSubcategory = selectedSubcategory;
     this.selectedChildCategory = selectedChildCategory;
@@ -88,6 +100,7 @@ class FilterServicesService with ChangeNotifier {
     distance = 50;
     prediction = null;
     serviceType = "All";
+    selectedCategories = null;
     selectedCategory = null;
     selectedSubcategory = null;
     selectedChildCategory = null;
@@ -105,6 +118,7 @@ class FilterServicesService with ChangeNotifier {
     url += "&latitude=${prediction?.lat ?? ""}";
     url += "&longitude=${prediction?.lng ?? ""}";
     url += "&distance_kilometers_value=$distance";
+    url += "&areaId=${cityId ?? ""}";
     if (minPrice.isNotEmpty || maxPrice.isNotEmpty) {
       url +=
           "&price_range_value=${minPrice.isEmpty ? 0 : minPrice},${maxPrice.isEmpty ? 0 : maxPrice}";
@@ -129,6 +143,7 @@ class FilterServicesService with ChangeNotifier {
     markerKeys = [];
     searchLoading = true;
     notifyListeners();
+    print("searchUrl===> $searchUrl");
     final responseData = await NetworkApiServices().getApi(
       searchUrl,
       "Search services",
@@ -139,25 +154,30 @@ class FilterServicesService with ChangeNotifier {
       var tempData = ServiceSearchModel.fromJson(responseData);
       _serviceSearchModel = tempData;
       debugPrint((tempData.mainServices?.length).toString());
+
       tempData.mainServices?.forEach((element) {
         setServiceList(
-          element.service?.id,
-          element.service?.title ?? "",
-          element.service?.sellerForMobile?.name ?? "",
-          element.service?.price,
-          calculateAverage(
-            element.service?.reviewsForMobile
-                ?.map(
-                  (e) => e.rating,
-                )
-                .toList(),
-          ),
-          element.imageUrl,
-          1,
-          element.service?.sellerId,
-          element.service?.sellerForMobile?.lat,
-          element.service?.sellerForMobile?.lng,
-        );
+            element.service?.id,
+            element.service?.title ?? "",
+            element.service?.sellerForMobile?.name ?? "",
+            element.service?.price,
+            calculateAverage(
+              element.service?.reviewsForMobile
+                  ?.map(
+                    (e) => e.rating,
+                  )
+                  .toList(),
+            ),
+            element.imageUrl,
+            1,
+            element.service?.sellerId,
+            element.service?.sellerForMobile?.lat,
+            element.service?.sellerForMobile?.lng,
+            element.service?.experience,
+            element.service?.status,
+            element.service?.sellerForMobile?.phone,
+            element.service?.sellerForMobile?.phone,
+            element.serviceAreas ?? []);
       });
       notifyListeners();
     }
@@ -181,15 +201,37 @@ class FilterServicesService with ChangeNotifier {
   }
 
   saveOrUnsave(int serviceId, String title, image, int price, String sellerName,
-      double rating, int index, BuildContext context, sellerId) async {
-    alreadySaved = await DbService().saveOrUnsave(serviceId, title,
-        image ?? placeHolderUrl, price, sellerName, rating, context, sellerId);
+      double rating, int index, BuildContext context, sellerId, exp) async {
+    alreadySaved = await DbService().saveOrUnsave(
+        serviceId,
+        title,
+        image ?? placeHolderUrl,
+        price,
+        sellerName,
+        rating,
+        context,
+        sellerId,
+        exp);
     serviceMap[index]['isSaved'] = alreadySaved;
     notifyListeners();
   }
 
-  setServiceList(serviceId, title, sellerName, price, rating, image, index,
-      sellerId, lat, lng) {
+  setServiceList(
+      serviceId,
+      title,
+      sellerName,
+      price,
+      rating,
+      image,
+      index,
+      sellerId,
+      lat,
+      lng,
+      experience,
+      status,
+      whatsappNumber,
+      callNumber,
+      serviceArea) {
     double randomLat = lat;
     double randomLng = lng;
     var latLng = "$randomLat, $randomLng";
@@ -202,6 +244,12 @@ class FilterServicesService with ChangeNotifier {
       } while (markerKeys.contains(latLng));
     }
     markerKeys.add(latLng);
+
+    /// ✅ Convert `List<ServiceAreas>` to `List<String>` (Extract `service_area`)
+    List processedServiceAreas = serviceArea is List<ServiceAreas>
+        ? serviceArea.map((area) => area.serviceArea ?? "Unknown").toList()
+        : [];
+
     serviceMap.add({
       'serviceId': serviceId,
       'title': title,
@@ -213,7 +261,13 @@ class FilterServicesService with ChangeNotifier {
       'sellerId': sellerId,
       'lat': randomLat,
       'lng': randomLng,
+      'experience': experience,
+      'status': status,
+      'whatsappNumber': whatsappNumber,
+      'callNumber': callNumber,
+      "serviceArea": processedServiceAreas
     });
+
     try {
       checkIfAlreadySaved(serviceId, title, sellerName, index);
     } catch (e) {}

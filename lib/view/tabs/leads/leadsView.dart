@@ -2,14 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:qixer/helper/contactFeatures.dart';
 import 'package:qixer/helper/extension/context_extension.dart';
+import 'package:qixer/helper/extension/dateTimeExtension.dart';
 import 'package:qixer/model/navigationModel.dart';
 import 'package:qixer/service/app_string_service.dart';
 import 'package:qixer/service/leadsController/leadsController.dart';
+import 'package:qixer/service/profile_service.dart';
 import 'package:qixer/view/home/components/section_title.dart';
 import 'package:qixer/view/tabs/leads/leadsDetailsView.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
+import 'package:qixer/view/utils/others_helper.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../model/MyLeadsDataModel.dart';
+import '../../utils/login_or_register.dart';
+import 'components/LeadDetailsItemCard.dart';
 import 'components/LeadItemCard.dart';
 
 class LeadsView extends StatefulWidget {
@@ -25,211 +33,143 @@ class _LeadsViewState extends State<LeadsView> {
 
   @override
   void initState() {
-    firstLoad();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      firstLoad();
+    });
     super.initState();
   }
 
-  firstLoad() {
+  firstLoad() async {
     final leadController = Provider.of<LeadsController>(context, listen: false);
     if (mounted) {
-      leadController.setIsNew(false);
-      leadController.getMyLeads();
+      final profileController =
+          Provider.of<ProfileService>(context, listen: false);
+      await profileController.getProfileDetails();
+      setState(() {});
+      if (await checkAuth()) {
+        leadController.setIsNew(false);
+        leadController.getMyLeads();
+      }
     }
   }
 
-  String getTimeDifference(String createdAt) {
-    try {
-      // Parse the created_at timestamp and convert it to local time
-      DateTime createdTime = DateTime.parse(createdAt).toLocal();
-      DateTime now = DateTime.now();
-
-      Duration diff = now.difference(createdTime);
-
-      if (diff.inSeconds < 60) {
-        return '${diff.inSeconds} sec ago';
-      } else if (diff.inMinutes < 60) {
-        return '${diff.inMinutes} min ago';
-      } else if (diff.inHours < 24) {
-        return '${diff.inHours} hr ago';
-      } else if (diff.inDays < 7) {
-        return '${diff.inDays} day${diff.inDays > 1 ? "s" : ""} ago';
-      } else if (diff.inDays < 30) {
-        return '${(diff.inDays / 7).floor()} week${(diff.inDays / 7).floor() > 1 ? "s" : ""} ago';
-      } else {
-        return DateFormat('dd MMM yyyy, hh:mm a').format(createdTime);
-      }
-    } catch (e) {
-      return 'Invalid time';
-    }
+  bool isLoggedIn = false;
+  Future<bool> checkAuth() async {
+    final prefs = await SharedPreferences.getInstance();
+    // Set default values instead of removing
+    isLoggedIn = await prefs.getBool('shashaktnirman_is_logged_in') ?? false;
+    return isLoggedIn;
   }
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    final leadController = Provider.of<LeadsController>(context);
-    print("is  new ===> ${leadController.isNew}");
-    return StreamBuilder<Object?>(
-      stream: leadController.countStream(),
-      builder: (context, snapshot) {
-        print("counts====> ${leadController.count}");
-        // if (!snapshot.hasData) {
-        //   return Scaffold(
-        //     body: Center(
-        //       child: CircularProgressIndicator(),
-        //     ),
-        //   );
-        // }
+    final leadController = Provider.of<LeadsController>(context, listen: false);
 
-        return Consumer<AppStringService>(
-          builder: (context, asProvider, child) {
-            return Consumer<LeadsController>(
-              builder: (BuildContext context, leadsProvider, child) {
-                return Scaffold(
-                    appBar: AppBar(
-                      centerTitle: true,
-                      surfaceTintColor: cc.white,
-                      iconTheme: IconThemeData(color: cc.greyPrimary),
-                      systemOverlayStyle: SystemUiOverlayStyle.dark,
-                      title: Text(
-                        asProvider.getString("My Leads"),
-                        style: TextStyle(
-                            color: cc.greyPrimary,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600),
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(
+          "My Leads",
+          overflow: TextOverflow.visible,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+              color: cc.greyPrimary, fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+      ),
+      body: StreamBuilder<MyLeadsDataModel>(
+        stream: leadController.leadsStream, // ✅ Correctly using stream
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator()); // Loading state
+          } else if (snapshot.hasError) {
+            return Center(
+                child: Text("Error: ${snapshot.error}")); // Error state
+          } else if (!snapshot.hasData || snapshot.data!.data!.isEmpty) {
+            return Center(child: Text("No Leads Available")); // No data case
+          }
+          MyLeadsDataModel leadsData =
+              snapshot.data!; // ✅ Extracting data from stream
+          return Column(
+            children: [
+              // ✅ Using Stream Data
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: buildCustomCard(
+                        icon: Icons.insert_chart,
+                        title: "${leadsData.newLeads ?? '0'} New Leads",
+                        backgroundColor: Colors.green.shade400,
+                        textColor: Colors.white,
+                        iconColor: Colors.white,
                       ),
-                      backgroundColor: cc.white,
-                      elevation: 0,
-                      leading: widget.navigationModel?.navFrom != "Home"
-                          ? InkWell(
-                              onTap: () => Navigator.pop(context),
-                              child: const Icon(
-                                Icons.arrow_back_ios,
-                                // size: 24,
-                              ),
-                            )
-                          : null,
                     ),
-                    body: Consumer<LeadsController>(
-                      builder: (context, leadController, child) {
-                        return Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Expanded(
-                                        child: buildCustomCard(
-                                          icon: Icons.insert_chart,
-                                          title:
-                                              "${leadController.myLeadsDataModel.newLeads ?? '0'} New Leads",
-                                          backgroundColor:
-                                              Colors.green.shade400,
-                                          textColor: Colors.white,
-                                          iconColor: Colors.white,
-                                        ),
-                                      ),
-                                      SizedBox(width: 10),
-                                      Expanded(
-                                        child: buildCustomCard(
-                                          icon: Icons.insert_chart_outlined,
-                                          title:
-                                              "${leadController.myLeadsDataModel.openLeads ?? '0'} Open Leads",
-                                          backgroundColor: Colors.red.shade400,
-                                          textColor: Colors.white,
-                                          iconColor: Colors.white,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  // SizedBox(height: 10),
-                                  // Row(
-                                  //   mainAxisAlignment:
-                                  //       MainAxisAlignment.spaceBetween,
-                                  //   children: [
-                                  //     Expanded(
-                                  //       child: buildCustomCard(
-                                  //         icon: Icons.local_fire_department_rounded,
-                                  //         title: "Priority Leads",
-                                  //         backgroundColor: Colors.orange.shade700,
-                                  //         boxShadow: [
-                                  //           BoxShadow(
-                                  //             blurRadius: 5,
-                                  //             color: Colors.orange.withOpacity(0.2),
-                                  //             offset: Offset(0, 2),
-                                  //           )
-                                  //         ],
-                                  //         textColor: Colors.white,
-                                  //         iconColor: Colors.white,
-                                  //       ),
-                                  //     ),
-                                  //   ],
-                                  // ),
-                                  SizedBox(height: 10),
-                                  leadController
-                                              .myLeadsDataModel.data?.length ==
-                                          0
-                                      ? Offstage()
-                                      : CategoryTitle2(
-                                          cc: cc,
-                                          title: asProvider
-                                              .getString('Recent Leads'),
-                                          hasSeeAllBtn: true,
-                                          pressed: () => context
-                                              .toPage(LeadsDetailsView()),
-                                        ),
-                                ],
-                              ),
-                            ),
-                            Expanded(
-                                child: leadController
-                                            .myLeadsDataModel.data?.length ==
-                                        0
-                                    ? Center(
-                                        child: Text(
-                                            "No Leads Generated For You Now"),
-                                      )
-                                    : ListView.builder(
-                                        padding: const EdgeInsets.only(top: 3),
-                                        itemCount: leadController
-                                            .myLeadsDataModel.data?.length,
-                                        itemBuilder: (context, index) {
-                                          final leads = leadController
-                                              .myLeadsDataModel.data?[index];
-                                          return Padding(
-                                            padding: const EdgeInsets.all(4.0),
-                                            child: LeadItemCard(
-                                              cc: cc,
-                                              isNew: leadController.isNew,
-                                              name: leads?.buyer?.name ?? '',
-                                              enquiryName:
-                                                  leads?.serviceName ?? '',
-                                              imageUrl:
-                                                  "https://i.postimg.cc/FKrHpCYL/pngwing-com-2.png",
-                                              leftTime: getTimeDifference(
-                                                  leads?.createdAt ?? ''),
-                                              address:
-                                                  "234-236, Kerawalla Mansion, Above City walk Shoes, Tilak Marg,Mumbai",
-                                              onTap: () => context
-                                                  .toPage(LeadsDetailsView()),
-                                              onTapCall: () => print("calling"),
-                                              isFav: false,
-                                            ),
-                                          );
-                                        },
-                                      ))
-                          ],
-                        );
-                      },
-                    ));
-              },
-            );
-          },
-        );
-      },
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: buildCustomCard(
+                        icon: Icons.insert_chart_outlined,
+                        title: "${leadsData.openLeads ?? '0'} Open Leads",
+                        backgroundColor: Colors.red.shade400,
+                        textColor: Colors.white,
+                        iconColor: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.only(top: 3),
+                  itemCount: leadsData.data!.length, // ✅ Using Stream Data
+                  itemBuilder: (context, index) {
+                    final lead = leadsData.data![index];
+                    return Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: InkWell(
+                        onTap: () {
+                          leadController.updateLeadStatus(
+                              leadId: lead.id.toString());
+                        },
+                        child: LeadsDetailItemCard(
+                          cc: cc,
+                          isNew: lead.status == "Open leads" ? false : true,
+                          name: lead.buyer?.name ?? "No Name",
+                          enquiryName: lead.serviceName ?? "No Title",
+                          imageUrl:
+                              'https://i.postimg.cc/FKrHpCYL/pngwing-com-2.png' ??
+                                  "",
+                          leftTime: lead.createdTime ?? "N/A",
+                          address: lead.buyer?.area != null
+                              ? lead.buyer?.area?.serviceArea ?? "No Address"
+                              : '',
+                          onTapCall: () {
+                            ContactFeatures().launchCalling(
+                                context, lead.buyer?.phone.toString() ?? '');
+                            leadController.updateLeadStatus(
+                                leadId: lead.id.toString());
+                          },
+                          isFav: false,
+                          datetime: lead.createdAt?.toFormattedDate(),
+                          onTapWhatsapp: () {
+                            ContactFeatures().launchWhatsapp(
+                                context,
+                                lead.buyer?.phone.toString() ?? '',
+                                "Hello How Can I Help You ? ");
+                            leadController.updateLeadStatus(
+                                leadId: lead.id.toString());
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 

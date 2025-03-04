@@ -124,7 +124,9 @@ class _HomepageState extends State<Homepage> {
                           borderRadius: BorderRadius.circular(8.0)),
                       child: TextFormField(
                         readOnly: true,
-                        onTap: () => HomepageHelper.tabIndex.value = 3,
+                        onTap: () => userType == '1'
+                            ? HomepageHelper.tabIndex.value = 2
+                            : HomepageHelper.tabIndex.value = 3,
                         textInputAction: TextInputAction.done,
                         onFieldSubmitted: (value) {
                           HomepageHelper.tabIndex.value = 3;
@@ -352,7 +354,7 @@ class _HomepageState extends State<Homepage> {
                                     padding: const EdgeInsets.all(8.0),
                                     child: Offstage(),
                                   )),
-                        //Top rated sellers ========>
+                        // Top booked services ========>
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 15),
                           child: TopRatedServices(
@@ -360,7 +362,7 @@ class _HomepageState extends State<Homepage> {
                             asProvider: asProvider,
                           ),
                         ),
-                        //Recent service ========>
+                        // Featured Services ========>
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 15),
                           child: RecentServices(
@@ -368,7 +370,7 @@ class _HomepageState extends State<Homepage> {
                             asProvider: asProvider,
                           ),
                         ),
-                        //Discount images
+                        // Discount images
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 15),
                           child: const RecentJobs(),

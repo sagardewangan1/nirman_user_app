@@ -3,18 +3,23 @@ import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:qixer/view/utils/responsive.dart';
 
 class CustomDropdown extends StatelessWidget {
-  String hintText;
-  List listData;
-  String? value;
+  final String? hintText;
+  final List? listData;
+  final String? value;
   void Function(dynamic)? onChanged;
-  CustomDropdown(this.hintText, this.listData, this.onChanged,
-      {this.value, super.key});
+  CustomDropdown({
+    this.value,
+    super.key,
+    this.hintText,
+    this.listData,
+    this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
     ConstantColors cc = ConstantColors();
     return Container(
-      height: 56,
+      height: 58,
       width: double.infinity,
       margin: const EdgeInsets.symmetric(vertical: 5),
       padding: const EdgeInsets.symmetric(horizontal: 5),
@@ -28,7 +33,7 @@ class CustomDropdown extends StatelessWidget {
       ),
       child: DropdownButton(
         hint: Text(
-          hintText,
+          hintText ?? '',
           style: Theme.of(context).textTheme.titleSmall!.copyWith(
                 color: cc.greyParagraph,
                 fontSize: 14,
@@ -48,18 +53,22 @@ class CustomDropdown extends StatelessWidget {
           color: cc.greyParagraph,
         ),
         onChanged: onChanged,
-        items: (listData).map((value) {
+        items: (listData)?.map((value) {
           return DropdownMenuItem(
             alignment: rtlProvider.direction == 'left'
                 ? Alignment.centerRight
                 : Alignment.centerLeft,
             value: value,
             child: SizedBox(
-              // width: screenWidth - 140,
+              width: double.infinity, // ✅ Ensures text takes full space
               child: Padding(
                 padding: const EdgeInsets.only(left: 5),
-                child:
-                    Text(lnProvider.getString(value).toString().capitalize()),
+                child: Text(
+                  lnProvider.getString(value).toString().capitalize(),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 12),
+                ),
               ),
             ),
           );

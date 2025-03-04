@@ -172,10 +172,11 @@ class TopAllServicesService with ChangeNotifier {
       double rating,
       int index,
       BuildContext context,
-      sellerId) async {
+      sellerId,
+      exp) async {
     var newListMap = serviceMap;
-    alreadySaved = await DbService().saveOrUnsave(
-        serviceId, title, image, price, sellerName, rating, context, sellerId);
+    alreadySaved = await DbService().saveOrUnsave(serviceId, title, image,
+        price, sellerName, rating, context, sellerId, exp);
     newListMap[index]['isSaved'] = alreadySaved;
     serviceMap = newListMap;
     notifyListeners();

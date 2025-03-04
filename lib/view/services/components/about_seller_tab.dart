@@ -53,36 +53,38 @@ class AboutSellerTab extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    provider.serviceAllDetails.serviceSellerName,
+                    provider.serviceAllDetails.serviceSellerName
+                        .toString()
+                        .capitalize(),
                     style: TextStyle(
                         color: cc.greyFour,
                         fontSize: 17,
                         fontWeight: FontWeight.w600),
                   ),
-                  const SizedBox(
-                    height: 6,
-                  ),
-                  Row(
-                    children: [
-                      Text(
-                        lnProvider.getString('Order Completed'),
-                        style: TextStyle(
-                          color: cc.primaryColor,
-                          fontSize: 12,
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      Text(
-                        '(${provider.serviceAllDetails.sellerCompleteOrder.toString()})',
-                        style: TextStyle(
-                          color: cc.greyParagraph,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
+                  // const SizedBox(
+                  //   height: 6,
+                  // ),
+                  // Row(
+                  //   children: [
+                  //     Text(
+                  //       lnProvider.getString('Order Completed'),
+                  //       style: TextStyle(
+                  //         color: cc.primaryColor,
+                  //         fontSize: 12,
+                  //       ),
+                  //     ),
+                  //     const SizedBox(
+                  //       width: 5,
+                  //     ),
+                  //     Text(
+                  //       '(${provider.serviceAllDetails.sellerCompleteOrder.toString()})',
+                  //       style: TextStyle(
+                  //         color: cc.greyParagraph,
+                  //         fontSize: 12,
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
                 ],
               ),
             ],
@@ -145,107 +147,10 @@ class AboutSellerTab extends StatelessWidget {
         // ),
         DescInHtml(
           cc: cc,
-          desc: '''<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Company Overview</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      line-height: 1.6;
-    }
-    .container {
-      max-width: 800px;
-      margin: auto;
-      padding: 20px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    .section {
-      margin-bottom: 20px;
-    }
-    .section h2 {
-      color: #4CAF50;
-      margin-bottom: 10px;
-      font-size: 1.5em;
-    }
-    .team-member {
-      margin: 10px 0;
-    }
-    .achievement {
-      margin: 5px 0;
-    }
-    .map {
-      margin-top: 10px;
-    }
-    .contact a {
-      color: #4CAF50;
-      text-decoration: none;
-    }
-    .contact a:hover {
-      text-decoration: underline;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <!-- Company Overview Section -->
-    <div class="section" id="company-overview">
-      <h2>Company Overview</h2>
-      <p><strong>Established Year:</strong> Established in 2010.</p>
-      <p><strong>Mission Statement:</strong> To provide exceptional services that create value and make a difference.</p>
-      <p><strong>Vision:</strong> To be a global leader in delivering innovative and sustainable solutions.</p>
-    </div>
-
-    <!-- Team Information Section -->
-    <div class="section" id="team-info">
-      <h2>Team Information</h2>
-      <div class="team-member">
-        <strong>John Doe</strong> - CEO
-      </div>
-      <div class="team-member">
-        <strong>Jane Smith</strong> - Service Lead
-      </div>
-      <div class="team-member">
-        <strong>Emily Johnson</strong> - Head of Operations
-      </div>
-    </div>
-
-    <!-- Achievements Section -->
-    <div class="section" id="achievements">
-      <h2>Achievements</h2>
-      <ul>
-        <li class="achievement">ISO Certified</li>
-        <li class="achievement">1000+ Clients Served</li>
-        <li class="achievement">Winner of the 2023 Industry Excellence Award</li>
-      </ul>
-    </div>
-
-    <!-- Location Section -->
-    <div class="section" id="location">
-      <h2>Location</h2>
-      <p><strong>Address:</strong>Ofc 06, 3rd Floor Magneto Mall Raipur (C.G) 492001</p>
-    </div>
-    <!-- Contact Information Section -->
-    <div class="section" id="contact-info">
-      <h2>Contact Information</h2>
-      <p><strong>Phone:</strong> +911234567890</p>
-      <p><strong>Email:</strong> <a href="mailto:info@company.com">info@company.com</a></p>
-      <p><strong>Follow us:</strong></p>
-      <p>
-        <a href="https://facebook.com/company" target="_blank">Facebook</a> |
-        <a href="https://twitter.com/company" target="_blank">Twitter</a> |
-        <a href="https://linkedin.com/company" target="_blank">LinkedIn</a>
-      </p>
-    </div>
-  </div>
-</body>
-</html>
-''',
+          desc: provider.serviceAllDetails.serviceDetails.seller.about
+                  .toString()
+                  .capitalize() ??
+              '',
         ),
       ]),
     );

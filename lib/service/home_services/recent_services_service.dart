@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:qixer/model/recent_service_model.dart';
+import 'package:qixer/model/service_search_model.dart';
 import 'package:qixer/service/common_service.dart';
 import 'package:qixer/service/db/db_service.dart';
 import 'package:qixer/view/utils/others_helper.dart';
@@ -23,7 +24,8 @@ class RecentServicesService with ChangeNotifier {
         //if connection is ok
         var response = await http.get(Uri.parse(apiLink));
 
-        debugPrint(response.body.toString());
+        debugPrint("latest services===> ${response.body.toString()}");
+
         if (response.statusCode == 201) {
           var data = RecentServiceModel.fromJson(jsonDecode(response.body));
 
@@ -52,23 +54,29 @@ class RecentServicesService with ChangeNotifier {
               totalRating = totalRating +
                   data.latestServices[i].reviewsForMobile[j].rating!.toInt();
             }
-
             double averageRate = 0;
-
             if (data.latestServices[i].reviewsForMobile.isNotEmpty) {
               averageRate = (totalRating /
                   data.latestServices[i].reviewsForMobile.length);
             }
-
+            print("service name====> ${data.latestServices[i].serviceAreas?.map(
+              (e) => e.serviceArea,
+            )}");
             setServiceList(
-                data.latestServices[i].id,
-                data.latestServices[i].title,
-                data.latestServices[i].sellerForMobile?.name ?? "",
-                data.latestServices[i].price,
-                averageRate,
-                serviceImage,
-                i,
-                data.latestServices[i].sellerId);
+              data.latestServices[i].id,
+              data.latestServices[i].title,
+              data.latestServices[i].sellerForMobile?.name ?? "",
+              data.latestServices[i].price,
+              averageRate,
+              serviceImage,
+              i,
+              data.latestServices[i].sellerId,
+              data.latestServices[i].status,
+              data.latestServices[i].experience,
+              data.latestServices[i].serviceAreas,
+              data.latestServices[i].sellerForMobile?.phone,
+              data.latestServices[i].sellerForMobile?.phone,
+            );
           }
           notifyListeners();
         } else {
@@ -83,7 +91,24 @@ class RecentServicesService with ChangeNotifier {
   }
 
   setServiceList(
-      serviceId, title, sellerName, price, rating, image, index, sellerId) {
+    serviceId,
+    title,
+    sellerName,
+    price,
+    rating,
+    image,
+    index,
+    sellerId,
+    status,
+    experience,
+    serviceArea,
+    whatsappNumber,
+    callNumber,
+  ) {
+    List processedServiceAreas = serviceArea is List<ServiceAreas>
+        ? serviceArea.map((area) => area.serviceArea ?? "Unknown").toList()
+        : [];
+
     recentServiceMap.add({
       'serviceId': serviceId,
       'title': title,
@@ -92,8 +117,15 @@ class RecentServicesService with ChangeNotifier {
       'rating': rating,
       'image': image,
       'isSaved': false,
-      'sellerId': sellerId
+      'sellerId': sellerId,
+      "status": status,
+      "experience": experience,
+      "serviceArea": processedServiceAreas,
+      'whatsappNumber': whatsappNumber,
+      'callNumber': callNumber,
     });
+
+    print("✅ Processed service areas: ${recentServiceMap.last["serviceArea"]}");
 
     checkIfAlreadySaved(serviceId, title, sellerName, index);
   }
@@ -106,11 +138,28 @@ class RecentServicesService with ChangeNotifier {
     notifyListeners();
   }
 
-  saveOrUnsave(int serviceId, String title, image, int price, String sellerName,
-      double rating, int index, BuildContext context, sellerId) async {
+  saveOrUnsave(
+      int serviceId,
+      String title,
+      image,
+      int price,
+      String sellerName,
+      double rating,
+      int index,
+      BuildContext context,
+      sellerId,
+      experience) async {
     var newListMap = recentServiceMap;
-    alreadySaved = await DbService().saveOrUnsave(serviceId, title,
-        image ?? placeHolderUrl, price, sellerName, rating, context, sellerId);
+    alreadySaved = await DbService().saveOrUnsave(
+        serviceId,
+        title,
+        image ?? placeHolderUrl,
+        price,
+        sellerName,
+        rating,
+        context,
+        sellerId,
+        experience);
     newListMap[index]['isSaved'] = alreadySaved;
     recentServiceMap = newListMap;
     notifyListeners();

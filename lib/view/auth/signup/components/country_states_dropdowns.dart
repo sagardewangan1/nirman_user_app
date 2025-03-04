@@ -33,25 +33,26 @@ class _CountryStatesDropdownsState extends State<CountryStatesDropdowns> {
                   width: 17,
                 ),
 
-                // Country dropdown ===============>
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CommonHelper()
-                        .labelCommon(lnProvider.getString("Choose country")),
-                    const CountryDropdown(),
-                  ],
-                ),
+                // // Country dropdown ===============>
+                // Column(
+                //   crossAxisAlignment: CrossAxisAlignment.start,
+                //   children: [
+                //     CommonHelper()
+                //         .labelCommon(lnProvider.getString("Choose country")),
+                //     const CountryDropdown(),
+                //   ],
+                // ),
 
-                const SizedBox(
-                  height: 25,
-                ),
+                // const SizedBox(
+                //   height: 25,
+                // ),
                 // States dropdown ===============>
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CommonHelper()
-                        .labelCommon(lnProvider.getString("Choose State")),
+                    CommonHelper().labelCommon(
+                        lnProvider.getString("Choose State"),
+                        isRequired: true),
                     const StateDropdown(),
                   ],
                 ),
@@ -64,7 +65,7 @@ class _CountryStatesDropdownsState extends State<CountryStatesDropdowns> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CommonHelper().labelCommon("Choose City"),
+                    CommonHelper().labelCommon("Choose City", isRequired: true),
                     const AreaDropdown(),
                   ],
                 )
