@@ -73,15 +73,15 @@ class AllServicesService with ChangeNotifier {
   }
 
   // ===============>
-
   setCategoryValue(value) {
     selectedCategory = value;
+    print("✅ New selected value: $selectedCategory");
     notifyListeners();
   }
 
   setSelectedCategoryId(value) {
     selectedCategoryId = value;
-    // notifyListeners();
+    print("✅ Selected Category ID: $selectedCategoryId");
   }
 
   setSubcatValue(value) {
@@ -158,29 +158,27 @@ class AllServicesService with ChangeNotifier {
   }
 
   fetchCategories(BuildContext context) async {
-    var categoriesList = Provider.of<CategoryService>(context, listen: false)
-        .categoriesDropdownList;
-    if (categoriesList.isNotEmpty && categoryDropdownList.length == 1) {
-      for (int i = 0; i < categoriesList.length; i++) {
-        categoryDropdownList.add(categoriesList[i].name);
-        categoryDropdownIndexList.add(categoriesList[i].id);
+    var categoryDataModel =
+        Provider.of<CategoryService>(context, listen: false).categoryDataModel;
+
+    if (categoryDataModel.categories != null &&
+        categoryDataModel.categories!.isNotEmpty) {
+      categoryDropdownList.clear();
+      categoryDropdownIndexList.clear();
+      categoryDropdownList.insert(0, "All Categories");
+      categoryDropdownIndexList.insert(0, 0);
+      for (var category in categoryDataModel.categories!) {
+        categoryDropdownList.add(category.name);
+        categoryDropdownIndexList.add(category.id ?? 0);
       }
-      Future.delayed(const Duration(microseconds: 500), () {
-        notifyListeners();
-      });
 
-      // selectedCategory = categoriesList[0].name;
-      // selectedCategoryId = categoriesList[0].id;
-
-      // //if all category is selected then don't load sub category
-      // if (categoryDropdownList.length != 1 && selectedCategoryId != 0) {
-      //   fetchSubcategory(selectedCategoryId);
-      // }
-    } else {
-      //already showed in dropdown. no need to do anything
-
-      // categoryDropdownList = [];
-      // notifyListeners();
+      if (categoryDataModel.categories!.isNotEmpty) {
+        selectedCategory = categoryDataModel.categories![0].name;
+        selectedCategoryId = categoryDataModel.categories![0].id ?? 0;
+        if (selectedCategoryId != 0) {
+          fetchSubcategory(selectedCategoryId.toString());
+        }
+      }
     }
   }
 
@@ -218,8 +216,6 @@ class AllServicesService with ChangeNotifier {
           ));
           subcatDropdownIndexList.add(data.subCategories[i].id!);
         }
-
-        print("_subCatList .length====> ${_subCatList.length}");
 
         // selectedSubcat = data.subCategories[0].name!;
         // selectedSubcatId = data.subCategories[0].id!;

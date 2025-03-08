@@ -1,0 +1,13 @@
+{
+  "ar": [
+    "default"
+  ],
+
+  "bn": [
+    "default"
+  ],
+
+  "hi": [
+    "default"
+  ]
+}

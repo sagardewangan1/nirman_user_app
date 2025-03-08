@@ -27,27 +27,38 @@ class ServiceFilterDropdownHelper {
                   ),
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton<String>(
-                      // menuMaxHeight: 200,
                       isExpanded: true,
-                      value: provider.selectedCategory,
+                      value: provider.selectedCategory, // ✅ Ensure it's updated
                       icon: Icon(Icons.keyboard_arrow_down_rounded,
                           color: cc.greyFour),
                       iconSize: 26,
                       elevation: 17,
                       style: TextStyle(color: cc.greyFour),
                       onChanged: (newValue) {
-                        provider.setCategoryValue(newValue);
+                        if (newValue == null) return;
 
-                        //setting the id of selected value
-                        provider.setSelectedCategoryId(provider
-                                .categoryDropdownIndexList[
-                            provider.categoryDropdownList.indexOf(newValue!)]);
+                        provider.setCategoryValue(newValue);
+                        print("✅ New selected value: $newValue");
+
+                        int index =
+                            provider.categoryDropdownList.indexOf(newValue);
+                        if (index != -1) {
+                          provider.setSelectedCategoryId(
+                              provider.categoryDropdownIndexList[index]);
+
+                          print(
+                              "✅ Selected Category ID: ${provider.selectedCategoryId}");
+                        } else {
+                          print(
+                              "❌ Error: Selected value not found in categoryDropdownList");
+                        }
 
                         provider.setEverythingToDefault();
-                        provider.fetchSubcategory(provider.selectedCategoryId);
-                        //fetch service
+                        provider.fetchSubcategory(
+                            provider.selectedCategoryId.toString());
                         provider.fetchServiceByFilter(context);
                       },
+
                       items: provider.categoryDropdownList
                           .map<DropdownMenuItem<String>>((value) {
                         return DropdownMenuItem(
@@ -61,7 +72,7 @@ class ServiceFilterDropdownHelper {
                       }).toList(),
                     ),
                   ),
-                )
+                ),
               ],
             )
           : Row(

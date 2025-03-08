@@ -18,7 +18,7 @@ class GetImageController extends ChangeNotifier {
     if (pickedFile != null) {
       _fileSingle = File(pickedFile.path);
     }
-    print("_files====> $_fileSingle");
+    print("_files====> ${_fileSingle}");
     notifyListeners();
   }
 

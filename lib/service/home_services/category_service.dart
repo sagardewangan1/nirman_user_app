@@ -20,7 +20,6 @@ class CategoryService with ChangeNotifier {
 
   fetchCategory({String location_id = ''}) async {
     _isLoading = true;
-    notifyListeners();
     if (_categoryDataModel.categories is List) {
       _categoryDataModel.categories?.clear();
     }
@@ -34,6 +33,9 @@ class CategoryService with ChangeNotifier {
       if (response.statusCode == 200) {
         _categoryDataModel =
             CategoryDataModel.fromJson(jsonDecode(response.body));
+        // ✅ Add all categories directly to the list (Flatten the data)
+        categoriesDropdownList.addAll(_categoryDataModel.categories ?? []);
+
         _isLoading = false;
         notifyListeners();
       } else {

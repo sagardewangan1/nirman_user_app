@@ -189,10 +189,10 @@ packages:
     dependency: "direct main"
     description:
       name: crypto
-      sha256: ff625774173754681d66daaf4a448684fb04b78f902da9cb3d308c19cc5e8bab
+      sha256: "1e445881f28f22d6140f181e07737b22f1e099a5e1ff94b0af2f9e4a463f4855"
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.3"
+    version: "3.0.6"
   csslib:
     dependency: transitive
     description:
@@ -570,10 +570,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_local_notifications
-      sha256: "725145682706fb0e5a30f93e5cb64f3df7ed7743de749bd555b22bf75ee718c0"
+      sha256: ef41ae901e7529e52934feba19ed82827b11baa67336829564aeab3129460610
       url: "https://pub.dev"
     source: hosted
-    version: "18.0.0"
+    version: "18.0.1"
   flutter_local_notifications_linux:
     dependency: transitive
     description:
@@ -1321,10 +1321,10 @@ packages:
     dependency: "direct main"
     description:
       name: phonepe_payment_sdk
-      sha256: "33f541e788e41173ce853752d60e94635543f47a82d1e6dfbe2512cff4f3b666"
+      sha256: c1d3f8adf18b3b6d70addb96f22b6770fe36130f9caf042bdaba0849149db39d
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.0"
+    version: "2.0.3"
   pin_code_fields:
     dependency: "direct main"
     description:

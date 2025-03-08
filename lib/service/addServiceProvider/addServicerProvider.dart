@@ -103,8 +103,10 @@ class AddServiceController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setSubCatId(subCatId) {
+  void setSubCatId(dynamic subCatId) {
     _selectedSubIds = subCatId;
+    print(
+        "sub cat ids===> ${_selectedSubIds.runtimeType} and ${subCatId.runtimeType}");
     notifyListeners();
   }
 
@@ -124,6 +126,7 @@ class AddServiceController extends ChangeNotifier {
 
   Future<bool> getSelectedCategory(
       {String? category_id, String? subCategory_id}) async {
+    setLoadingTrue();
     var connection = await checkConnection();
     if (!connection) {
       return false;
@@ -163,16 +166,16 @@ class AddServiceController extends ChangeNotifier {
             _selectedCategoryList
                 .insert(0, {"id": 0, "name": "Select Category"});
             _selectedCategoryList.addAll(responseData['data']);
-            print("✅ Updated Categories: $_selectedCategoryList");
+            // print("✅ Updated Categories: $_selectedCategoryList");
           }
 
           // ✅ Subcategory list ko hamesha update karo jab category ho
           if (category_id != null && category_id != '0') {
             _selectedSubCategoryList.clear();
-            _selectedSubCategoryList
-                .insert(0, {"id": 0, "name": "Select Sub Category"});
+            // _selectedSubCategoryList
+            //     .insert(0, {"id": 0, "name": "Select Sub Category"});
             _selectedSubCategoryList.addAll(responseData['data']);
-            print("✅ Selected sub Categories: $_selectedSubCategoryList");
+            // print("✅ Selected sub Categories: $_selectedSubCategoryList");
           }
 
           // ✅ Child category list ko hamesha update karo jab subCategory_id ho

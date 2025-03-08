@@ -107,5 +107,14 @@
 		<key>TemporaryPreciseAccuracy</key>
 		<string>This App requires temporary access to the device&apos;s precise location.</string>
 	</dict>
+	<!-- for payement ios skd --->
+	<key>LSApplicationQueriesSchemes</key>
+    <array>
+       <string>ppemerchantsdkv1</string>
+       <string>ppemerchantsdkv2</string>
+       <string>ppemerchantsdkv3</string>
+       <string>paytmmp</string>
+       <string>gpay</string>
+    </array>
 </dict>
 </plist>

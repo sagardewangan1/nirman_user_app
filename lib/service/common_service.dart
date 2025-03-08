@@ -89,29 +89,39 @@ runAtstart(BuildContext context) async {
 
 Future<void> runAtHome(BuildContext context) async {
   try {
-    await Provider.of<PushNotificationService>(context, listen: false)
-        .fetchPusherCredential(context: context);
-    Provider.of<SliderService>(context, listen: false).loadSlider();
-    final int? cityId = context.read<RecentJobsService>().cityID;
-    print("cityId= $cityId");
-    Provider.of<CategoryService>(context, listen: false)
-        .fetchCategory(location_id: cityId.toString() ?? '');
-    Provider.of<TopRatedServicesSerivce>(context, listen: false)
-        .fetchTopService();
-    Provider.of<RecentServicesService>(context, listen: false)
-        .fetchRecentService();
-    Provider.of<RecentJobsService>(context, listen: false)
-        .fetchRecentJobs(context);
-    Provider.of<RecentJobsService>(context, listen: false)
-        .fetchAllCities(context);
-    Provider.of<ProfileService>(context, listen: false).getProfileDetails();
-    // Provider.of<CountryStatesService>(context, listen: false)
-    //     .fetchCountries(context);
-    Provider.of<PermissionsService>(context, listen: false)
-        .fetchUserPermissions(context);
-  } catch (e) {
-    print("Error: $e");
-  }
+    // Store the context in a local variable
+    final BuildContext localContext = context;
 
-  //
+    await Provider.of<PushNotificationService>(localContext, listen: false)
+        .fetchPusherCredential(context: localContext);
+
+    Provider.of<SliderService>(localContext, listen: false).loadSlider();
+
+    final int? cityId = localContext.read<RecentJobsService>().cityID;
+    print("cityId= $cityId");
+
+    Provider.of<CategoryService>(localContext, listen: false)
+        .fetchCategory(location_id: cityId?.toString() ?? '');
+
+    Provider.of<TopRatedServicesSerivce>(localContext, listen: false)
+        .fetchTopService();
+
+    Provider.of<RecentServicesService>(localContext, listen: false)
+        .fetchRecentService();
+
+    Provider.of<RecentJobsService>(localContext, listen: false)
+        .fetchRecentJobs(localContext);
+
+    Provider.of<RecentJobsService>(localContext, listen: false)
+        .fetchAllCities(localContext);
+
+    Provider.of<ProfileService>(localContext, listen: false)
+        .getProfileDetails();
+
+    // Provider.of<CountryStatesService>(localContext, listen: false)
+    //     .fetchCountries(localContext);
+
+    Provider.of<PermissionsService>(localContext, listen: false)
+        .fetchUserPermissions(localContext);
+  } catch (e, stackTrace) {}
 }

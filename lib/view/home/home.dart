@@ -43,11 +43,12 @@ class _HomepageState extends State<Homepage> {
   }
 
   firstLoad() async {
+    await runAtHome(context);
     final pref = await SharedPreferences.getInstance();
     userType = pref.getString("shashaktnirmanusertype");
     print("userType =====> $userType ${userType.runtimeType}");
     if (!mounted) false;
-    runAtHome(context);
+    (context);
     setState(() {});
   }
 

@@ -9,6 +9,8 @@ import 'package:qixer/model/navigationModel.dart';
 import 'package:qixer/service/addServiceProvider/addServicerProvider.dart';
 import 'package:qixer/service/app_string_service.dart';
 import 'package:qixer/service/getImageController.dart';
+import 'package:qixer/service/home_services/category_service.dart';
+import 'package:qixer/service/jobs_service/recent_jobs_service.dart';
 import 'package:qixer/view/utils/common_helper.dart';
 import 'package:qixer/view/utils/custom_input.dart';
 import 'package:qixer/view/utils/others_helper.dart';
@@ -150,6 +152,10 @@ class _AddServiceViewState extends State<AddServiceView> {
   final _formKey = GlobalKey<FormState>();
 
   firstLoad() async {
+    final int? cityId = context.read<RecentJobsService>().cityID;
+    print("cityId= $cityId");
+    Provider.of<CategoryService>(context, listen: false)
+        .fetchCategory(location_id: cityId.toString() ?? '');
     final addServiceProvider =
         Provider.of<AddServiceController>(context, listen: false);
     await addServiceProvider.getSelectedCategory();
@@ -265,6 +271,7 @@ class _AddServiceViewState extends State<AddServiceView> {
     Size size = MediaQuery.of(context).size;
     final getImageController = Provider.of<GetImageController>(context);
     final addServiceController = Provider.of<AddServiceController>(context);
+    final categoryController = Provider.of<CategoryService>(context);
     return Consumer<AppStringService>(
       builder: (context, asProvider, child) {
         return Consumer<AddServiceController>(
@@ -295,152 +302,336 @@ class _AddServiceViewState extends State<AddServiceView> {
                             CommonHelper()
                                 .labelCommon2("Categories", isRequired: true),
                             SizedBox(height: 10),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                              child: DropdownSearch<dynamic>(
-                                dropdownBuilder: (context, selectedItem) {
-                                  return Text(
-                                    selectedItem?["name"] ?? "Select Category",
-                                  );
-                                },
-                                items: serviceProvider.selectedCategoryList,
-                                popupProps: PopupProps.menu(
-                                  itemBuilder: (context, item, isSelected) {
-                                    return Container(
-                                      color: Colors.white,
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 15.0, vertical: 5.0),
-                                        child: Text(
-                                          item["name"],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  fit: FlexFit.loose,
-                                ),
-                                onChanged: (dynamic data) {
-                                  print(
-                                      "Selected category ===> ${data?["id"]}  runtype==> ${data?['id'].runtimeType}");
-                                  addServiceController
-                                      .setCatId(data?["id"].toString());
-                                  // addServiceController.selectedCatIds = data?['id'];
-                                  // addServiceController.selectedSubCategoryList
-                                  //     .clear();
-                                  addServiceController.getSelectedCategory(
-                                      category_id:
-                                          addServiceController.selectedCatIds);
-                                },
-                                dropdownDecoratorProps: DropDownDecoratorProps(
-                                  dropdownSearchDecoration: InputDecoration(
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: ConstantColors().greyFive,
-                                        width: 1,
-                                      ),
-                                      borderRadius: BorderRadius.circular(8.0),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8.0),
-                                      borderSide: BorderSide(
-                                        color: ConstantColors().greyFive,
-                                        width: 1,
-                                      ),
+                            categoryController.isLoading
+                                ? OthersHelper().showLoading(cc.primaryColor)
+                                : SizedBox(
+                                    height: 160,
+                                    child: ListView.builder(
+                                      scrollDirection: Axis.horizontal,
+                                      shrinkWrap: true,
+                                      itemCount: categoryController
+                                          .categoryDataModel.categories?.length,
+                                      itemBuilder: (context, index) {
+                                        var category = categoryController
+                                            .categoryDataModel
+                                            .categories?[index];
+                                        return Padding(
+                                          padding: const EdgeInsets.all(5.0),
+                                          child: InkWell(
+                                            onTap: () {
+                                              addServiceController
+                                                  .setCatId(category?.id);
+                                              addServiceController
+                                                  .getSelectedCategory(
+                                                      category_id:
+                                                          addServiceController
+                                                              .selectedCatIds);
+                                            },
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                Container(
+                                                  alignment: Alignment.center,
+                                                  decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8.0),
+                                                      border: Border.all(
+                                                          width: addServiceController
+                                                                      .selectedCatIds ==
+                                                                  category?.id
+                                                                      .toString()
+                                                              ? 2
+                                                              : 1,
+                                                          color: addServiceController
+                                                                      .selectedCatIds ==
+                                                                  category?.id
+                                                                      .toString()
+                                                              ? cc.primaryColor
+                                                              : cc.black3)),
+                                                  child: CommonHelper()
+                                                      .profileImage(
+                                                          fit: BoxFit.contain,
+                                                          category?.mobileIcon
+                                                                  .toString() ??
+                                                              "https://cdn-icons-png.flaticon.com/512/11498/11498792.png",
+                                                          75,
+                                                          75),
+                                                ),
+                                                SizedBox(
+                                                  width: 100,
+                                                  child: Text(
+                                                    textAlign: TextAlign.center,
+                                                    maxLines: 4,
+                                                    overflow:
+                                                        TextOverflow.visible,
+                                                    category?.name.toString() ??
+                                                        '',
+                                                    style: TextStyle(
+                                                        fontSize: 12,
+                                                        color: cc.black3),
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      },
                                     ),
                                   ),
-                                ),
-                                itemAsString: (dynamic item) => item["name"],
-                                // selectedItem: serviceProvider.selectedCategoryList.firstWhere(
-                                //       (item) => item["id"].toString() == addServiceController.selectedCatIds,
-                                //   orElse: () => {"id": 0, "name": "Select Category"},
-                                // ),
-                                selectedItem: serviceProvider
-                                    .selectedCategoryList
-                                    .firstWhere(
-                                  (item) =>
-                                      item["id"].toString() ==
-                                      addServiceController.selectedCatIds,
-                                  orElse: () =>
-                                      {"id": 0, "name": "Select Category"},
-                                ),
-                              ),
-                            ),
+                            SizedBox(
+                                height: addServiceController
+                                            .selectedSubCategoryList.length ==
+                                        0
+                                    ? 0
+                                    : 10),
+                            // Container(
+                            //   decoration: BoxDecoration(
+                            //     color: Colors.white,
+                            //     borderRadius: BorderRadius.circular(8.0),
+                            //   ),
+                            //   child: DropdownSearch<dynamic>(
+                            //     dropdownBuilder: (context, selectedItem) {
+                            //       return Text(
+                            //         selectedItem?["name"] ?? "Select Category",
+                            //       );
+                            //     },
+                            //     items: serviceProvider.selectedCategoryList,
+                            //     popupProps: PopupProps.menu(
+                            //       itemBuilder: (context, item, isSelected) {
+                            //         return Container(
+                            //           color: Colors.white,
+                            //           child: Padding(
+                            //             padding: const EdgeInsets.symmetric(
+                            //                 horizontal: 15.0, vertical: 5.0),
+                            //             child: Text(
+                            //               item["name"],
+                            //             ),
+                            //           ),
+                            //         );
+                            //       },
+                            //       fit: FlexFit.loose,
+                            //     ),
+                            //     onChanged: (dynamic data) {
+                            //       print(
+                            //           "Selected category ===> ${data?["id"]}  runtype==> ${data?['id'].runtimeType}");
+                            //       addServiceController
+                            //           .setCatId(data?["id"].toString());
+                            //       // addServiceController.selectedCatIds = data?['id'];
+                            //       // addServiceController.selectedSubCategoryList
+                            //       //     .clear();
+                            //       addServiceController.getSelectedCategory(
+                            //           category_id:
+                            //               addServiceController.selectedCatIds);
+                            //     },
+                            //     dropdownDecoratorProps: DropDownDecoratorProps(
+                            //       dropdownSearchDecoration: InputDecoration(
+                            //         focusedBorder: OutlineInputBorder(
+                            //           borderSide: BorderSide(
+                            //             color: ConstantColors().greyFive,
+                            //             width: 1,
+                            //           ),
+                            //           borderRadius: BorderRadius.circular(8.0),
+                            //         ),
+                            //         enabledBorder: OutlineInputBorder(
+                            //           borderRadius: BorderRadius.circular(8.0),
+                            //           borderSide: BorderSide(
+                            //             color: ConstantColors().greyFive,
+                            //             width: 1,
+                            //           ),
+                            //         ),
+                            //       ),
+                            //     ),
+                            //     itemAsString: (dynamic item) => item["name"],
+                            //     // selectedItem: serviceProvider.selectedCategoryList.firstWhere(
+                            //     //       (item) => item["id"].toString() == addServiceController.selectedCatIds,
+                            //     //   orElse: () => {"id": 0, "name": "Select Category"},
+                            //     // ),
+                            //     selectedItem: serviceProvider
+                            //         .selectedCategoryList
+                            //         .firstWhere(
+                            //       (item) =>
+                            //           item["id"].toString() ==
+                            //           addServiceController.selectedCatIds,
+                            //       orElse: () =>
+                            //           {"id": 0, "name": "Select Category"},
+                            //     ),
+                            //   ),
+                            // ),
                             // sub category
-                            SizedBox(height: 15),
                             // sub category name
-                            CommonHelper().labelCommon2("Sub Categories",
-                                isRequired: true),
-                            SizedBox(height: 10),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                              child: DropdownSearch<dynamic>(
-                                items: addServiceController
-                                    .selectedSubCategoryList, // ✅ Updated list
-                                dropdownBuilder: (context, selectedItem) {
-                                  return Text(
-                                    selectedItem?["name"] ??
-                                        "Select Sub Category",
-                                  );
-                                },
-                                popupProps: PopupProps.menu(
-                                  itemBuilder: (context, item, isSelected) {
-                                    return Container(
-                                      color: Colors.white,
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 15.0, vertical: 5.0),
-                                        child: Text(item["name"] ?? ''),
-                                      ),
-                                    );
-                                  },
-                                  fit: FlexFit.loose,
-                                ),
-                                onChanged: (dynamic data) {
-                                  print(
-                                      "Selected Sub Category ===> ${data?["id"]}");
-
-                                  addServiceController
-                                      .setSubCatId(data?['id'].toString());
-                                  serviceProvider.getSelectedCategory(
-                                      subCategory_id: data['id'].toString());
-
-                                  print(
-                                      "Selected Sub Category  ===> ${addServiceController.selectedSubCatName}");
-                                },
-                                dropdownDecoratorProps: DropDownDecoratorProps(
-                                  dropdownSearchDecoration: InputDecoration(
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: ConstantColors().greyFive,
-                                          width: 1),
-                                      borderRadius: BorderRadius.circular(8.0),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: ConstantColors().greyFive,
-                                          width: 1),
-                                      borderRadius: BorderRadius.circular(8.0),
+                            addServiceController
+                                        .selectedSubCategoryList.length ==
+                                    0
+                                ? Offstage()
+                                : CommonHelper().labelCommon2("Sub Categories",
+                                    isRequired: true),
+                            SizedBox(
+                                height: addServiceController
+                                            .selectedSubCategoryList.length ==
+                                        0
+                                    ? 0
+                                    : 10),
+                            addServiceController.isLoading
+                                ? OthersHelper().showLoading(cc.primaryColor)
+                                : SizedBox(
+                                    height: addServiceController
+                                                .selectedSubCategoryList
+                                                .length ==
+                                            0
+                                        ? 0
+                                        : 160,
+                                    child: ListView.builder(
+                                      scrollDirection: Axis.horizontal,
+                                      shrinkWrap: true,
+                                      itemCount: addServiceController
+                                          .selectedSubCategoryList.length,
+                                      itemBuilder: (context, index) {
+                                        var subCategory = addServiceController
+                                            .selectedSubCategoryList[index];
+                                        return Padding(
+                                          padding: const EdgeInsets.all(5.0),
+                                          child: InkWell(
+                                            onTap: () {
+                                              addServiceController.setSubCatId(
+                                                  subCategory?["id"]
+                                                      .toString());
+                                            },
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                Container(
+                                                  alignment: Alignment.center,
+                                                  decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8.0),
+                                                      border: Border.all(
+                                                          width: addServiceController
+                                                                      .selectedSubIds ==
+                                                                  subCategory?[
+                                                                          "id"]
+                                                                      .toString()
+                                                              ? 2
+                                                              : 1,
+                                                          color: addServiceController
+                                                                      .selectedSubIds ==
+                                                                  subCategory?[
+                                                                          "id"]
+                                                                      .toString()
+                                                              ? cc.primaryColor
+                                                              : cc.black3)),
+                                                  child: CommonHelper()
+                                                      .profileImage(
+                                                          fit: BoxFit.contain,
+                                                          subCategory?["image"]
+                                                                  .toString() ??
+                                                              "https://cdn-icons-png.flaticon.com/512/11498/11498792.png",
+                                                          75,
+                                                          75),
+                                                ),
+                                                SizedBox(
+                                                  width: 100,
+                                                  child: Text(
+                                                    textAlign: TextAlign.center,
+                                                    maxLines: 4,
+                                                    overflow:
+                                                        TextOverflow.visible,
+                                                    subCategory?["name"]
+                                                            .toString() ??
+                                                        '',
+                                                    style: TextStyle(
+                                                        fontSize: 12,
+                                                        color: cc.black3),
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      },
                                     ),
                                   ),
-                                ),
-                                itemAsString: (dynamic item) => item["name"],
-                                selectedItem: addServiceController
-                                    .selectedSubCategoryList
-                                    .firstWhere(
-                                  (item) =>
-                                      item["id"].toString() ==
-                                      addServiceController.selectedSubIds,
-                                  orElse: () =>
-                                      {"id": 0, "name": "Select Sub Category"},
-                                ),
-                              ),
-                            ),
+                            SizedBox(
+                                height: addServiceController
+                                            .selectedSubCategoryList.length ==
+                                        0
+                                    ? 0
+                                    : 10),
+                            // Container(
+                            //   decoration: BoxDecoration(
+                            //     color: Colors.white,
+                            //     borderRadius: BorderRadius.circular(8.0),
+                            //   ),
+                            //   child: DropdownSearch<dynamic>(
+                            //     items: addServiceController
+                            //         .selectedSubCategoryList, // ✅ Updated list
+                            //     dropdownBuilder: (context, selectedItem) {
+                            //       return Text(
+                            //         selectedItem?["name"] ??
+                            //             "Select Sub Category",
+                            //       );
+                            //     },
+                            //     popupProps: PopupProps.menu(
+                            //       itemBuilder: (context, item, isSelected) {
+                            //         return Container(
+                            //           color: Colors.white,
+                            //           child: Padding(
+                            //             padding: const EdgeInsets.symmetric(
+                            //                 horizontal: 15.0, vertical: 5.0),
+                            //             child: Text(item["name"] ?? ''),
+                            //           ),
+                            //         );
+                            //       },
+                            //       fit: FlexFit.loose,
+                            //     ),
+                            //     onChanged: (dynamic data) {
+                            //       print(
+                            //           "Selected Sub Category ===> ${data?["id"]}");
+                            //
+                            //       addServiceController
+                            //           .setSubCatId(data?['id'].toString());
+                            //       serviceProvider.getSelectedCategory(
+                            //           subCategory_id: data['id'].toString());
+                            //
+                            //       print(
+                            //           "Selected Sub Category  ===> ${addServiceController.selectedSubCatName}");
+                            //     },
+                            //     dropdownDecoratorProps: DropDownDecoratorProps(
+                            //       dropdownSearchDecoration: InputDecoration(
+                            //         focusedBorder: OutlineInputBorder(
+                            //           borderSide: BorderSide(
+                            //               color: ConstantColors().greyFive,
+                            //               width: 1),
+                            //           borderRadius: BorderRadius.circular(8.0),
+                            //         ),
+                            //         enabledBorder: OutlineInputBorder(
+                            //           borderSide: BorderSide(
+                            //               color: ConstantColors().greyFive,
+                            //               width: 1),
+                            //           borderRadius: BorderRadius.circular(8.0),
+                            //         ),
+                            //       ),
+                            //     ),
+                            //     itemAsString: (dynamic item) => item["name"],
+                            //     selectedItem: addServiceController
+                            //         .selectedSubCategoryList
+                            //         .firstWhere(
+                            //       (item) =>
+                            //           item["id"].toString() ==
+                            //           addServiceController.selectedSubIds,
+                            //       orElse: () =>
+                            //           {"id": 0, "name": "Select Sub Category"},
+                            //     ),
+                            //   ),
+                            // ),
+
                             // sub child category
                             // serviceProvider.selectedChildCategoryList.isEmpty
                             //     ? Offstage()
@@ -521,8 +712,6 @@ class _AddServiceViewState extends State<AddServiceView> {
                             //           addServiceController.selectedChildCatName,
                             //     ),
                             //   ),
-
-                            SizedBox(height: 15),
                             // Service Name
                             CommonHelper().labelCommon2(
                                 asProvider.getString("Service Name"),

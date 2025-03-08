@@ -30,6 +30,12 @@ def keystoreProperties = new Properties()
        keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
    }
 
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+} else {
+    throw new GradleException("❌ ERROR: keystore.properties file missing!")
+}
+
 android {
     namespace = "com.shashaktnirmanuserapp"
     compileSdk = 35
@@ -59,7 +65,8 @@ android {
         release {
             keyAlias keystoreProperties['keyAlias']
             keyPassword keystoreProperties['keyPassword']
-            storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
+            storeFile file(keystoreProperties['storeFile'])
+//            storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
             storePassword keystoreProperties['storePassword']
         }
     }
@@ -85,7 +92,7 @@ dependencies {
     implementation 'com.facebook.android:facebook-login:latest.release'
     implementation 'com.google.firebase:firebase-messaging:21.1.0'
     implementation 'com.pusher:push-notifications-android:1.9.0'
-
+    implementation 'phonepe.intentsdk.android.release:IntentSDK:3.1.0'
 }
 
 

@@ -28,11 +28,11 @@ class ServiceFilterDropdowns extends StatelessWidget {
                         .subCategoryDropdown(cc, context),
                     sizedBox20(),
 
-                    // Ratings dropdown
-                    ServiceFilterDropdownHelper().ratingDropdown(cc, context),
-
-                    // ====================>
-                    sizedBox20(),
+                    // // Ratings dropdown
+                    // ServiceFilterDropdownHelper().ratingDropdown(cc, context),
+                    //
+                    // // ====================>
+                    // sizedBox20(),
                     // Sort by dropdown
                     ServiceFilterDropdownHelper().sortByDropdown(cc, context),
                   ],

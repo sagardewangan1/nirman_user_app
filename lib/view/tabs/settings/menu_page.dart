@@ -16,6 +16,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../auth/delete_account_page.dart';
 import '../../home/homepage_helper.dart';
 import '../../utils/login_or_register.dart';
+import 'appSettings.dart';
 
 class MenuPage extends StatefulWidget {
   const MenuPage({super.key});
@@ -249,7 +250,19 @@ class _MenuPageState extends State<MenuPage> {
                                                           );
                                                         })
                                                       : Offstage(),
-
+                                                  // Setting App
+                                                  SettingsHelper().settingOption(
+                                                      'assets/svg/setting_icon.svg',
+                                                      "App Setting", () {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute<void>(
+                                                        builder: (BuildContext
+                                                                context) =>
+                                                            const AppSettings(),
+                                                      ),
+                                                    );
+                                                  })
                                                   // CommonHelper()
                                                   //     .dividerCommon(),
                                                   // SettingsHelper().settingOption(

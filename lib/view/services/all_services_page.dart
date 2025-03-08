@@ -108,7 +108,7 @@ class _AllServicePageState extends State<AllServicePage> {
                                           serviceAreaList.isNotEmpty)
                                       ? serviceAreaList.join(", ")
                                       : "NA"; // Default message when empty
-                                  print("area==> $areas");
+
                                   return Column(
                                     children: [
                                       InkWell(

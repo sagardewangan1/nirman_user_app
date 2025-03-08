@@ -225,7 +225,9 @@ class LocationSheet2 extends StatelessWidget {
                             runAtHome(context);
                             Navigator.pop(context);
                           },
-                          child: Text(cities?.serviceArea.toString() ?? ''),
+                          child: Text(
+                              cities?.serviceArea.toString().capitalize() ??
+                                  ''),
                         ),
                       );
                     }
