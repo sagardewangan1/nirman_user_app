@@ -8,7 +8,8 @@ import '../utils/constant_colors.dart';
 
 import 'dart:io'; // ✅ For Platform check
 
-import 'dart:io'; // ✅ For Platform check
+import 'dart:io';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class BottomNav extends StatelessWidget {
   final int currentIndex;
@@ -39,7 +40,7 @@ class BottomNav extends StatelessWidget {
             semanticsLabel: 'Home Icon',
           ),
         ),
-        label: lnProvider.getString('Home'),
+        label: AppLocalizations.of(context)!.home,
       ),
       if (userType == "0")
         BottomNavigationBarItem(
@@ -50,7 +51,7 @@ class BottomNav extends StatelessWidget {
               color: currentIndex == 1 ? cc.primaryColor : cc.greyFour,
             ),
           ),
-          label: lnProvider.getString('My Leads'),
+          label: AppLocalizations.of(context)!.myLeads,
         ),
       BottomNavigationBarItem(
         icon: Container(
@@ -63,7 +64,7 @@ class BottomNav extends StatelessWidget {
             semanticsLabel: 'Saved Icon',
           ),
         ),
-        label: lnProvider.getString('Saved'),
+        label: AppLocalizations.of(context)!.saved,
       ),
       BottomNavigationBarItem(
         icon: Container(
@@ -76,7 +77,7 @@ class BottomNav extends StatelessWidget {
             semanticsLabel: 'Search Icon',
           ),
         ),
-        label: lnProvider.getString('Search'),
+        label: AppLocalizations.of(context)!.search,
       ),
       BottomNavigationBarItem(
         icon: Container(
@@ -89,7 +90,7 @@ class BottomNav extends StatelessWidget {
             semanticsLabel: 'Menu Icon',
           ),
         ),
-        label: lnProvider.getString('Menu'),
+        label: AppLocalizations.of(context)!.menuText,
       ),
     ];
 

@@ -10,9 +10,11 @@ import 'package:qixer/view/services/components/desc_from_html.dart';
 import 'package:qixer/view/services/seller_all_service_page.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:qixer/view/utils/responsive.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../utils/constant_styles.dart';
 import '../service_helper.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ServiceDetailsTop extends StatelessWidget {
   const ServiceDetailsTop({
@@ -24,48 +26,6 @@ class ServiceDetailsTop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final desc = '''
-    <table border="1" style="border-collapse: collapse; width: 100%; text-align: left;">
-  <thead>
-    <tr>
-      <th style="padding: 8px; background-color: #f2f2f2;">Day</th>
-      <th style="padding: 8px; background-color: #f2f2f2;">Opening Hours</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="padding: 8px;">Monday</td>
-      <td style="padding: 8px;">9:00 AM - 5:00 PM</td>
-    </tr>
-    <tr>
-      <td style="padding: 8px;">Tuesday</td>
-      <td style="padding: 8px;">9:00 AM - 5:00 PM</td>
-    </tr>
-    <tr>
-      <td style="padding: 8px;">Wednesday</td>
-      <td style="padding: 8px;">9:00 AM - 5:00 PM</td>
-    </tr>
-    <tr>
-      <td style="padding: 8px;">Thursday</td>
-      <td style="padding: 8px;">9:00 AM - 5:00 PM</td>
-    </tr>
-    <tr>
-      <td style="padding: 8px;">Friday</td>
-      <td style="padding: 8px;">9:00 AM - 5:00 PM</td>
-    </tr>
-    <tr>
-      <td style="padding: 8px;">Saturday</td>
-      <td style="padding: 8px;">10:00 AM - 4:00 PM</td>
-    </tr>
-    <tr>
-      <td style="padding: 8px;">Sunday</td>
-      <td style="padding: 8px;">Closed</td>
-    </tr>
-  </tbody>
-</table>
-
-    ''';
-
     return Consumer<ServiceDetailsService>(
       builder: (context, provider, child) => Column(
         children: [
@@ -77,31 +37,35 @@ class ServiceDetailsTop extends StatelessWidget {
             child: Column(children: [
               ServiceTitleAndUser(
                 cc: cc,
-                title: provider.serviceAllDetails.serviceDetails.title,
-                userImg: provider.serviceAllDetails.serviceSellerImage.imgUrl,
-                sellerName: provider.serviceAllDetails.serviceSellerName,
+                title: provider.serviceDetailsModel.serviceDetails?.title ?? '',
+                userImg:
+                    provider.serviceDetailsModel.serviceSellerImage?.imgUrl ??
+                        '',
+                sellerName: provider.serviceDetailsModel.serviceDetails
+                        ?.sellerForMobile.businessName ??
+                    '',
                 sellerId: provider.sellerId,
-                videoLink: provider.serviceAllDetails.videoUrl,
+                videoLink: provider.serviceDetailsModel.videoUrl,
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => SellerAllServicePage(
-                              sellerId: provider.sellerId,
-                              sellerName:
-                                  provider.serviceAllDetails.serviceSellerName,
-                            )),
-                  );
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //       builder: (context) => SellerAllServicePage(
+                  //             sellerId: provider.sellerId,
+                  //             sellerName: provider
+                  //                     .serviceDetailsModel.serviceSellerName ??
+                  //                 '',
+                  //           )),
+                  // );
                 },
               ),
-
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Address : ",
+                      Text("${AppLocalizations.of(context)!.address} : ",
                           style: TextStyle(
                               color: cc.black3,
                               fontSize: 12,
@@ -111,8 +75,8 @@ class ServiceDetailsTop extends StatelessWidget {
                         child: Text(
                             textAlign: TextAlign.left,
                             overflow: TextOverflow.ellipsis,
-                            provider.serviceAllDetails.serviceDetails.seller
-                                    .address ??
+                            provider.serviceDetailsModel.serviceDetails
+                                    ?.sellerForMobile.businessFullAddress ??
                                 '',
                             style: TextStyle(
                                 color: cc.black3,
@@ -125,7 +89,7 @@ class ServiceDetailsTop extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Work Type : ",
+                        "${AppLocalizations.of(context)!.category} : ",
                         style: TextStyle(
                           color: cc.black3,
                           fontSize: 12,
@@ -136,7 +100,9 @@ class ServiceDetailsTop extends StatelessWidget {
                       Flexible(
                         // Ensures text does not overflow
                         child: Text(
-                          "${provider.serviceAllDetails.serviceDetails.category.name ?? ''},\n${provider.serviceAllDetails.serviceDetails.subcategory.name ?? ''}",
+                          provider.serviceDetailsModel.serviceDetails?.category
+                                  .name ??
+                              '',
                           style: TextStyle(
                             color: cc.black3,
                             fontSize: 12,
@@ -150,31 +116,33 @@ class ServiceDetailsTop extends StatelessWidget {
                     ],
                   ),
 
-                  Row(
-                    children: [
-                      Text("Experience : ",
-                          style: TextStyle(
-                              color: cc.black3,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w400)),
-                      Text(
-                          provider.serviceAllDetails.serviceDetails
-                                      .experience ==
-                                  null
-                              ? ''
-                              : (RegExp(r'^\d+$').hasMatch(provider
-                                      .serviceAllDetails
-                                      .serviceDetails
-                                      .experience
-                                      .toString())
-                                  ? "${provider.serviceAllDetails.serviceDetails.experience} year"
-                                  : "${provider.serviceAllDetails.serviceDetails.experience}"),
-                          style: TextStyle(
-                              color: cc.black3,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w400)),
-                    ],
-                  ),
+                  // Row(
+                  //   children: [
+                  //     Text(AppLocalizations.of(context)!.experience,
+                  //         style: TextStyle(
+                  //             color: cc.black3,
+                  //             fontSize: 12,
+                  //             fontWeight: FontWeight.w400)),
+                  //     Text(
+                  //         provider.serviceDetailsModel.serviceDetails
+                  //                     ?.experience ==
+                  //                 null
+                  //             ? ''
+                  //             : (RegExp(r'^\d+$').hasMatch(provider
+                  //                         .serviceDetailsModel
+                  //                         .serviceDetails
+                  //                         ?.experience
+                  //                         .toString() ??
+                  //                     '')
+                  //                 ? "${provider.serviceDetailsModel.serviceDetails?.experience} year"
+                  //                 : "${provider.serviceDetailsModel.serviceDetails?.experience}"),
+                  //         style: TextStyle(
+                  //             color: cc.black3,
+                  //             fontSize: 12,
+                  //             fontWeight: FontWeight.w400)),
+                  //   ],
+                  // ),
+
                   // InkWell(
                   //   onTap: () => showBottomSheetWithListView(desc, context),
                   //   child: Row(
@@ -232,32 +200,80 @@ class ServiceDetailsTop extends StatelessWidget {
                   SizedBox(
                     height: 10,
                   ),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.check_circle,
-                        color:
-                            provider.serviceAllDetails.serviceDetails.status ==
-                                    1
-                                ? cc.successColor
-                                : cc.errorColor,
-                        size: 14,
-                      ),
-                      SizedBox(width: 7),
-                      Text(
-                          provider.serviceAllDetails.serviceDetails.status == 1
-                              ? 'Available'
-                              : 'UnAvailable',
-                          style: TextStyle(
-                              color: provider.serviceAllDetails.serviceDetails
-                                          .status ==
-                                      1
-                                  ? cc.successColor
-                                  : cc.errorColor,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500)),
-                    ],
-                  )
+
+                  provider.serviceDetailsModel.serviceDetails?.serviceArea !=
+                              null &&
+                          provider.serviceDetailsModel.serviceDetails!
+                              .serviceArea!.isNotEmpty
+                      ? Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "${AppLocalizations.of(context)!.area} : ",
+                              style: TextStyle(
+                                color: cc.black3,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            SizedBox(
+                                width: 5), // Adds small spacing between text
+                            Flexible(
+                              child: provider.serviceDetailsModel.serviceDetails
+                                              ?.serviceArea !=
+                                          null &&
+                                      provider
+                                          .serviceDetailsModel
+                                          .serviceDetails!
+                                          .serviceArea!
+                                          .isNotEmpty
+                                  ? Text(
+                                      provider.serviceDetailsModel
+                                          .serviceDetails!.serviceArea!
+                                          .map((serviceArea) => serviceArea
+                                              .serviceArea
+                                              .toString())
+                                          .join(
+                                              ', '), // ✅ Joins all values with ", "
+                                      style: TextStyle(
+                                        color: cc.black3,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    )
+                                  : Offstage(),
+                            )
+                          ],
+                        )
+                      : Offstage(),
+
+                  // Row(
+                  //   children: [
+                  //     Icon(
+                  //       Icons.check_circle,
+                  //       color: provider.serviceDetailsModel.serviceDetails
+                  //                   ?.status ==
+                  //               1
+                  //           ? cc.successColor
+                  //           : cc.errorColor,
+                  //       size: 14,
+                  //     ),
+                  //     SizedBox(width: 7),
+                  //     Text(
+                  //         provider.serviceDetailsModel.serviceDetails?.status ==
+                  //                 1
+                  //             ? AppLocalizations.of(context)!.available
+                  //             : AppLocalizations.of(context)!.unAvailable,
+                  //         style: TextStyle(
+                  //             color: provider.serviceDetailsModel.serviceDetails
+                  //                         ?.status ==
+                  //                     1
+                  //                 ? cc.successColor
+                  //                 : cc.errorColor,
+                  //             fontSize: 12,
+                  //             fontWeight: FontWeight.w500)),
+                  //   ],
+                  // )
                 ],
               ),
 
@@ -282,8 +298,8 @@ class ServiceDetailsTop extends StatelessWidget {
               //         Consumer<RtlService>(
               //           builder: (context, rtlP, child) => Text(
               //             rtlP.currencyDirection == 'left'
-              //                 ? '${rtlP.currency}${provider.serviceAllDetails.serviceDetails.price}'
-              //                 : '${provider.serviceAllDetails.serviceDetails.price}${rtlP.currency}',
+              //                 ? '${rtlP.currency}${provider.serviceDetailsModel.serviceDetails.price}'
+              //                 : '${provider.serviceDetailsModel.serviceDetails.price}${rtlP.currency}',
               //             style: TextStyle(
               //                 color: cc.primaryColor,
               //                 fontSize: 23,
@@ -298,146 +314,153 @@ class ServiceDetailsTop extends StatelessWidget {
                 height: 30,
               ),
               for (int i = 0;
-                  i < provider.serviceAllDetails.serviceIncludes.length;
+                  i <
+                      (provider.serviceDetailsModel.serviceIncludes?.length ??
+                          0);
                   i++)
                 ServiceHelper().checkListCommon(
                     context,
-                    provider.serviceAllDetails.serviceIncludes[i]
-                        .includeServiceTitle
-                        .toString()
-                        .capitalizeEachWord())
+                    provider.serviceDetailsModel.serviceIncludes?[i]
+                            .includeServiceTitle
+                            .toString() ??
+                        ''.capitalizeEachWord())
             ]),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              decoration: BoxDecoration(
-                  color: cc.white, borderRadius: BorderRadius.circular(8.0)),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        ContactFeatures().launchWhatsapp(
-                            context,
-                            provider
-                                .serviceAllDetails.serviceDetails.seller.phone,
-                            "Hello sir, How can i help you ?");
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          border: Border.all(width: 1, color: cc.black6),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 5.0, vertical: 3),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Image.network(
-                                "https://i.postimg.cc/zGGrQYmw/whatsa-removebg-preview.png",
-                                height: 21,
-                                width: 21,
-                              ),
-                              SizedBox(width: 5),
-                              Text(
-                                'Whatsapp',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+          Container(
+            decoration: BoxDecoration(
+              color: cc.white,
+            ),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      ContactFeatures().launchWhatsapp(
+                          context,
+                          provider.serviceDetailsModel.serviceDetails
+                                  ?.sellerForMobile.businessPhoneNumber ??
+                              '',
+                          "Hello sir, How can i help you ?");
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        border: Border.all(width: 1, color: cc.black6),
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                    ),
-                    SizedBox(
-                      width: 20,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        ContactFeatures().launchCalling(
-                            context,
-                            provider
-                                .serviceAllDetails.serviceDetails.seller.phone);
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: Colors.blue.shade700,
-                          border:
-                              Border.all(width: 1, color: Colors.blue.shade700),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 5.0, vertical: 3),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Icon(
-                                Icons.call,
-                                size: 16,
-                                color: Colors.white,
-                              ),
-                              SizedBox(width: 5),
-                              Text(
-                                'Call Now',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 20,
-                    ),
-                    GestureDetector(
-                      onTap: () {},
-                      child: Container(
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          border: Border.all(width: 1, color: cc.black6),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 5.0, vertical: 3),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Icon(
-                                Icons.share,
-                                size: 16,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 5.0, vertical: 3),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Image.network(
+                              "https://i.postimg.cc/zGGrQYmw/whatsa-removebg-preview.png",
+                              height: 21,
+                              width: 21,
+                            ),
+                            SizedBox(width: 5),
+                            Text(
+                              AppLocalizations.of(context)!.whatsapp,
+                              style: TextStyle(
                                 color: Colors.black,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
                               ),
-                              SizedBox(width: 5),
-                              Text(
-                                'Share',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  SizedBox(
+                    width: 20,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      ContactFeatures().launchCalling(
+                          context,
+                          provider.serviceDetailsModel.serviceDetails
+                                  ?.sellerForMobile.businessPhoneNumber ??
+                              '');
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade700,
+                        border:
+                            Border.all(width: 1, color: Colors.blue.shade700),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 5.0, vertical: 3),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Icon(
+                              Icons.call,
+                              size: 16,
+                              color: Colors.white,
+                            ),
+                            SizedBox(width: 5),
+                            Text(
+                              AppLocalizations.of(context)!.callNow,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 20,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Share.share(
+                        "${AppLocalizations.of(context)!.shareMessage} https://sashaktnirman.com/",
+                        subject: AppLocalizations.of(context)!.shareSubject,
+                      );
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        border: Border.all(width: 1, color: cc.black6),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 5.0, vertical: 3),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Icon(
+                              Icons.share,
+                              size: 16,
+                              color: Colors.black,
+                            ),
+                            SizedBox(width: 5),
+                            Text(
+                              AppLocalizations.of(context)!.shareNow,
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -456,7 +479,7 @@ class ServiceDetailsTop extends StatelessWidget {
           //       child: Row(
           //         children: [
           //           Text(
-          //             provider.serviceAllDetails.sellerCompleteOrder
+          //             provider.serviceDetailsModel.sellerCompleteOrder
           //                 .toString()
           //                 .capitalizeEachWord(),
           //             style: TextStyle(
@@ -490,7 +513,7 @@ class ServiceDetailsTop extends StatelessWidget {
           //     Row(
           //       children: [
           //         Text(
-          //           provider.serviceAllDetails.sellerRating.toString(),
+          //           provider.serviceDetailsModel.sellerRating.toString(),
           //           style: TextStyle(
           //               color: cc.primaryColor,
           //               fontSize: 16,
@@ -590,29 +613,9 @@ class ServiceTitleAndUser extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-//Watch video button ===========>
-        videoLink != null
-            ? ElevatedButton(
-                onPressed: () {
-                  ServiceHelper().watchVideoPopup(context, videoLink);
-
-                  // Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //         builder: ((context) => WatchVideoPage(
-                  //               videoUrl: videoLink,
-                  //             ))));
-                },
-                style: ElevatedButton.styleFrom(
-                    elevation: 0, backgroundColor: cc.successColor),
-                child: Text(lnProvider.getString('Watch video')))
-            : Container(),
-
-        const SizedBox(
-          height: 7,
-        ),
         Text(
-          title.capitalizeEachWord(),
+          sellerName.toString().capitalizeEachWord(),
+          // title.capitalizeEachWord(),
           style: TextStyle(
             color: cc.greyFour,
             fontSize: 16,
@@ -656,13 +659,11 @@ class ServiceTitleAndUser extends StatelessWidget {
               // Expanded seller name
               Expanded(
                 child: Text(
-                  sellerName.toString().capitalizeEachWord(),
+                  title.capitalizeEachWord(),
+                  // sellerName.toString().capitalizeEachWord(),
                   overflow: TextOverflow
                       .ellipsis, // Prevent overflow and add ellipsis
-                  style: TextStyle(
-                      color: cc.primaryColor,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500),
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
                 ),
               ),
               const SizedBox(

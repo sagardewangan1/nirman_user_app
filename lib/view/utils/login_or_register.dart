@@ -4,6 +4,7 @@ import 'package:qixer/view/selectionRole/selectionRoleView.dart';
 
 import '../utils/custom_button.dart';
 import 'common_helper.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LoginOrRegister extends StatelessWidget {
   const LoginOrRegister({super.key});
@@ -19,22 +20,22 @@ class LoginOrRegister extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: Image.asset(
-              'assets/images/avatar.png',
-              height: context.height / 6,
+              'assets/images/logoutpage.png',
+              height: context.height / 4,
               // width: 48,
               fit: BoxFit.cover,
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 50),
           Padding(
               padding: const EdgeInsets.symmetric(horizontal: 30),
               child: CommonHelper().titleCommon(
-                  "You'll have to login/register to edit or see your profile info.",
+                  AppLocalizations.of(context)!.logoutScreenText,
                   fontsize: 16,
                   textAlign: TextAlign.center)),
-          const SizedBox(height: 20),
+          const SizedBox(height: 50),
           CustomButton(
-              btText: 'Sign-In/Sign-Up',
+              btText: AppLocalizations.of(context)!.continueText,
               onPressed: () {
                 context.toPage(const SelectionRoleView(
                   hasBackButton: true,

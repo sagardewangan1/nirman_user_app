@@ -233,10 +233,12 @@ class CommonHelper {
     double fontsize = 14,
     color,
     textAlign = TextAlign.left,
+    textOverFlow = TextOverflow.ellipsis,
   }) {
     return AutoSizeText(
       title,
       textAlign: textAlign,
+      overflow: textOverFlow,
       style: TextStyle(
         color: color ?? cc.greyParagraph,
         height: 1.4,
@@ -311,17 +313,7 @@ class CommonHelper {
       child: CachedNetworkImage(
         imageUrl: imageLink,
         placeholder: (context, url) {
-          return SizedBox(
-            height: 20,
-            width: 20,
-            child: Transform.scale(
-              scale:
-                  0.7, // Scale down the size (1.0 is default, less than 1 reduces size).
-              child: CircularProgressIndicator(
-                strokeWidth: 3, // Adjust thickness if needed.
-              ),
-            ),
-          );
+          return OthersHelper().showLoading(cc.primaryColor);
         },
         errorWidget: (_, string, obj) {
           return Image.network(fit: BoxFit.cover, placeHolderUrl2);

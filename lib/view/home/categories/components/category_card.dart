@@ -1,8 +1,9 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
+import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:qixer/view/utils/others_helper.dart';
-
 
 class CategoryCard extends StatelessWidget {
   const CategoryCard(
@@ -12,14 +13,16 @@ class CategoryCard extends StatelessWidget {
       required this.cc,
       required this.index,
       required this.imagelink,
-      this.onTap});
+      this.onTap,
+      this.isSelected});
 
   final name;
   final id;
-  final cc;
+  final ConstantColors cc;
   final index;
   final imagelink;
   final VoidCallback? onTap;
+  final bool? isSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -32,10 +35,13 @@ class CategoryCard extends StatelessWidget {
         decoration: BoxDecoration(
             color: cc.white,
             borderRadius: BorderRadius.circular(9),
-            border: Border.all(width: 1, color: cc.black8)),
+            border: Border.all(
+                width: 1,
+                color: isSelected ?? false ? cc.primaryColor : cc.black8)),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
+            Gap(10),
             ClipRRect(
               borderRadius: BorderRadius.circular(5.0),
               child: SizedBox(
@@ -61,7 +67,7 @@ class CategoryCard extends StatelessWidget {
                   name,
                   softWrap: true,
                   textAlign: TextAlign.center,
-                  maxLines: 1,
+                  maxLines: 4,
                   overflow: TextOverflow.ellipsis,
                   wrapWords: true,
                   style: TextStyle(

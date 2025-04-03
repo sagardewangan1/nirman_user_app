@@ -8,6 +8,7 @@ import 'package:qixer/view/auth/signup/pages/signup_phone_pass.dart';
 import 'package:qixer/view/utils/common_helper.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -116,7 +117,8 @@ class _SignupPageState extends State<SignupPage> {
 
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 25),
-                      child: CommonHelper().titleCommon("Add Your Details"),
+                      child: CommonHelper().titleCommon(
+                          AppLocalizations.of(context)!.addYourDetails),
                     ),
 
                     const SizedBox(

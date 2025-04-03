@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:qixer/helper/extension/context_extension.dart';
 import 'package:qixer/helper/extension/string_extension.dart';
 import 'package:qixer/service/app_string_service.dart';
 import 'package:qixer/service/filter_services_service.dart';
+import 'package:qixer/service/home_services/category_service.dart';
 import 'package:qixer/view/home_map_view/home_map_view.dart';
 import 'package:qixer/view/search/components/search_bar.dart' as sb;
 import 'package:qixer/view/utils/common_helper.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:qixer/view/utils/constant_styles.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qixer/view/utils/responsive.dart';
 
 class SearchTab extends StatefulWidget {
   const SearchTab({super.key});
@@ -22,12 +26,13 @@ class _SearchTabState extends State<SearchTab> {
   @override
   void initState() {
     super.initState();
-    Provider.of<FilterServicesService>(context, listen: false).resetFilters();
+    // Provider.of<FilterServicesService>(context, listen: false).resetFilters();
   }
 
   @override
   Widget build(BuildContext context) {
     ConstantColors cc = ConstantColors();
+    final categoryController = Provider.of<CategoryService>(context);
 
     return Listener(onPointerDown: (_) {
       FocusScopeNode currentFocus = FocusScope.of(context);
@@ -40,7 +45,7 @@ class _SearchTabState extends State<SearchTab> {
             appBar: AppBar(
               automaticallyImplyLeading: false,
               title: CommonHelper()
-                  .titleCommon(asProvider.getString('Search services')),
+                  .titleCommon(AppLocalizations.of(context)!.searchServices),
               // actions: [
               //   ValueListenableBuilder<bool>(
               //       valueListenable: viewMap,
@@ -56,19 +61,38 @@ class _SearchTabState extends State<SearchTab> {
             body: SafeArea(
               child: Container(
                 clipBehavior: Clip.none,
-                child: Consumer<AppStringService>(
-                  builder: (context, asProvider, child) => Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        sizedBox20(),
-                        Expanded(
-                            child: ValueListenableBuilder<bool>(
-                                valueListenable: viewMap,
-                                builder: (context, map, _) => map
-                                    ? HomeMapView()
-                                    : const sb.SearchBar())),
-                      ]),
-                ),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      sizedBox20(),
+                      Expanded(
+                          child: categoryController
+                                      .categoryDataModel.categories?.length ==
+                                  0
+                              ? Container(
+                                  alignment: Alignment.center,
+                                  height: screenHeight - 140,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Image.asset(
+                                        "assets/images/nodata.png",
+                                        fit: BoxFit.contain,
+                                      ),
+                                      Gap(10),
+                                      Text(AppLocalizations.of(context)!
+                                          .noServiceProviderInYourArea),
+                                    ],
+                                  ),
+                                )
+                              : ValueListenableBuilder<bool>(
+                                  valueListenable: viewMap,
+                                  builder: (context, map, _) => map
+                                      ? HomeMapView()
+                                      : const sb.SearchBar())),
+                    ]),
               ),
             ));
       },

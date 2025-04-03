@@ -8,6 +8,7 @@ import 'package:qixer/view/utils/common_helper.dart';
 import 'package:qixer/view/utils/responsive.dart';
 
 import '../../../utils/constant_colors.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CountryStatesDropdowns extends StatefulWidget {
   const CountryStatesDropdowns({super.key});
@@ -51,7 +52,7 @@ class _CountryStatesDropdownsState extends State<CountryStatesDropdowns> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CommonHelper().labelCommon(
-                        lnProvider.getString("Choose State"),
+                        AppLocalizations.of(context)!.chooseState,
                         isRequired: true),
                     const StateDropdown(),
                   ],
@@ -65,7 +66,9 @@ class _CountryStatesDropdownsState extends State<CountryStatesDropdowns> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CommonHelper().labelCommon("Choose City", isRequired: true),
+                    CommonHelper().labelCommon(
+                        AppLocalizations.of(context)!.chooseCity,
+                        isRequired: true),
                     const AreaDropdown(),
                   ],
                 )

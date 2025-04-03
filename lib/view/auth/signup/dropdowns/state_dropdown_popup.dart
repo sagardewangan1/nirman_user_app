@@ -11,6 +11,7 @@ import 'package:qixer/view/utils/others_helper.dart';
 import 'package:qixer/view/utils/responsive.dart';
 
 import '../../../../service/searchbar_with_dropdown_service.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class StateDropdownPopup extends StatelessWidget {
   const StateDropdownPopup({super.key});
@@ -31,7 +32,7 @@ class StateDropdownPopup extends StatelessWidget {
         onRefresh: () async {
           final result =
               await Provider.of<StateDropdownService>(context, listen: false)
-                  .fetchStates(context);
+                  .fetchStates(context, isrefresh: true); // ✅ Pura refresh ho
           if (result) {
             refreshController.refreshCompleted();
           } else {
@@ -39,19 +40,15 @@ class StateDropdownPopup extends StatelessWidget {
           }
         },
         onLoading: () async {
-          final result =
-              await Provider.of<StateDropdownService>(context, listen: false)
-                  .fetchStates(context);
+          final result = await Provider.of<StateDropdownService>(context,
+                  listen: false)
+              .fetchStates(
+                  context); // ✅ Naye data add ho, list sirf ek baar reset ho
           if (result) {
-            debugPrint('loadcomplete ran');
-            //loadcomplete function loads the data again
             refreshController.loadComplete();
           } else {
-            debugPrint('no more data');
             refreshController.loadNoData();
-
             Future.delayed(const Duration(seconds: 1), () {
-              //it will reset footer no data state to idle and will let us load again
               refreshController.resetNoData();
             });
           }
@@ -64,7 +61,7 @@ class StateDropdownPopup extends StatelessWidget {
                 children: [
                   sizedBoxCustom(30),
                   CustomInput(
-                    hintText: lnProvider.getString('Search state'),
+                    hintText: AppLocalizations.of(context)!.selectState,
                     paddingHorizontal: 17,
                     icon: 'assets/icons/search.png',
                     onChanged: (v) {
@@ -81,8 +78,9 @@ class StateDropdownPopup extends StatelessWidget {
                               itemCount: p.statesDropdownList.length,
                               itemBuilder: (context, i) {
                                 return InkWell(
-                                  onTap: () {
-                                    p.setStatesValue(p.statesDropdownList[i]);
+                                  onTap: () async {
+                                    p.setStatesValue(
+                                        p.statesDropdownList[i] ?? 0);
 
                                     // setting the id of selected value
                                     p.setSelectedStatesId(
@@ -103,6 +101,10 @@ class StateDropdownPopup extends StatelessWidget {
                                     sProvider
                                         .setSelectedCityId(p.selectedStateId);
                                     sProvider.fetchService(context);
+                                    await Provider.of<StateDropdownService>(
+                                            context,
+                                            listen: false)
+                                        .fetchStates(context);
                                   },
                                   child: Container(
                                     padding: const EdgeInsets.symmetric(

@@ -4,6 +4,7 @@ import 'package:qixer/data/network/network_api_services.dart';
 import 'package:qixer/view/utils/common_helper.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:qixer/view/utils/others_helper.dart';
+import 'package:qixer/view/utils/responsive.dart';
 
 class TacPP extends StatelessWidget {
   final route;
@@ -21,7 +22,14 @@ class TacPP extends StatelessWidget {
             return OthersHelper().showLoading(cc.primaryColor);
           }
           if (snapshot.data.toString() == "null" || snapshot.hasError) {
-            return CommonHelper().nothingfound(context, "Nothing found");
+            return Container(
+              alignment: Alignment.center,
+              height: screenHeight - 140,
+              child: Image.asset(
+                "assets/images/nodata.png",
+                fit: BoxFit.contain,
+              ),
+            );
           }
           return SingleChildScrollView(
               padding: const EdgeInsets.all(20),

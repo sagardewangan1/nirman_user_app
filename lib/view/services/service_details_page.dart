@@ -7,21 +7,19 @@ import 'package:qixer/service/service_details_service.dart';
 import 'package:qixer/view/live_chat/chat_message_page.dart';
 import 'package:qixer/view/services/components/about_seller_tab.dart';
 import 'package:qixer/view/services/components/image_big.dart';
-import 'package:qixer/view/services/components/moreServicesTab.dart';
 import 'package:qixer/view/services/components/overview_tab.dart';
-import 'package:qixer/view/services/components/photosTabs.dart';
-import 'package:qixer/view/services/components/review_tab.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:qixer/view/utils/others_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../utils/common_helper.dart';
-import 'components/MemberShipTabs.dart';
 import 'components/service_details_top.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ServiceDetailsPage extends StatefulWidget {
+  final String? serviceId;
   const ServiceDetailsPage({
     super.key,
+    this.serviceId,
   });
 
   // final serviceId;
@@ -32,16 +30,6 @@ class ServiceDetailsPage extends StatefulWidget {
 
 class _ServiceDetailsPageState extends State<ServiceDetailsPage>
     with SingleTickerProviderStateMixin {
-  final String points = """
-    <ul class="pricing-content">
-        <li>&#x2713; Find Job On Portal HR Contact No./Contact Person Name</li>
-        <li>&#x2713; Job Lead From ShashaktNirman.com</li>
-        <li>&#x2713; Candidate Portal to find job</li>
-        <li>&#x2713; Sharing Job Details and contact Details by Whatsapp, Email</li>
-        <li>&#x2713; Sharing Interview & Location Details</li>
-    </ul>
-""";
-
   late TabController _tabController;
   int _tabIndex = 0;
   @override
@@ -83,8 +71,7 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage>
         builder: (context, asProvider, child) =>
             Consumer<ServiceDetailsService>(
           builder: (context, provider, child) => provider.isloading == false
-              ? provider.serviceAllDetails != 'error' &&
-                      provider.serviceAllDetails != null
+              ? provider.serviceDetailsModel.serviceDetails != null
                   ? Column(
                       children: [
                         Expanded(
@@ -95,13 +82,20 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage>
                                 children: [
                                   // Image big
                                   ImageBig(
-                                    serviceName: provider
-                                        .serviceAllDetails.serviceDetails.title,
-                                    imageLink: provider.serviceAllDetails
-                                                ?.serviceImage !=
+                                    fit: BoxFit.fill,
+                                    serviceName: provider.serviceDetailsModel
+                                        .serviceDetails?.title,
+                                    imageLink: provider
+                                                .serviceDetailsModel
+                                                .serviceDetails
+                                                ?.sellerForMobile
+                                                .sellerBusinessImg !=
                                             null
-                                        ? provider.serviceAllDetails
-                                                .serviceImage.imgUrl ??
+                                        ? provider
+                                                .serviceDetailsModel
+                                                .serviceDetails
+                                                ?.sellerForMobile
+                                                .sellerBusinessImg ??
                                             placeHolderUrl2
                                         : placeHolderUrl2,
                                   ),
@@ -112,80 +106,79 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage>
                                   ServiceDetailsTop(cc: cc),
                                 ],
                               ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(8.0)),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: <Widget>[
-                                        TabBar(
-                                          tabAlignment: TabAlignment.start,
-                                          onTap: (value) {
-                                            setState(() {
-                                              currentTab = value;
-                                            });
-                                          },
-                                          padding: EdgeInsets.zero,
-                                          labelColor: cc.primaryColor,
-                                          unselectedLabelColor: cc.greyFour,
-                                          indicatorColor: cc.primaryColor,
-                                          unselectedLabelStyle: TextStyle(
-                                              color: cc.greyParagraph,
-                                              fontWeight: FontWeight.normal),
-                                          controller: _tabController,
-                                          isScrollable: true,
-                                          tabs: [
-                                            Tab(
-                                                text: asProvider
-                                                    .getString('Overview')),
-                                            Tab(
-                                                text: asProvider
-                                                    .getString('About seller')),
-                                            // Tab(
-                                            //     text: asProvider
-                                            //         .getString('Review')),
-                                            // Tab(
-                                            //     text: asProvider
-                                            //         .getString('Price Chart')),
-                                            // Tab(
-                                            //     text: asProvider
-                                            //         .getString('Services')),
-                                            // Tab(
-                                            //     text: asProvider
-                                            //         .getString('Photos')),
-                                          ],
-                                        ),
-                                        Container(
-                                          child: [
-                                            OverviewTab(
-                                              provider: provider,
-                                            ),
-                                            AboutSellerTab(
-                                              provider: provider,
-                                            ),
-                                            // ReviewTab(
-                                            //   provider: provider,
-                                            // ),
-                                            // MemberShipTabs(
-                                            //   desc: points,
-                                            //   cc: cc,
-                                            // ),
-                                            // MoreServicesTab(
-                                            //   provider: provider,
-                                            // ),
-                                            // PhotosTabs(
-                                            //   provider: provider,
-                                            // ),
-                                          ][_tabIndex],
-                                        ),
-                                      ],
-                                    ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  // borderRadius: BorderRadius.circular(8.0)
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: <Widget>[
+                                      TabBar(
+                                        tabAlignment: TabAlignment.start,
+                                        onTap: (value) {
+                                          setState(() {
+                                            currentTab = value;
+                                          });
+                                        },
+                                        padding: EdgeInsets.zero,
+                                        labelColor: cc.primaryColor,
+                                        unselectedLabelColor: cc.greyFour,
+                                        indicatorColor: cc.primaryColor,
+                                        unselectedLabelStyle: TextStyle(
+                                            color: cc.greyParagraph,
+                                            fontWeight: FontWeight.normal),
+                                        controller: _tabController,
+                                        isScrollable: true,
+                                        tabs: [
+                                          Tab(
+                                              text:
+                                                  AppLocalizations.of(context)!
+                                                      .overview),
+                                          Tab(
+                                              text:
+                                                  AppLocalizations.of(context)!
+                                                      .aboutSeller),
+                                          // Tab(
+                                          //     text: asProvider
+                                          //         .getString('Review')),
+                                          // Tab(
+                                          //     text: asProvider
+                                          //         .getString('Price Chart')),
+                                          // Tab(
+                                          //     text: asProvider
+                                          //         .getString('Services')),
+                                          // Tab(
+                                          //     text: asProvider
+                                          //         .getString('Photos')),
+                                        ],
+                                      ),
+                                      Container(
+                                        child: [
+                                          OverviewTab(
+                                            provider: provider,
+                                          ),
+                                          AboutSellerTab(
+                                            provider: provider,
+                                          ),
+                                          // ReviewTab(
+                                          //   provider: provider,
+                                          // ),
+                                          // MemberShipTabs(
+                                          //   desc: points,
+                                          //   cc: cc,
+                                          // ),
+                                          // MoreServicesTab(
+                                          //   provider: provider,
+                                          // ),
+                                          // PhotosTabs(
+                                          //   provider: provider,
+                                          // ),
+                                        ][_tabIndex],
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
@@ -216,7 +209,7 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage>
                                   //                     (BuildContext context) =>
                                   //                         WriteReviewPage(
                                   //                   serviceId: provider
-                                  //                       .serviceAllDetails
+                                  //                       .serviceDetailsModel
                                   //                       .serviceDetails
                                   //                       .id,
                                   //                 ),
@@ -233,7 +226,8 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage>
                                     children: [
                                       Expanded(
                                         child: CommonHelper().buttonOrange(
-                                          "Enquiry Now",
+                                          AppLocalizations.of(context)!
+                                              .enquiryNow,
                                           () {
                                             showDialog(
                                               context: context,
@@ -266,7 +260,9 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage>
                                                             MainAxisSize.min,
                                                         children: [
                                                           Text(
-                                                            'Thank You',
+                                                            AppLocalizations.of(
+                                                                    context)!
+                                                                .thankYou,
                                                             style: TextStyle(
                                                               fontSize: 16.0,
                                                               fontWeight:
@@ -284,7 +280,9 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage>
                                                           Text(
                                                             textAlign: TextAlign
                                                                 .center,
-                                                            "Thank you for your enquiry with us, we will call you back soon.",
+                                                            AppLocalizations.of(
+                                                                    context)!
+                                                                .thankYouEnquiryText,
                                                             style: TextStyle(
                                                               fontSize: 14.0,
                                                               fontWeight:
@@ -344,9 +342,10 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage>
                                                                       Colors
                                                                           .blueAccent,
                                                                 ),
-                                                                child:
-                                                                    const Text(
-                                                                        'OK'),
+                                                                child: Text(
+                                                                    AppLocalizations.of(
+                                                                            context)!
+                                                                        .ok),
                                                               ),
                                                             ],
                                                           ),
@@ -371,7 +370,8 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage>
                     )
                   : Container(
                       alignment: Alignment.center,
-                      child: Text(asProvider.getString('Something went wrong')),
+                      child: Text(
+                          AppLocalizations.of(context)!.somethingWentWrong),
                     )
               : OthersHelper().showLoading(cc.primaryColor),
         ),
@@ -406,7 +406,7 @@ class ServiceDetailsChatIcon extends StatelessWidget {
                     builder: (BuildContext context) => ChatMessagePage(
                       receiverId: provider.sellerId,
                       currentUserId: currentUserId,
-                      userName: provider.serviceAllDetails.serviceSellerName,
+                      userName: provider.serviceDetailsModel.serviceSellerName,
                     ),
                   ),
                 );

@@ -23,6 +23,7 @@ import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 import '../../utils/custom_input.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ProfileEditPage extends StatefulWidget {
   const ProfileEditPage({super.key});
@@ -39,7 +40,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   TextEditingController addressController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
   TextEditingController aboutController = TextEditingController();
-  String? countryCode;
+  String? countryCode = 'IN';
 
   @override
   void initState() {
@@ -48,7 +49,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
             .profileDetails
             .userDetails
             .countryCode ??
-        "ES";
+        "IN";
     //set country code
     Future.delayed(const Duration(milliseconds: 600), () {
       Provider.of<ProfileEditService>(context, listen: false)
@@ -79,13 +80,15 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   Widget build(BuildContext context) {
     ConstantColors cc = ConstantColors();
     return Scaffold(
-      appBar: CommonHelper().appbarCommon('Edit profile', context, () {
+      appBar: CommonHelper()
+          .appbarCommon(AppLocalizations.of(context)!.editProfile, context, () {
         if (Provider.of<ProfileEditService>(context, listen: false).isloading ==
             false) {
           Navigator.pop(context);
         } else {
           OthersHelper().showToast(
-              'Please wait while the profile is updating', Colors.black);
+              AppLocalizations.of(context)!.pleaseWaitWhileTheProfileIsUpdating,
+              Colors.black);
         }
       }),
       body: Listener(
@@ -105,7 +108,8 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                   return Future.value(true);
                 } else {
                   OthersHelper().showToast(
-                      'Please wait while the profile is updating',
+                      AppLocalizations.of(context)!
+                          .pleaseWaitWhileTheProfileIsUpdating,
                       Colors.black);
                   return Future.value(false);
                 }
@@ -198,20 +202,20 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                           children: [
                             //Name ============>
                             CommonHelper().labelCommon(
-                                asProvider.getString('Full name'),
+                                AppLocalizations.of(context)!.fullName,
                                 isRequired: true),
 
                             CustomInput(
                               controller: fullNameController,
                               validation: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return asProvider
-                                      .getString('Please enter your full name');
+                                  return AppLocalizations.of(context)!
+                                      .pleaseEnterYourFullName;
                                 }
                                 return null;
                               },
-                              hintText:
-                                  asProvider.getString('Enter your full name'),
+                              hintText: AppLocalizations.of(context)!
+                                  .enterYourFullName,
                               icon: 'assets/icons/user.png',
                               textInputAction: TextInputAction.next,
                             ),
@@ -221,20 +225,20 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
 
                             //Email ============>
                             CommonHelper().labelCommon(
-                                asProvider.getString('Email'),
+                                AppLocalizations.of(context)!.email,
                                 isRequired: true),
 
                             CustomInput(
                               controller: emailController,
                               validation: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return asProvider
-                                      .getString('Please enter your email');
+                                  return AppLocalizations.of(context)!
+                                      .enterYourEmail;
                                 }
                                 return null;
                               },
                               hintText:
-                                  lnProvider.getString("Enter your email"),
+                                  AppLocalizations.of(context)!.enterYourEmail,
                               icon: 'assets/icons/email-grey.png',
                               textInputAction: TextInputAction.next,
                             ),
@@ -250,15 +254,20 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             CommonHelper().labelCommon(
-                                asProvider.getString('Phone'),
+                                AppLocalizations.of(context)!.phone,
                                 isRequired: true),
                             Consumer<RtlService>(
                               builder: (context, rtlP, child) => IntlPhoneField(
                                 searchText:
-                                    asProvider.getString("Search country"),
-                                initialCountryCode: provider.countryCode,
+                                    AppLocalizations.of(context)!.searchCountry,
+                                initialCountryCode: provider.countryCode.isEmpty
+                                    ? 'IN'
+                                    : provider
+                                        .countryCode, // ✅ Default to India if empty
                                 initialValue: phoneController.text,
                                 // controller: phoneController,
+                                enabled: false,
+                                readOnly: true,
                                 decoration:
                                     SignupHelper().phoneFieldDecoration(),
                                 disableLengthCheck: true,
@@ -305,10 +314,10 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                               height: 25,
                             ),
                             CommonHelper().labelCommon(
-                                asProvider.getString('Your Address'),
+                                AppLocalizations.of(context)!.yourAddress,
                                 isRequired: true),
                             TextareaField(
-                              hintText: asProvider.getString('Address'),
+                              hintText: AppLocalizations.of(context)!.address,
                               notesController: addressController,
                             ),
                           ],
@@ -322,10 +331,10 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                               height: 25,
                             ),
                             CommonHelper().labelCommon(
-                                asProvider.getString('About'),
+                                AppLocalizations.of(context)!.about,
                                 isRequired: true),
                             TextareaField(
-                              hintText: asProvider.getString('About'),
+                              hintText: AppLocalizations.of(context)!.about,
                               notesController: aboutController,
                             ),
                           ],
@@ -335,7 +344,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                           height: 25,
                         ),
                         CommonHelper().buttonOrange(
-                            asProvider.getString('Save'), () async {
+                            AppLocalizations.of(context)!.save, () async {
                           provider.setLoadingFalse();
                           var selectedStateId =
                               Provider.of<StateDropdownService>(context,
@@ -345,63 +354,66 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                                   context,
                                   listen: false)
                               .selectedAreaId;
-                          if (selectedStateId == '0' || selectedAreaId == '0') {
-                            OthersHelper().showSnackBar(
-                                context,
-                                asProvider.getString(
-                                    'You must select a state and area'),
-                                cc.warningColor);
-                            return;
-                          } else if (provider.isloading == false) {
-                            if (addressController.text.isEmpty) {
-                              OthersHelper().showToast(
-                                  asProvider
-                                      .getString('Address field is required'),
-                                  Colors.black);
-                              return;
-                            } else if (phoneController.text.isEmpty) {
-                              OthersHelper().showToast(
-                                  asProvider
-                                      .getString('Phone field is required'),
-                                  Colors.black);
-                              return;
-                            }
+                          // if (selectedStateId == '0' || selectedAreaId == '0') {
+                          //   OthersHelper().showSnackBar(
+                          //       context,
+                          //       AppLocalizations.of(context)!
+                          //           .youMustSelectAStateAndArea,
+                          //       cc.warningColor);
+                          //   return;
+                          // } else if (provider.isloading == false) {
+                          //   if (addressController.text.isEmpty) {
+                          //     OthersHelper().showToast(
+                          //         AppLocalizations.of(context)!
+                          //             .addressFieldIsRequired,
+                          //         Colors.black);
+                          //     return;
+                          //   } else
+                          if (phoneController.text.isEmpty) {
                             OthersHelper().showToast(
-                                "Successfully Updated", cc.successColor);
-                            // showTopSnackBar(
-                            //     Overlay.of(context),
-                            //     CustomSnackBar.success(
-                            //       message: asProvider.getString(
-                            //           'Updating profile...It may take few seconds'),
-                            //     ),
-                            //     persistent: true,
-                            //     onAnimationControllerInit: (controller) =>
-                            //         localAnimationController = controller,
-                            //     onTap: () {
-                            //       // localAnimationController.reverse();
-                            //     });
-
-                            //update profile
-                            var result = await provider.updateProfile(
-                              fullNameController.text,
-                              emailController.text,
-                              phoneController.text,
-                              selectedStateId,
-                              selectedAreaId,
-                              Provider.of<CountryDropdownService>(context,
-                                      listen: false)
-                                  .selectedCountryId,
-                              postCodeController.text,
-                              addressController.text,
-                              aboutController.text,
-                              pickedImage?.path,
-                              context,
-                            );
-                            if (result == true || result == false) {
-                              localAnimationController.reverse();
-                            }
+                                AppLocalizations.of(context)!
+                                    .phoneFieldIsRequired,
+                                Colors.black);
+                            return;
                           }
-                        },
+                          OthersHelper().showToast(
+                              AppLocalizations.of(context)!.successfullyUpdated,
+                              cc.successColor);
+                          // showTopSnackBar(
+                          //     Overlay.of(context),
+                          //     CustomSnackBar.success(
+                          //       message: asProvider.getString(
+                          //           'Updating profile...It may take few seconds'),
+                          //     ),
+                          //     persistent: true,
+                          //     onAnimationControllerInit: (controller) =>
+                          //         localAnimationController = controller,
+                          //     onTap: () {
+                          //       // localAnimationController.reverse();
+                          //     });
+
+                          //update profile
+                          var result = await provider.updateProfile(
+                            fullNameController.text,
+                            emailController.text,
+                            phoneController.text,
+                            selectedStateId,
+                            selectedAreaId,
+                            Provider.of<CountryDropdownService>(context,
+                                    listen: false)
+                                .selectedCountryId,
+                            postCodeController.text,
+                            addressController.text,
+                            aboutController.text,
+                            pickedImage?.path,
+                            context,
+                          );
+                          if (result == true || result == false) {
+                            localAnimationController.reverse();
+                          }
+                        }
+                            // },
+                            ,
                             isloading:
                                 provider.isloading == false ? false : true),
 

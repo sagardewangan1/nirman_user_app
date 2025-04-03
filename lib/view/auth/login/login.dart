@@ -17,7 +17,7 @@ import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:qixer/view/utils/others_helper.dart';
 import 'package:qixer/view/utils/responsive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../service/rtl_service.dart';
 import '../../utils/constant_styles.dart';
 import '../signup/signup_helper.dart';
@@ -127,7 +127,7 @@ class _LoginPageState extends State<LoginPage> {
         mainAxisSize: MainAxisSize.min,
         children: [
           CommonHelper().titleCommon(
-            lnProvider.getString('Enter OTP'),
+            AppLocalizations.of(context)!.enterOtp,
           ),
           SizedBox(height: 16),
           Pinput(
@@ -137,11 +137,11 @@ class _LoginPageState extends State<LoginPage> {
           ),
           SizedBox(height: 16),
           CommonHelper().buttonOrange(
-            lnProvider.getString("Continue"),
+            AppLocalizations.of(context)!.continueText,
             () {
               if (otpController.text.isEmpty) {
                 OthersHelper().showToast(
-                  "Please Enter OTP",
+                  AppLocalizations.of(context)!.pleaseEnterOtp,
                   ConstantColors().warningColor,
                 );
               } else {
@@ -157,14 +157,15 @@ class _LoginPageState extends State<LoginPage> {
                   if (value != null) {
                     if (value.status == true) {
                       OthersHelper().showToast(
-                        "OTP Verification Success",
+                        AppLocalizations.of(context)!.otpVerificationSuccess,
                         ConstantColors().successColor,
                       );
                       SharedPreferencesHelper.setData(value);
                       print("value type is new ====> ${value.user?.isNew}");
                       if (value.user?.isNew == 0) {
                         if (value.user?.userType == 0) {
-                          // context.toPage(const SignUpVendorView());
+                          final prefs = await SharedPreferences.getInstance();
+                          prefs.setBool('shashaktnirman_is_logged_in', false);
                           Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) => SignUpVendorView()));
                         } else {
@@ -174,7 +175,6 @@ class _LoginPageState extends State<LoginPage> {
                           );
                         }
                       } else {
-                        final prefs = await SharedPreferences.getInstance();
                         SharedPreferencesHelper.setData(value);
                         if (mounted) {
                           Navigator.of(context).pushAndRemoveUntil(
@@ -186,13 +186,13 @@ class _LoginPageState extends State<LoginPage> {
                       }
                     } else {
                       OthersHelper().showToast(
-                        "OTP Verification Failed",
+                        AppLocalizations.of(context)!.otpVerificationFailed,
                         ConstantColors().warningColor,
                       );
                     }
                   } else {
                     OthersHelper().showToast(
-                      "OTP Verification Failed",
+                      AppLocalizations.of(context)!.otpVerificationFailed,
                       ConstantColors().warningColor,
                     );
                   }
@@ -213,7 +213,7 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: CommonHelper().appbarCommon(
-        "Login",
+        AppLocalizations.of(context)!.login,
         context,
         () => Navigator.pop(context),
       ),
@@ -252,10 +252,11 @@ class _LoginPageState extends State<LoginPage> {
                           [
                             const SizedBox(height: 33),
                             CommonHelper().titleCommon(
-                                lnProvider.getString('Welcome back! Login')),
+                              AppLocalizations.of(context)!.welcomeBackLogin,
+                            ),
                             const SizedBox(height: 10),
                             Text(
-                              "Enter your mobile number below to receive a One-Time Password (OTP) for verification.",
+                              AppLocalizations.of(context)!.loginViewText,
                               style: TextStyle(
                                 color: cc.greyThree,
                                 fontSize: 14,
@@ -264,7 +265,8 @@ class _LoginPageState extends State<LoginPage> {
                             const SizedBox(height: 25),
 
                             CommonHelper().labelCommon(
-                                lnProvider.getString("Mobile Number")),
+                              AppLocalizations.of(context)!.mobileNumber,
+                            ),
                             Consumer<RtlService>(
                               builder: (context, rtlP, child) => IntlPhoneField(
                                 controller: numberController,
@@ -273,7 +275,7 @@ class _LoginPageState extends State<LoginPage> {
                                 keyboardType: TextInputType.number,
                                 textInputAction: TextInputAction.done,
                                 searchText:
-                                    asprovider.getString("Search country"),
+                                    AppLocalizations.of(context)!.searchCountry,
                                 initialCountryCode:
                                     context.read<SignupService>().countryCode,
                                 disableLengthCheck: true,
@@ -293,7 +295,8 @@ class _LoginPageState extends State<LoginPage> {
                                 },
                                 validator: (p0) {
                                   if (p0?.number.length != 10) {
-                                    return "Please Enter Valid Mobile Number";
+                                    return AppLocalizations.of(context)!
+                                        .numberValidation;
                                   }
                                   return null;
                                 },
@@ -479,14 +482,15 @@ class _LoginPageState extends State<LoginPage> {
                             const SizedBox(height: 13),
 
                             CommonHelper().buttonOrange(
-                              lnProvider.getString("Continue"),
+                              AppLocalizations.of(context)!.continueText,
                               () async {
                                 if (numberController.text.trim().isEmpty ||
                                     numberController.text.trim().length != 10 ||
                                     !RegExp(r'^[0-9]{10}$').hasMatch(
                                         numberController.text.trim())) {
                                   OthersHelper().showToast(
-                                      "Invalid Mobile Number",
+                                      AppLocalizations.of(context)!
+                                          .invalidMobileNumber,
                                       ConstantColors().warningColor);
                                 } else {
                                   await loginFunction(context, loginController);
@@ -496,7 +500,6 @@ class _LoginPageState extends State<LoginPage> {
                                   ? false
                                   : true,
                             ),
-
                             // Consumer<LoginService>(
                             //   builder: (context, provider, child) =>
                             //
@@ -656,9 +659,9 @@ class _LoginPageState extends State<LoginPage> {
                             //     )
                             //   ],
                             // ),
-                            const SizedBox(
-                              height: 30,
-                            ),
+                            // const SizedBox(
+                            //   height: 30,
+                            // ),
                           ],
                         ),
                       ),

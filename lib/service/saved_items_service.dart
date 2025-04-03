@@ -7,9 +7,17 @@ import 'package:qixer/service/home_services/top_rated_services_service.dart';
 class SavedItemService with ChangeNotifier {
   var savedItemList = [];
 
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+
   fetchSavedItem() async {
-    savedItemList = await DbService().getAllSaveditem();
-    notifyListeners();
+    _isLoading = true;
+    savedItemList = await DbService().getAllSaveditem().whenComplete(
+      () {
+        _isLoading = false;
+        notifyListeners();
+      },
+    );
   }
 
   remove(
@@ -21,9 +29,10 @@ class SavedItemService with ChangeNotifier {
       double rating,
       int index,
       BuildContext context,
-      sellerId,exp) async {
-    await DbService().saveOrUnsave(
-        serviceId, title, image, price, sellerName, rating, context, sellerId,exp);
+      sellerId,
+      exp) async {
+    await DbService().saveOrUnsave(serviceId, title, image, price, sellerName,
+        rating, context, sellerId, exp);
     fetchSavedItem();
     Provider.of<TopRatedServicesSerivce>(context, listen: false)
         .topServiceSaveUnsaveFromOtherPage(serviceId, title, sellerName);

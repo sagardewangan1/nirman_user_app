@@ -7,6 +7,7 @@ import '../utils/common_helper.dart';
 import '../utils/constant_colors.dart';
 import '../utils/constant_styles.dart';
 import '../utils/others_helper.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DeleteAccountPage extends StatelessWidget {
   DeleteAccountPage({super.key});
@@ -19,7 +20,8 @@ class DeleteAccountPage extends StatelessWidget {
 
     ConstantColors cc = ConstantColors();
     return Scaffold(
-      appBar: CommonHelper().appbarCommon('Delete account', context, () {
+      appBar: CommonHelper().appbarCommon(
+          AppLocalizations.of(context)!.deleteAccount, context, () {
         Navigator.pop(context);
       }),
       backgroundColor: Colors.white,
@@ -39,7 +41,8 @@ class DeleteAccountPage extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CommonHelper().labelCommon(ln.getString("Choose Reason")),
+                      CommonHelper().labelCommon(
+                          AppLocalizations.of(context)!.chooseReason),
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -58,13 +61,25 @@ class DeleteAccountPage extends StatelessWidget {
                             elevation: 17,
                             style: TextStyle(color: cc.greyFour),
                             onChanged: (newValue) {
-                              provider.setdeactivateReasonValue(newValue);
+                              if (newValue != null) {
+                                provider.setdeactivateReasonValue(newValue);
 
-                              //setting the id of selected value
-                              provider.setSelecteddeactivateReasonId(
-                                  provider.deactivateReasonDropdownList[provider
-                                      .deactivateReasonDropdownList
-                                      .indexOf(newValue!)]);
+                                // Get the index of the selected value in the dropdown list
+                                int index = provider
+                                    .deactivateReasonDropdownList
+                                    .indexOf(newValue);
+
+                                // Set the corresponding ID from the ID list
+                                if (index >= 0 &&
+                                    index <
+                                        provider
+                                            .deactivateReasonDropdownIndexList
+                                            .length) {
+                                  provider.setSelecteddeactivateReasonId(
+                                      provider.deactivateReasonDropdownIndexList[
+                                          index]);
+                                }
+                              }
                             },
                             items: provider.deactivateReasonDropdownList
                                 .map<DropdownMenuItem<String>>((value) {
@@ -86,10 +101,10 @@ class DeleteAccountPage extends StatelessWidget {
                   const SizedBox(
                     height: 20,
                   ),
-                  CommonHelper().labelCommon(ln.getString("Short description")),
-
+                  CommonHelper().labelCommon(
+                      AppLocalizations.of(context)!.shortDescription),
                   TextareaField(
-                    hintText: ln.getString('description'),
+                    hintText: AppLocalizations.of(context)!.description,
                     notesController: descController,
                   ),
                   const SizedBox(
@@ -105,43 +120,25 @@ class DeleteAccountPage extends StatelessWidget {
                   // const SizedBox(
                   //   height: 30,
                   // ),
-
                   Consumer<DeleteAccountService>(
                     builder: (context, provider, child) => CommonHelper()
-                        .buttonOrange(ln.getString("Delete"), () {
+                        .buttonOrange(AppLocalizations.of(context)!.delete, () {
                       if (provider.isloading == false) {
                         if (descController.text.isEmpty) {
                           OthersHelper().showToast(
-                              ln.getString('Please enter a description'),
+                              AppLocalizations.of(context)!
+                                  .pleaseEnterADescription,
                               Colors.black);
                           return;
                         }
-                        // if (passwordController.text.length < 6) {
-                        //   OthersHelper().showToast(
-                        //       ln.getString('Please enter a valid password'),
-                        //       Colors.black);
-                        //   return;
-                        // }
-
                         provider.deleteAccount(
-                          context,
-                          passwordController.text,
-                          descController.text,
-                        );
-                        // Navigator.pushReplacement<void, void>(
-                        //   context,
-                        //   MaterialPageRoute<void>(
-                        //     builder: (BuildContext context) =>
-                        //         const Homepage(),
-                        //   ),
-                        // );
+                            context, descController.text.toString());
                       }
                     },
                             isloading:
                                 provider.isloading == false ? false : true,
                             bgColor: cc.warningColor),
                   ),
-
                   const SizedBox(
                     height: 30,
                   )

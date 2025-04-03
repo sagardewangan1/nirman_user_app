@@ -205,8 +205,10 @@ class CountryStatesService with ChangeNotifier {
       set_State(context, data: data);
       notifyListeners();
       fetchArea(countryId, selectedStateId, context);
+      print("calling if");
       return true;
     } else {
+      print("calling else");
       fetchArea(countryId, selectedStateId, context);
       //error fetching data
       statesDropdownList.add(lnProvider.getString('Select State'));
@@ -226,7 +228,7 @@ class CountryStatesService with ChangeNotifier {
 
     var response = await http.get(Uri.parse(
         '$baseApi/country/service-city/service-area/$countryId/$stateId'));
-
+    printLargeResponse(response.body);
     if (response.statusCode == 200 || response.statusCode == 201) {
       var data = AreaDropdownModel.fromJson(jsonDecode(response.body));
       for (int i = 0; i < data.serviceAreas.data.length; i++) {

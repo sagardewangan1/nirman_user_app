@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:qixer/service/service_details_service.dart';
 import 'package:qixer/view/services/components/desc_from_html.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:qixer/view/utils/others_helper.dart';
@@ -9,7 +10,7 @@ import '../seller_all_service_page.dart';
 
 class AboutSellerTab extends StatelessWidget {
   const AboutSellerTab({super.key, required this.provider});
-  final provider;
+  final ServiceDetailsService provider;
   @override
   Widget build(BuildContext context) {
     ConstantColors cc = ConstantColors();
@@ -18,17 +19,18 @@ class AboutSellerTab extends StatelessWidget {
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         //profile image, name and completed orders
         InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => SellerAllServicePage(
-                        sellerId: provider.sellerId,
-                        sellerName:
-                            provider.serviceAllDetails.serviceSellerName,
-                      )),
-            );
-          },
+          // onTap: () {
+          //   Navigator.push(
+          //     context,
+          //     MaterialPageRoute(
+          //         builder: (context) => SellerAllServicePage(
+          //               sellerId: provider.sellerId,
+          //               sellerName: provider.serviceDetailsModel.serviceDetails
+          //                       ?.seller.name ??
+          //                   '',
+          //             )),
+          //   );
+          // },
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -36,7 +38,7 @@ class AboutSellerTab extends StatelessWidget {
                 borderRadius: BorderRadius.circular(6),
                 child: CachedNetworkImage(
                   imageUrl:
-                      provider.serviceAllDetails.serviceSellerImage.imgUrl ??
+                      provider.serviceDetailsModel.serviceSellerImage?.imgUrl ??
                           userPlaceHolderUrl,
                   placeholder: (context, url) {
                     return Image.asset('assets/images/loading_image.png');
@@ -49,44 +51,46 @@ class AboutSellerTab extends StatelessWidget {
               const SizedBox(
                 width: 10,
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    provider.serviceAllDetails.serviceSellerName
-                        .toString()
-                        .capitalize(),
-                    style: TextStyle(
-                        color: cc.greyFour,
-                        fontSize: 17,
-                        fontWeight: FontWeight.w600),
-                  ),
-                  // const SizedBox(
-                  //   height: 6,
-                  // ),
-                  // Row(
-                  //   children: [
-                  //     Text(
-                  //       lnProvider.getString('Order Completed'),
-                  //       style: TextStyle(
-                  //         color: cc.primaryColor,
-                  //         fontSize: 12,
-                  //       ),
-                  //     ),
-                  //     const SizedBox(
-                  //       width: 5,
-                  //     ),
-                  //     Text(
-                  //       '(${provider.serviceAllDetails.sellerCompleteOrder.toString()})',
-                  //       style: TextStyle(
-                  //         color: cc.greyParagraph,
-                  //         fontSize: 12,
-                  //       ),
-                  //     ),
-                  //   ],
-                  // ),
-                ],
-              ),
+              provider.serviceDetailsModel.serviceSellerName != null
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          provider.serviceDetailsModel.serviceSellerName
+                              .toString()
+                              .capitalize(),
+                          style: TextStyle(
+                              color: cc.greyFour,
+                              fontSize: 17,
+                              fontWeight: FontWeight.w600),
+                        ),
+                        // const SizedBox(
+                        //   height: 6,
+                        // ),
+                        // Row(
+                        //   children: [
+                        //     Text(
+                        //       lnProvider.getString('Order Completed'),
+                        //       style: TextStyle(
+                        //         color: cc.primaryColor,
+                        //         fontSize: 12,
+                        //       ),
+                        //     ),
+                        //     const SizedBox(
+                        //       width: 5,
+                        //     ),
+                        //     Text(
+                        //       '(${provider.serviceDetailsModel.sellerCompleteOrder.toString()})',
+                        //       style: TextStyle(
+                        //         color: cc.greyParagraph,
+                        //         fontSize: 12,
+                        //       ),
+                        //     ),
+                        //   ],
+                        // ),
+                      ],
+                    )
+                  : Offstage(),
             ],
           ),
         ),
@@ -105,12 +109,12 @@ class AboutSellerTab extends StatelessWidget {
         //         children: [
         //           Expanded(
         //             child: ServiceHelper().serviceDetails(
-        //                 'From', provider.serviceAllDetails.sellerFrom ?? ''),
+        //                 'From', provider.serviceDetailsModel.sellerFrom ?? ''),
         //           ),
         //           Expanded(
         //               child: ServiceHelper().serviceDetails(
         //                   'Order Completion Rate',
-        //                   '${provider.serviceAllDetails.orderCompletionRate}%'))
+        //                   '${provider.serviceDetailsModel.orderCompletionRate}%'))
         //         ],
         //       ),
         //       const SizedBox(
@@ -122,12 +126,12 @@ class AboutSellerTab extends StatelessWidget {
         //             child: ServiceHelper().serviceDetails(
         //                 'Seller Since',
         //                 getYear(
-        //                     provider.serviceAllDetails.sellerSince.createdAt)),
+        //                     provider.serviceDetailsModel.sellerSince.createdAt)),
         //           ),
         //           Expanded(
         //               child: ServiceHelper().serviceDetails(
         //                   'Order Completed',
-        //                   provider.serviceAllDetails.sellerCompleteOrder
+        //                   provider.serviceDetailsModel.sellerCompleteOrder
         //                       .toString()))
         //         ],
         //       ),
@@ -145,13 +149,15 @@ class AboutSellerTab extends StatelessWidget {
         //     ],
         //   ),
         // ),
-        DescInHtml(
-          cc: cc,
-          desc: provider.serviceAllDetails.serviceDetails.seller.about
-                  .toString()
-                  .capitalize() ??
-              '',
-        ),
+        provider.serviceDetailsModel.serviceDetails?.seller.about != null
+            ? DescInHtml(
+                cc: cc,
+                desc: provider.serviceDetailsModel.serviceDetails?.seller.about
+                        .toString()
+                        .capitalize() ??
+                    '',
+              )
+            : Offstage(),
       ]),
     );
   }

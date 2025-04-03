@@ -4,7 +4,10 @@
 
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:qixer/model/MyServiceListDataModel.dart';
+import 'package:qixer/model/dropdown_models/area_dropdown_model.dart';
+import 'package:qixer/model/recent_service_model.dart';
 
 ServiceDetailsModel serviceDetailsModelFromJson(String str) =>
     ServiceDetailsModel.fromJson(json.decode(str));
@@ -14,22 +17,22 @@ String serviceDetailsModelToJson(ServiceDetailsModel data) =>
 
 class ServiceDetailsModel {
   ServiceDetailsModel(
-      {required this.serviceDetails,
-      required this.serviceImage,
+      {this.serviceDetails,
+      this.serviceImage,
       this.serviceSellerName,
-      required this.serviceSellerImage,
+      this.serviceSellerImage,
       this.sellerCompleteOrder,
       this.sellerRating,
       this.orderCompletionRate,
       this.sellerFrom,
-      required this.sellerSince,
-      required this.serviceIncludes,
-      required this.serviceBenifits,
-      required this.serviceReviews,
-      required this.reviewerImage,
+      this.sellerSince,
+      this.serviceIncludes,
+      this.serviceBenifits,
+      this.serviceReviews,
+      this.reviewerImage,
       this.videoUrl});
 
-  ServiceDetails serviceDetails;
+  ServiceDetails? serviceDetails;
   Image? serviceImage;
   String? serviceSellerName;
   Image? serviceSellerImage;
@@ -37,11 +40,11 @@ class ServiceDetailsModel {
   int? sellerRating;
   int? orderCompletionRate;
   String? sellerFrom;
-  SellerSince sellerSince;
-  List<ServiceInclude> serviceIncludes;
-  List<ServiceBenifit> serviceBenifits;
-  List<ServiceReview> serviceReviews;
-  List<dynamic> reviewerImage;
+  SellerSince? sellerSince;
+  List<ServiceInclude>? serviceIncludes;
+  List<ServiceBenifit>? serviceBenifits;
+  List<ServiceReview>? serviceReviews;
+  List<dynamic>? reviewerImage;
   String? videoUrl;
 
   factory ServiceDetailsModel.fromJson(Map<String?, dynamic>? json) =>
@@ -69,7 +72,7 @@ class ServiceDetailsModel {
       );
 
   Map<String, dynamic> toJson() => {
-        "service_details": serviceDetails.toJson(),
+        "service_details": serviceDetails?.toJson(),
         "service_image": serviceImage?.toJson(),
         "service_seller_name": serviceSellerName,
         "service_seller_image": serviceSellerImage?.toJson(),
@@ -77,14 +80,15 @@ class ServiceDetailsModel {
         "seller_rating": sellerRating,
         "order_completion_rate": orderCompletionRate,
         "seller_from": sellerFrom,
-        "seller_since": sellerSince.toJson(),
+        "seller_since": sellerSince?.toJson(),
         "service_includes":
-            List<dynamic>.from(serviceIncludes.map((x) => x.toJson())),
+            List<dynamic>.from(serviceIncludes?.map((x) => x.toJson()) ?? {}),
         "service_benifits":
-            List<dynamic>.from(serviceBenifits.map((x) => x.toJson())),
+            List<dynamic>.from(serviceBenifits?.map((x) => x.toJson()) ?? {}),
         "service_reviews":
-            List<dynamic>.from(serviceReviews.map((x) => x.toJson())),
-        "reviewer_image": List<dynamic>.from(reviewerImage.map((x) => x)),
+            List<dynamic>.from(serviceReviews?.map((x) => x.toJson()) ?? {}),
+        "reviewer_image":
+            List<dynamic>.from(reviewerImage?.map((x) => x) ?? {}),
         "video_url": videoUrl,
       };
 }
@@ -183,6 +187,7 @@ class ServiceDetails {
     required this.subcategory,
     required this.reviewsForMobile,
     required this.serviceFaq,
+    this.serviceArea,
   });
 
   int? id;
@@ -209,6 +214,7 @@ class ServiceDetails {
   Subcategory subcategory;
   List<ServiceReview> reviewsForMobile;
   List<ServiceFaq> serviceFaq;
+  List<ServiceArea>? serviceArea;
 
   factory ServiceDetails.fromJson(Map<String, dynamic> json) => ServiceDetails(
         id: json["id"],
@@ -237,6 +243,12 @@ class ServiceDetails {
             json["reviews_for_mobile"].map((x) => ServiceReview.fromJson(x))),
         serviceFaq: List<ServiceFaq>.from(
             json["service_faq"].map((x) => ServiceFaq.fromJson(x))),
+        serviceArea:
+            (json["service_areas"] != null && json["service_areas"] is List)
+                ? List<ServiceArea>.from(json["service_areas"]
+                    .where((x) => x is Map)
+                    .map((x) => ServiceArea.fromJson(x)))
+                : [],
       );
 
   Map<String, dynamic> toJson() => {
@@ -365,30 +377,143 @@ class SellerForMobile {
     this.name,
     this.image,
     this.countryId,
-    required this.country,
+    this.phone,
+    this.serviceCity,
+    this.serviceArea,
+    this.address,
+    this.latitude,
+    this.longitude,
+    this.sellerAddress,
+    this.postCode,
+    this.username,
+    this.businessName,
+    this.businessGstNumber,
+    this.businessPhoneNumber,
+    this.businessEmail,
+    this.businessFullAddress,
+    this.businessDescription,
+    this.workingCategories,
+    this.profileBackground,
+    this.sellerBusinessImg,
+    this.country,
   });
 
   int? id;
   String? name;
   String? image;
   int? countryId;
+  String? phone;
+  String? serviceCity;
+  dynamic serviceArea;
+  String? address;
+  double? latitude;
+  double? longitude;
+  String? sellerAddress;
+  String? postCode;
+  String? username;
+  String? businessName;
+  String? businessGstNumber;
+  String? businessPhoneNumber;
+  String? businessEmail;
+  String? businessFullAddress;
+  String? businessDescription;
+  List<String>? workingCategories;
+  String? profileBackground;
+  dynamic sellerBusinessImg;
   Country? country;
 
-  factory SellerForMobile.fromJson(Map<String, dynamic> json) =>
-      SellerForMobile(
-        id: json["id"],
-        name: json["name"],
-        image: json["image"],
-        countryId: json["country_id"],
-        country:
-            json["country"] == null ? null : Country.fromJson(json["country"]),
-      );
+  factory SellerForMobile.fromJson(Map<String, dynamic> json) {
+    debugPrint(
+        'check service area runtimeType: ${json["service_area"].runtimeType}');
+
+    dynamic serviceArea = json["service_area"];
+
+    // Handle serviceArea field dynamically based on its type
+    if (serviceArea == null) {
+      // Handle null case (e.g., assign a default value or return null)
+      print("Service area is null.");
+      serviceArea =
+          ""; // Assigning a default value or it can be null based on your requirement
+    } else if (serviceArea is String) {
+      // Handle string case
+      print("Service area is a string: $serviceArea");
+    } else if (serviceArea is int) {
+      // Handle int case
+      print("Service area is an integer: $serviceArea");
+      serviceArea = serviceArea.toString(); // Convert to string if needed
+    } else if (serviceArea is List) {
+      // Handle list case
+      print("Service area is a list: $serviceArea");
+      serviceArea = serviceArea.join(", "); // Or handle as per your requirement
+    } else {
+      // Handle any unexpected type
+      print("Unexpected type for service area: $serviceArea");
+      serviceArea = ""; // Fallback handling
+    }
+
+    return SellerForMobile(
+      id: json["id"],
+      name: json["name"],
+      image: json["image"],
+      countryId: json["country_id"],
+      phone: json["phone"],
+      serviceCity: json["service_city"],
+      serviceArea: serviceArea, // Use the processed serviceArea
+      address: json["address"],
+      latitude: json["latitude"] != null
+          ? double.tryParse(json["latitude"].toString())
+          : null,
+      longitude: json["longitude"] != null
+          ? double.tryParse(json["longitude"].toString())
+          : null,
+      sellerAddress: json["seller_address"],
+      postCode: json["post_code"],
+      username: json["username"],
+      businessName: json["businessName"],
+      businessGstNumber: json["businessGstNumber"],
+      businessPhoneNumber: json["businessPhoneNumber"],
+      businessEmail: json["businessEmail"],
+      businessFullAddress: json["businessFullAddress"],
+      businessDescription: json["businessDescription"],
+      workingCategories: json["working_categories"] != null
+          ? List<String>.from(jsonDecode(json["working_categories"]))
+          : [],
+      profileBackground: json["profile_background"],
+      sellerBusinessImg: json["seller_business_img"] is List
+          ? (json["seller_business_img"].isNotEmpty
+              ? json["seller_business_img"][0]
+              : "") // Get first URL if list is not empty
+          : json["seller_business_img"] is String
+              ? json["seller_business_img"] // Single URL string
+              : "",
+      country:
+          json["country"] == null ? null : Country.fromJson(json["country"]),
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         "id": id,
         "name": name,
         "image": image,
         "country_id": countryId,
+        "phone": phone,
+        "service_city": serviceCity,
+        "service_area": jsonEncode(serviceArea),
+        "address": address,
+        "latitude": latitude,
+        "longitude": longitude,
+        "seller_address": sellerAddress,
+        "post_code": postCode,
+        "username": username,
+        "businessName": businessName,
+        "businessGstNumber": businessGstNumber,
+        "businessPhoneNumber": businessPhoneNumber,
+        "businessEmail": businessEmail,
+        "businessFullAddress": businessFullAddress,
+        "businessDescription": businessDescription,
+        "working_categories": jsonEncode(workingCategories),
+        "profile_background": profileBackground,
+        "seller_business_img": sellerBusinessImg,
         "country": country?.toJson(),
       };
 }
@@ -498,6 +623,7 @@ class Seller {
     this.latitude,
     this.longitude,
     this.sellerAddress,
+    this.userServiceArea,
   });
 
   int? id;
@@ -555,7 +681,7 @@ class Seller {
   double? latitude;
   double? longitude;
   String? sellerAddress;
-
+  List<UserServiceArea>? userServiceArea; // ✅ New field for `user_service_area`
   factory Seller.fromJson(Map<String, dynamic> json) => Seller(
         id: json["id"],
         name: json["name"],
@@ -618,6 +744,11 @@ class Seller {
             ? double.tryParse(json["longitude"].toString())
             : null,
         sellerAddress: json["seller_address"],
+        userServiceArea: json["user_service_area"] != null
+            ? (json["user_service_area"] as List)
+                .map((e) => UserServiceArea.fromJson(e))
+                .toList()
+            : [],
       );
 
   Map<String, dynamic> toJson() => {
@@ -677,5 +808,6 @@ class Seller {
         "latitude": latitude,
         "longitude": longitude,
         "seller_address": sellerAddress,
+        "user_service_area": userServiceArea?.map((e) => e.toJson()).toList(),
       };
 }

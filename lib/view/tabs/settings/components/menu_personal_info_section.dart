@@ -5,6 +5,7 @@ import 'package:qixer/service/profile_service.dart';
 import 'package:qixer/view/booking/booking_helper.dart';
 import 'package:qixer/view/utils/common_helper.dart';
 import 'package:qixer/view/utils/constant_styles.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MenuPersonalInfoSection extends StatelessWidget {
   const MenuPersonalInfoSection({super.key});
@@ -23,20 +24,21 @@ class MenuPersonalInfoSection extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       CommonHelper().titleCommon(
-                          asProvider.getString("Personal information's")),
+                        AppLocalizations.of(context)!.personalInformations,
+                      ),
                       const SizedBox(
                         height: 15,
                       ),
                       BookingHelper().bRow(
                           'null',
-                          asProvider.getString("Email"),
+                          AppLocalizations.of(context)!.email,
                           profileProvider.profileDetails.userDetails.email ??
                               ''),
                       profileProvider.profileDetails.userDetails.city == null
                           ? Offstage()
                           : BookingHelper().bRow(
                               'null',
-                              asProvider.getString("City"),
+                              AppLocalizations.of(context)!.state,
                               profileProvider.profileDetails.userDetails.city
                                       .serviceCity ??
                                   ''),
@@ -44,7 +46,7 @@ class MenuPersonalInfoSection extends StatelessWidget {
                           ? Offstage()
                           : BookingHelper().bRow(
                               'null',
-                              asProvider.getString("Area"),
+                              AppLocalizations.of(context)!.city,
                               profileProvider.profileDetails.userDetails.area
                                       .serviceArea ??
                                   ''),
@@ -52,7 +54,7 @@ class MenuPersonalInfoSection extends StatelessWidget {
                           ? Offstage()
                           : BookingHelper().bRow(
                               'null',
-                              asProvider.getString("Country"),
+                              AppLocalizations.of(context)!.country,
                               profileProvider.profileDetails.userDetails.country
                                       .country ??
                                   ''),

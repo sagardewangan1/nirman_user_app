@@ -101,7 +101,8 @@ class EmailVerifyService with ChangeNotifier {
           //save the details for later login
           LoginService().saveDetails(email, token, userId, state, countryId);
           // );
-          await Provider.of<ProfileService>(context, listen: false).fetchData();
+          await Provider.of<ProfileService>(context, listen: false)
+              .fetchData(context);
           await Provider.of<PushNotificationService>(context, listen: false)
               .fetchPusherCredential(context: context);
 

@@ -56,4 +56,60 @@ class GetImageController extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  final ImagePicker pickerForTopBanner = ImagePicker();
+  final ImagePicker pickerForBottomBanner = ImagePicker();
+
+  // Store images mapped to subscription IDs
+  Map<String, File?> _fileForTopBannerMap = {};
+  Map<String, File?> get fileForTopBannerMap => _fileForTopBannerMap;
+
+  Map<String, File?> _fileForBottomBannerMap = {};
+  Map<String, File?> get fileForBottomBannerMap => _fileForBottomBannerMap;
+
+// Pick Image for Top Banner
+  void chooseImageForTopBanner(String subscriptionId) async {
+    final pickedFile = await pickerForTopBanner.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 50,
+      maxHeight: 500,
+      maxWidth: 500,
+    );
+
+    if (pickedFile != null) {
+      _fileForTopBannerMap[subscriptionId] = File(pickedFile.path);
+    }
+
+    // Corrected print statement
+    print(
+        "_fileForTopBannerMap: ${_fileForTopBannerMap.map((key, value) => MapEntry(key, value?.path))}");
+    notifyListeners();
+  }
+
+// Pick Image for Bottom Banner
+  void chooseImageForBottomBanner(String subscriptionId) async {
+    final pickedFile = await pickerForBottomBanner.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 50,
+      maxHeight: 500,
+      maxWidth: 500,
+    );
+
+    if (pickedFile != null) {
+      _fileForBottomBannerMap[subscriptionId] = File(pickedFile.path);
+    }
+
+    // Corrected print statement
+    print(
+        "_fileForBottomBannerMap: ${_fileForBottomBannerMap.map((key, value) => MapEntry(key, value?.path))}");
+    notifyListeners();
+  }
+
+  void removeBannerImages() {
+    if (_fileForTopBannerMap.isNotEmpty || _fileForBottomBannerMap.isNotEmpty) {
+      _fileForTopBannerMap.clear();
+      _fileForBottomBannerMap.clear();
+      notifyListeners();
+    }
+  }
 }

@@ -1,4 +1,6 @@
 import 'package:provider/provider.dart';
+import 'package:qixer/service/cityAndAreaController/cityAndAreaController.dart';
+import 'package:qixer/service/home_services/landingPageService.dart';
 import 'package:qixer/service/languageController/languageController.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/single_child_widget.dart';
@@ -150,6 +152,8 @@ class AppInitializer {
       ChangeNotifierProvider(create: (_) => GetImageController()),
       ChangeNotifierProvider(create: (_) => LeadsController()),
       ChangeNotifierProvider(create: (_) => VendorDashboardService()),
+      ChangeNotifierProvider(create: (_) => LandingPageService()),
+      ChangeNotifierProvider(create: (_) => CityAndAreaController()),
     ];
   }
 }

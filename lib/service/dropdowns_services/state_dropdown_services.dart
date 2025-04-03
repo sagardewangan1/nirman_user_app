@@ -7,6 +7,7 @@ import 'package:qixer/model/dropdown_models/states_dropdown_model.dart';
 import 'package:qixer/service/dropdowns_services/country_dropdown_service.dart';
 import 'package:qixer/service/profile_service.dart';
 import 'package:qixer/view/utils/others_helper.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class StateDropdownService with ChangeNotifier {
   var statesDropdownList = [];
@@ -64,44 +65,51 @@ class StateDropdownService with ChangeNotifier {
   Future<bool> fetchStates(BuildContext context,
       {bool isrefresh = false}) async {
     if (isrefresh) {
-      //making the list empty first to show loading bar (we are showing loading bar while the product list is empty)
-      //we are make the list empty when the sub category or brand is selected because then the refresh is true
+      // ✅ Sirf refresh pe puri list clear ho
+      statesDropdownList.clear();
+      statesDropdownIndexList.clear();
       setStateDefault();
-
-      setCurrentPage(currentPage);
+      setCurrentPage(1);
+    } else if (currentPage == 1) {
+      // ✅ Sirf page 1 load hone pe ek baar clear ho, baaki pages sirf naye data add karein
+      statesDropdownList.clear();
+      statesDropdownIndexList.clear();
     }
 
     var selectedCountryId =
         Provider.of<CountryDropdownService>(context, listen: false)
             .selectedCountryId;
+    String url =
+        '$baseApi/country/service-city/$selectedCountryId?page=$currentPage';
 
-    var response = await http.get(Uri.parse(
-        '$baseApi/country/service-city/$selectedCountryId?page=$currentPage'));
+    var response = await http.get(Uri.parse(url));
+    print("url states====> $url");
 
-    if ((response.statusCode == 200 || response.statusCode == 201) &&
-        jsonDecode(response.body)['service_cities']['data'].isNotEmpty) {
-      var data = StatesDropdownModel.fromJson(jsonDecode(response.body));
-      for (int i = 0; i < data.serviceCities.data.length; i++) {
-        statesDropdownList.add(data.serviceCities.data[i].serviceCity);
-        statesDropdownIndexList.add(data.serviceCities.data[i].id);
+    if ((response.statusCode == 200 || response.statusCode == 201)) {
+      var jsonResponse = jsonDecode(response.body);
+      var data = StatesDropdownModel.fromJson(jsonResponse);
+
+      if (data.serviceCities.data.isNotEmpty) {
+        for (var city in data.serviceCities.data) {
+          statesDropdownList.add(city.serviceCity);
+          statesDropdownIndexList.add(city.id);
+        }
+
+        notifyListeners();
+
+        // ✅ Pagination: Next Page ho to sirf naye data add ho
+        if (jsonResponse['service_cities']['next_page_url'] != null) {
+          currentPage++;
+          setCurrentPage(currentPage);
+        } else {
+          // refreshController.loadNoData();
+        }
+
+        return true;
       }
-
-      set_State(context, data: data);
-      notifyListeners();
-
-      currentPage++;
-      setCurrentPage(currentPage);
-
-      return true;
-    } else {
-      //error fetching data
-      statesDropdownList.add('Select City');
-      statesDropdownIndexList.add(defaultId);
-      selectedState = 'Select City';
-      selectedStateId = defaultId;
-      notifyListeners();
-      return false;
     }
+
+    return false;
   }
 
   //Set state based on user profile
@@ -168,32 +176,43 @@ class StateDropdownService with ChangeNotifier {
 
   Future<bool> searchState(BuildContext context, String searchText,
       {bool isrefresh = false, bool isSearching = false}) async {
+    if (searchText.trim().isEmpty) {
+      // ✅ Agar search text empty ho gaya, to poora list reload ho
+      return fetchStates(context, isrefresh: true);
+    }
+
     if (isSearching) {
       setStateDefault();
     }
 
-    var response =
-        await http.get(Uri.parse('$baseApi/city-search?q=$searchText'));
+    var url = Uri.parse('$baseApi/city-search?q=$searchText');
+    print("🔍 Searching for: $searchText");
+    var response = await http.get(url);
+
     if ((response.statusCode == 200 || response.statusCode == 201) &&
         jsonDecode(response.body)['service_cities']['data'].isNotEmpty) {
+      // ✅ Purani list clear karke naye search results add karo
+      statesDropdownList.clear();
+      statesDropdownIndexList.clear();
+
       var data = StatesDropdownModel.fromJson(jsonDecode(response.body));
-      for (int i = 0; i < data.serviceCities.data.length; i++) {
-        statesDropdownList.add(data.serviceCities.data[i].serviceCity);
-        statesDropdownIndexList.add(data.serviceCities.data[i].id);
+      for (var city in data.serviceCities.data) {
+        statesDropdownList.add(city.serviceCity);
+        statesDropdownIndexList.add(city.id);
       }
 
       notifyListeners();
-
-      currentPage++;
-      setCurrentPage(currentPage);
-
+      currentPage = 1; // ✅ Reset page number for next pagination
       return true;
     } else {
-      //error fetching data
-      statesDropdownList.add('Select City');
-      statesDropdownIndexList.add(defaultId);
-      selectedState = 'Select City';
-      selectedStateId = defaultId;
+      // ✅ Agar koi result nahi mila, to default state dikhayein
+      if (!statesDropdownList
+          .contains(AppLocalizations.of(context)!.selectState)) {
+        statesDropdownList.add(AppLocalizations.of(context)!.selectState);
+        statesDropdownIndexList.add(defaultId);
+        selectedState = AppLocalizations.of(context)!.selectState;
+        selectedStateId = defaultId;
+      }
       notifyListeners();
       return false;
     }

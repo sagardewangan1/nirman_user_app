@@ -10,14 +10,17 @@ import 'package:qixer/service/app_string_service.dart';
 import 'package:qixer/service/auth_services/delete_account_service.dart';
 import 'package:qixer/service/auth_services/logout_service.dart';
 import 'package:qixer/view/intro/splash.dart';
+import 'package:qixer/view/selectionRole/selectionRoleView.dart';
 import 'package:qixer/view/utils/common_helper.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:qixer/view/utils/custom_input.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../service/auth_services/facebook_login_service.dart';
 import '../../../service/auth_services/google_sign_service.dart';
 import '../../home/homepage_helper.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SettingsHelper {
   ConstantColors cc = ConstantColors();
@@ -39,13 +42,24 @@ class SettingsHelper {
     SettingsGridCard('assets/svg/receipt-circle.svg', 'Total orders'),
   ];
 
-  settingOption(String icon, String title, VoidCallback pressed) {
+  settingOption(
+      String icon, String title, VoidCallback pressed, BuildContext context) {
     return ListTile(
       onTap: pressed,
-      leading: SvgPicture.asset(
-        icon,
-        height: 35,
-      ),
+      leading: icon.contains('.svg')
+          ? SvgPicture.asset(
+              icon,
+              height: 35,
+            )
+          : CircleAvatar(
+              radius: 17,
+              backgroundColor: Colors.grey.shade300.withOpacity(0.8),
+              child: Image.asset(
+                icon,
+                color: cc.black3,
+                height: 22,
+              ),
+            ),
       title: Text(
         title,
         style: TextStyle(color: cc.greyFour, fontSize: 14),
@@ -91,7 +105,7 @@ class SettingsHelper {
             builder: (context, asProvider, child) => Column(
               children: [
                 Text(
-                  '${asProvider.getString('Are you sure?')}',
+                  AppLocalizations.of(context)!.areYouSure,
                   style: TextStyle(color: cc.greyPrimary, fontSize: 17),
                 ),
                 const SizedBox(
@@ -101,7 +115,7 @@ class SettingsHelper {
                   children: [
                     Expanded(
                         child: CommonHelper().borderButtonOrange(
-                            asProvider.getString('Cancel'), () {
+                            AppLocalizations.of(context)!.cancel, () {
                       Navigator.pop(context);
                     })),
                     const SizedBox(
@@ -110,16 +124,14 @@ class SettingsHelper {
                     Consumer<LogoutService>(
                       builder: (context, provider, child) => Expanded(
                           child: CommonHelper().buttonOrange(
-                              asProvider.getString('Logout'), () {
+                              AppLocalizations.of(context)!.logout, () async {
                         if (provider.isloading == false) {
-                          provider.logout(context);
-                          SharedPreferencesHelper.clearData();
-                          //if logged in by google then logout from it
-                          GoogleSignInService().logOutFromGoogleLogin();
-                          //if logged in by facebook then logout from it
-                          FacebookLoginService().logoutFromFacebook();
-                          HomepageHelper.tabIndex.value =
-                              0; // ✅ Ensure it starts from Home
+                          final pref = await SharedPreferences.getInstance();
+                          String token =
+                              pref.getString("shashaktnirmantoken") ?? '';
+                          if (token.isNotEmpty) {
+                            provider.logout(context);
+                          }
                         }
                       },
                               isloading:
@@ -176,14 +188,15 @@ class SettingsHelper {
                 size: 34,
               ),
               Text(
-                '${asProvider.getString('Are you sure? Do you want to permanently delete your service?')}',
+                AppLocalizations.of(context)!.deleteDialogueText,
                 style: TextStyle(color: cc.greyPrimary, fontSize: 17),
               ),
               const SizedBox(height: 25),
               Row(
                 children: [
                   Expanded(
-                    child: CommonHelper().borderButtonOrange("Cancel", () {
+                    child: CommonHelper().borderButtonOrange(
+                        AppLocalizations.of(context)!.delete, () {
                       Navigator.pop(context);
                       completer.complete(false); // Return false on cancel
                     }),
@@ -192,7 +205,7 @@ class SettingsHelper {
                   Consumer<AddServiceController>(
                     builder: (context, provider, child) => Expanded(
                       child: CommonHelper().buttonOrange(
-                        "Delete",
+                        AppLocalizations.of(context)!.delete,
                         () {
                           if (!provider.isLoading2) {
                             provider.deleteService(serviceId: serviceId).then(
@@ -254,19 +267,19 @@ class SettingsHelper {
             builder: (context, asProvider, child) => Column(
               children: [
                 Text(
-                  '${asProvider.getString('Are you sure?')}',
+                  AppLocalizations.of(context)!.areYouSure,
                   style: TextStyle(color: cc.greyPrimary, fontSize: 17),
                 ),
                 const SizedBox(height: 25),
                 CustomInput(
                     controller: passwordController,
-                    hintText: asProvider.getString("Enter password")),
+                    hintText: AppLocalizations.of(context)!.enterPassword),
                 const SizedBox(height: 12),
                 Row(
                   children: [
                     Expanded(
                         child: CommonHelper().borderButtonOrange(
-                            asProvider.getString('Cancel'), () {
+                            AppLocalizations.of(context)!.cancel, () {
                       Navigator.pop(context);
                     })),
                     const SizedBox(
@@ -275,7 +288,7 @@ class SettingsHelper {
                     Consumer<DeleteAccountService>(
                       builder: (context, provider, child) => Expanded(
                           child: CommonHelper().buttonOrange(
-                              asProvider.getString('Delete'), () {
+                              AppLocalizations.of(context)!.delete, () {
                         if (provider.isloading == false) {
                           // provider.deleteAccount(
                           //     context, _passwordController.text);

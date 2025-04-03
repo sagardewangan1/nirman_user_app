@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:qixer/helper/extension/context_extension.dart';
 import 'package:qixer/service/common_service.dart';
+import 'package:qixer/service/profile_service.dart';
+import 'package:qixer/service/push_notification_service.dart';
 import 'package:qixer/view/home/landing_page.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:qixer/view/utils/others_helper.dart';
 import 'package:qixer/view/utils/responsive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'introduction_page.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -28,26 +30,43 @@ class _SplashScreenState extends State<SplashScreen> {
     //run when app starts
   }
 
-  startInitialization(BuildContext context) async {
-    await runAtstart(context);
-    initializeLNProvider(context);
+  startInitialization(BuildContext contextBuild) async {
+    // PushNotifications.start(
+    //     getApplicationContext(), "03806d23-cb51-408f-b104-935f01fb08a9");
+    // PushNotifications.addDeviceInterest("hello");
+    // await runAtstart(context);
+    initializeLNProvider(contextBuild);
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool? intro = prefs.getBool('intro');
     bool? isLogin = prefs.getBool('shashaktnirman_is_logged_in');
-    debugPrint(intro.toString());
-    if (isLogin == false || isLogin == null) {
-      //that means user is opening the app for the first time.. so , show the intro
-      Future.delayed(const Duration(microseconds: 2), () {
-        Navigator.pushReplacement<void, void>(
-          context,
+    // await Provider.of<PushNotificationService>(context, listen: false)
+    //     .fetchPusherCredential(context: context);
+    Future.delayed(const Duration(seconds: 8), () async {
+      if (isLogin == false || isLogin == null) {
+        Navigator.pushReplacement(
+          contextBuild,
           MaterialPageRoute<void>(
             builder: (BuildContext context) => const IntroductionPage(),
           ),
         );
-      });
-      return;
-    }
-    context.toUntilPage(const LandingPage());
+        return;
+      } else {
+        var senderId = prefs.getString('shashaktnirmanUserId');
+        await Provider.of<PushNotificationService>(contextBuild, listen: false)
+            .fetchPusherCredential(context: contextBuild);
+        Provider.of<PushNotificationService>(context, listen: false)
+            .sendNotificationToSeller(context,
+                sellerId: senderId,
+                title: 'New Lead',
+                body: 'You have a new lead request.');
+        Navigator.pushAndRemoveUntil(
+          contextBuild,
+          MaterialPageRoute<void>(
+            builder: (BuildContext context) => const LandingPage(),
+          ),
+          (route) => false,
+        );
+      }
+    });
   }
 
   @override
@@ -60,31 +79,34 @@ class _SplashScreenState extends State<SplashScreen> {
       width: double.infinity,
       alignment: Alignment.center,
       decoration: const BoxDecoration(
-        color: Colors.white,
-      ),
+          color: Colors.white,
+          image: DecorationImage(
+              fit: BoxFit.fill,
+              image: AssetImage("assets/gif/splash_screen.gif"))),
+
       // color: ConstantColors().primaryColor,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            height: 250,
-            width: double.infinity,
-            decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: AssetImage(appLogoIcon), fit: BoxFit.fitHeight)),
-          ),
-          // const SizedBox(height: 24),
-          // OthersHelper().showLoading(ConstantColors().primaryColor),
-          // const SizedBox(height: 24),
-          // Text(
-          //   appVersion,
-          //   style: TextStyle(
-          //       fontSize: 14,
-          //       color: ConstantColors().greyFour,
-          //       fontWeight: FontWeight.w600),
-          // )
-        ],
-      ),
+      // child: Column(
+      //   mainAxisAlignment: MainAxisAlignment.center,
+      //   children: [
+      //     Container(
+      //       height: 270,
+      //       width: double.infinity,
+      //       decoration: BoxDecoration(
+      //           image: DecorationImage(
+      //               image: AssetImage(appLogoIcon), fit: BoxFit.fitHeight)),
+      //     ),
+      //     // const SizedBox(height: 24),
+      //     // OthersHelper().showLoading(ConstantColors().primaryColor),
+      //     // const SizedBox(height: 24),
+      //     // Text(
+      //     //   appVersion,
+      //     //   style: TextStyle(
+      //     //       fontSize: 14,
+      //     //       color: ConstantColors().greyFour,
+      //     //       fontWeight: FontWeight.w600),
+      //     // )
+      //   ],
+      // ),
     ));
   }
 }

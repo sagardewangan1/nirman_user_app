@@ -9,6 +9,7 @@ import 'package:qixer/view/home/top_all_service_page.dart';
 import 'package:qixer/view/services/service_details_page.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:qixer/view/utils/others_helper.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TopRatedServices extends StatelessWidget {
   const TopRatedServices({
@@ -32,7 +33,7 @@ class TopRatedServices extends StatelessWidget {
                     ),
                     SectionTitle(
                       cc: cc,
-                      title: asProvider.getString('Top booked services'),
+                      title: AppLocalizations.of(context)!.topServices,
                       pressed: () {
                         Navigator.push(
                           context,

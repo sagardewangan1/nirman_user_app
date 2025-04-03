@@ -77,51 +77,50 @@ removeDollar(value) {
   return value.replaceAll(RegExp('[^0-9.]'), '');
 }
 
-runAtstart(BuildContext context) async {
-  Provider.of<RtlService>(context, listen: false).fetchCurrency();
-  //language direction (ltr or rtl)
-  await Provider.of<RtlService>(context, listen: false).fetchDirection(context);
-  await Provider.of<ProfileService>(context, listen: false).fetchData();
-//fetch translated strings
-  // Provider.of<AppStringService>(context, listen: false)
-  //     .fetchTranslatedStrings();243|IRU2ztxfHA51Vkk8uCTYgPAQG6uvSWcbqsGZkYBQ36d4bdff
-}
+// runAtstart(BuildContext context) async {
+//   Provider.of<RtlService>(context, listen: false).fetchCurrency();
+//   //language direction (ltr or rtl)
+//   await Provider.of<RtlService>(context, listen: false).fetchDirection(context);
+//   await Provider.of<ProfileService>(context, listen: false).fetchData();
+// //fetch translated strings
+//   // Provider.of<AppStringService>(context, listen: false)
+//   //     .fetchTranslatedStrings();243|IRU2ztxfHA51Vkk8uCTYgPAQG6uvSWcbqsGZkYBQ36d4bdff
+// }
+//----------------------------------------------------------------------------//
+// Future<void> runAtHome(BuildContext context) async {
+//   try {
+//     // Store the context in a local variable
+//     final BuildContext localContext = context;
+//
 
-Future<void> runAtHome(BuildContext context) async {
-  try {
-    // Store the context in a local variable
-    final BuildContext localContext = context;
-
-    await Provider.of<PushNotificationService>(localContext, listen: false)
-        .fetchPusherCredential(context: localContext);
-
-    Provider.of<SliderService>(localContext, listen: false).loadSlider();
-
-    final int? cityId = localContext.read<RecentJobsService>().cityID;
-    print("cityId= $cityId");
-
-    Provider.of<CategoryService>(localContext, listen: false)
-        .fetchCategory(location_id: cityId?.toString() ?? '');
-
-    Provider.of<TopRatedServicesSerivce>(localContext, listen: false)
-        .fetchTopService();
-
-    Provider.of<RecentServicesService>(localContext, listen: false)
-        .fetchRecentService();
-
-    Provider.of<RecentJobsService>(localContext, listen: false)
-        .fetchRecentJobs(localContext);
-
-    Provider.of<RecentJobsService>(localContext, listen: false)
-        .fetchAllCities(localContext);
-
-    Provider.of<ProfileService>(localContext, listen: false)
-        .getProfileDetails();
-
-    // Provider.of<CountryStatesService>(localContext, listen: false)
-    //     .fetchCountries(localContext);
-
-    Provider.of<PermissionsService>(localContext, listen: false)
-        .fetchUserPermissions(localContext);
-  } catch (e, stackTrace) {}
-}
+//
+//     Provider.of<SliderService>(localContext, listen: false).loadSlider();
+//
+//     final int? cityId = localContext.read<RecentJobsService>().cityID ?? 0;
+//     print("cityId= $cityId");
+//
+//     Provider.of<CategoryService>(localContext, listen: false)
+//         .fetchCategory(location_id: cityId?.toString() ?? '');
+//
+//     Provider.of<TopRatedServicesSerivce>(localContext, listen: false)
+//         .fetchTopService();
+//
+//     Provider.of<RecentServicesService>(localContext, listen: false)
+//         .fetchRecentService(context: context);
+//
+//     Provider.of<RecentJobsService>(localContext, listen: false)
+//         .fetchRecentJobs(localContext);
+//
+//     Provider.of<RecentJobsService>(localContext, listen: false)
+//         .fetchAllCities(localContext);
+//
+//     Provider.of<ProfileService>(localContext, listen: false)
+//         .getProfileDetails();
+//
+//     // Provider.of<CountryStatesService>(localContext, listen: false)
+//     //     .fetchCountries(localContext);
+//
+//     Provider.of<PermissionsService>(localContext, listen: false)
+//         .fetchUserPermissions(localContext);
+//   } catch (e, stackTrace) {}
+// }

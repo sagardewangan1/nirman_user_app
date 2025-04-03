@@ -6,6 +6,7 @@ import 'package:qixer/view/auth/signup/components/email_name_fields.dart';
 import 'package:qixer/view/utils/common_helper.dart';
 
 import '../../../utils/constant_colors.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SignupVendorEmailName extends StatefulWidget {
   const SignupVendorEmailName({
@@ -69,7 +70,8 @@ class _SignupVendorEmailNameState extends State<SignupVendorEmailName> {
               ),
               Consumer<SignupVendorService>(
                 builder: (context, provider, child) => CommonHelper()
-                    .buttonOrange(asProvider.getString("Continue"), () {
+                    .buttonOrange(AppLocalizations.of(context)!.continueText,
+                        () {
                   if (_formKey.currentState!.validate()) {
                     provider.pagecontroller.animateToPage(
                       provider.selectedPage + 1,

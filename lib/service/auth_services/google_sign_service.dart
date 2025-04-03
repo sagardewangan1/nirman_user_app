@@ -95,7 +95,7 @@ class GoogleSignInService with ChangeNotifier {
         await saveDetailsAfterSocialLogin(
             email, username, token, userId, isGoogleLogin);
         await Provider.of<ProfileService>(context, listen: false)
-            .getProfileDetails();
+            .getProfileDetails(context: context);
         await Provider.of<PushNotificationService>(context, listen: false)
             .fetchPusherCredential(context: context);
         var pusherInstance =

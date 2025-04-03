@@ -11,6 +11,7 @@ import 'package:qixer/view/utils/field_label.dart';
 import '../../../service/filter_services_service.dart';
 import '../../utils/constant_colors.dart';
 import '../../utils/responsive.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class FilterSheet extends StatelessWidget {
   const FilterSheet({super.key});
@@ -53,7 +54,7 @@ class FilterSheet extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 16.toHeight,
-                const FieldLabel(label: "Sort By"),
+                FieldLabel(label: AppLocalizations.of(context)!.sortBy),
                 ValueListenableBuilder<SortModel?>(
                   valueListenable: sfm.selectedSorting,
                   builder: (context, sort, child) {
@@ -138,7 +139,8 @@ class FilterSheet extends StatelessWidget {
                                     rating: null);
                             context.popFalse;
                           },
-                          child: Text(lnProvider.getString("Clear Filter"))),
+                          child:
+                              Text(AppLocalizations.of(context)!.clearFilter)),
                     ),
                     16.toWidth,
                     Expanded(
@@ -161,7 +163,8 @@ class FilterSheet extends StatelessWidget {
                                     rating: sfm.rating.value);
                             context.popFalse;
                           },
-                          child: Text(lnProvider.getString("Apply Filter"))),
+                          child:
+                              Text(AppLocalizations.of(context)!.applyFilter)),
                     ),
                   ],
                 ),

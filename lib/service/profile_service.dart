@@ -4,47 +4,51 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:qixer/model/profile_model.dart';
 import 'package:qixer/service/common_service.dart';
+import 'package:qixer/view/selectionRole/selectionRoleView.dart';
 import 'package:qixer/view/utils/others_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileService with ChangeNotifier {
-  bool isloading = false;
+  bool _isloading = false;
+  bool get isloading => _isloading;
 
   var profileDetails;
   var profileImage;
+  var businessProfile;
 
   List ordersList = [0, 0, 0, 0];
   setLoadingTrue() {
-    isloading = true;
+    _isloading = true;
     notifyListeners();
   }
 
   setLoadingFalse() {
-    isloading = false;
+    _isloading = false;
     notifyListeners();
   }
 
   setEverythingToDefault() {
     profileDetails = null;
     profileImage = null;
+    businessProfile = null;
     ordersList = [0, 0, 0, 0];
+
     // notifyListeners();
   }
 
-  Future<bool> getProfileDetails({bool isFromProfileupdatePage = false}) async {
+  Future<bool> getProfileDetails(
+      {bool isFromProfileupdatePage = false,
+      required BuildContext context}) async {
     if (isFromProfileupdatePage == true) {
       //if from update profile page then load it anyway
-
       setEverythingToDefault();
       print("calling profile service");
-      await fetchData();
+      await fetchData(context);
       return true;
     } else {
-      //not from profile page. check if data already loaded
-
       if (profileDetails == null) {
         print("calling profile service2222");
-        fetchData();
+        fetchData(context);
         return true;
       } else {
         return true;
@@ -52,16 +56,24 @@ class ProfileService with ChangeNotifier {
     }
   }
 
-  Future<bool> fetchData() async {
+  bool _isLoggedIn = false;
+  bool get isLoggedIn => _isLoggedIn;
+
+  getLoggedIn() async {
+    final pref = await SharedPreferences.getInstance();
+    _isLoggedIn = pref.getBool("shashaktnirman_is_logged_in") ?? false;
+    print("isLoggedIn ===> $_isLoggedIn");
+    notifyListeners();
+  }
+
+  Future<bool> fetchData(BuildContext context) async {
+    _isloading = true;
     print("token form profile=====>");
     var connection = await checkConnection();
     if (!connection) return false;
     //internet connection is on
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var token = prefs.getString('shashaktnirmantoken');
-
-    setLoadingTrue();
-
     var header = {
       //if header type is application/json then the data should be in jsonEncode method
       "Accept": "application/json",
@@ -74,6 +86,7 @@ class ProfileService with ChangeNotifier {
     print("headers====> $header");
     if (response.statusCode == 201) {
       var data = ProfileModel.fromJson(jsonDecode(response.body));
+      debugPrint("business name ====> ${data.userDetails?.businessName}");
       profileDetails = data;
       ordersList[0] = profileDetails.pendingOrder;
       ordersList[1] = profileDetails.activeOrder;
@@ -85,17 +98,32 @@ class ProfileService with ChangeNotifier {
       } else {
         profileImage = jsonDecode(response.body)['profile_image']['img_url'];
       }
-
-      setLoadingFalse();
+      print(
+          "image business ===> ${jsonDecode(response.body)['business_profile_image']}");
+      if (jsonDecode(response.body)['business_profile_image'] is List) {
+        //then dont do anything because it means image is missing from database
+      } else {
+        businessProfile =
+            jsonDecode(response.body)['business_profile_image']['img_url'];
+      }
+      _isloading = false;
       notifyListeners();
       return true;
     } else {
+      var decodedBody = jsonDecode(response.body);
       debugPrint(response.body.toString());
+      debugPrint("message :==== ${decodedBody['message']}");
+      if (decodedBody['message'] == "Unauthenticated.") {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SelectionRoleView(hasBackButton: false),
+            ));
+      }
       profileDetails == 'error';
-      setLoadingFalse();
       // OthersHelper().showToast('Something went wrong', Colors.black);
+      _isloading = false;
       notifyListeners();
-
       return false;
     }
   }

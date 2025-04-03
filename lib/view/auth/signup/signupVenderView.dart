@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qixer/model/navigationModel.dart';
 import 'package:qixer/service/app_string_service.dart';
+import 'package:qixer/service/dropdowns_services/state_dropdown_services.dart';
 import 'package:qixer/view/auth/signup/pages/signupVenderEmailName.dart';
 import 'package:qixer/view/auth/signup/pages/signupVendorBussinessDetails.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../service/auth_services/signUpVendorService.dart';
 import '../../../service/auth_services/signup_service.dart';
 import '../../utils/common_helper.dart';
@@ -49,14 +50,14 @@ class _SignUpVendorViewState extends State<SignUpVendorView> {
     String? email;
     String? pass;
     String? number;
-    if (shashaktnirman_is_logged_in) {
-      email = prefs.getString('shashaktnirmanemail');
-      pass = prefs.getString("pass");
-      number = prefs.getString("shashaktnirmanphone");
-      print("number===> $number");
-    }
+    print("is logged in ====> ${shashaktnirman_is_logged_in}");
+    email = prefs.getString('shashaktnirmanemail');
+    pass = prefs.getString("pass");
+    number = prefs.getString("shashaktnirmanphone");
+    print("number===> $number");
+    print("email===> ${prefs.getString('shashaktnirmanemail')}");
 
-    if (email!.isNotEmpty) {
+    if (email != null) {
       emailController.text = email ?? "";
       signUpController.setReadOnly(true);
     } else {
@@ -87,6 +88,7 @@ class _SignUpVendorViewState extends State<SignUpVendorView> {
         builder: (context, provider, child) => WillPopScope(
           onWillPop: () {
             if (provider.selectedPage == 0) {
+              context.read<StateDropdownService>().setStateDefault();
               return Future.value(true);
             } else {
               context.read<SignupVendorService>().pagecontroller.animateToPage(
@@ -99,7 +101,8 @@ class _SignUpVendorViewState extends State<SignUpVendorView> {
           },
           child: Scaffold(
             backgroundColor: Colors.white,
-            appBar: CommonHelper().appbarCommon('', context, () {
+            appBar: CommonHelper().appbarCommon(
+                AppLocalizations.of(context)!.addYourDetails, context, () {
               if (provider.selectedPage == 0) {
                 Navigator.pop(context);
               } else {
@@ -129,7 +132,8 @@ class _SignUpVendorViewState extends State<SignUpVendorView> {
 
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 25),
-                      child: CommonHelper().titleCommon("Add Your Details"),
+                      child: CommonHelper().titleCommon(
+                          AppLocalizations.of(context)!.shareSubject),
                     ),
 
                     const SizedBox(

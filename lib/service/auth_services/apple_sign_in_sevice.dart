@@ -95,7 +95,7 @@ class AppleSignInService with ChangeNotifier {
         await saveDetailsAfterSocialLogin(
             email, username, token, userId, userToken, isAppleLogin, appleId);
         await Provider.of<ProfileService>(context, listen: false)
-            .getProfileDetails();
+            .getProfileDetails(context: context);
         await Provider.of<PushNotificationService>(context, listen: false)
             .fetchPusherCredential(context: context);
         setLoadingFalse();

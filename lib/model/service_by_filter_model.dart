@@ -143,9 +143,10 @@ class Datum {
         isServiceOnline:
             json["is_service_online"].toString().tryToParse.toInt(),
         serviceCityId: json["service_city_id"].toString().tryToParse.toInt(),
-        sellerForMobile: json["seller_for_mobile"] == null
-            ? null
-            : SellerForMobile.fromJson(json["seller_for_mobile"]),
+        sellerForMobile: (json["seller_for_mobile"] != null &&
+                json["seller_for_mobile"] is Map)
+            ? SellerForMobile.fromJson(json["seller_for_mobile"])
+            : null,
         serviceAreas: json["service_areas"] == null
             ? []
             : List<ServiceAreas>.from(
@@ -245,5 +246,194 @@ class ServiceImage {
         "path": path,
         "img_url": imgUrl,
         "img_alt": imgAlt,
+      };
+}
+
+class SellerForMobile {
+  SellerForMobile({
+    this.id,
+    this.name,
+    this.image,
+    this.countryId,
+    this.phone,
+    this.serviceCity,
+    this.serviceArea,
+    this.address,
+    this.latitude,
+    this.longitude,
+    this.sellerAddress,
+    this.postCode,
+    this.username,
+    this.businessName,
+    this.businessGstNumber,
+    this.businessPhoneNumber,
+    this.businessEmail,
+    this.businessFullAddress,
+    this.businessDescription,
+    this.sellerBusinessImg,
+    this.workingCategories,
+    this.userServiceArea,
+  });
+
+  int? id;
+  String? name;
+  String? image;
+  int? countryId;
+  String? phone;
+  String? serviceCity;
+  List<int>?
+      serviceArea; // 🔥 Convert service_area from JSON string to List<int>
+  String? address;
+  double? latitude;
+  double? longitude;
+  String? sellerAddress;
+  String? postCode;
+  String? username;
+  String? businessName;
+  String? businessGstNumber;
+  String? businessPhoneNumber;
+  String? businessEmail;
+  String? businessFullAddress;
+  String? businessDescription;
+  String? sellerBusinessImg;
+  String? workingCategories;
+  List<UserServiceArea>? userServiceArea; // ✅ New field for `user_service_area`
+
+  factory SellerForMobile.fromJson(Map<String, dynamic> json) =>
+      SellerForMobile(
+        id: json["id"] as int?,
+        name: json["name"],
+        image: json["image"],
+        countryId: json["country_id"] as int?,
+        phone: json["phone"],
+        serviceCity: json["service_city"],
+        // ✅ Fix `service_area` parsing issue
+        serviceArea: json["service_area"] != null
+            ? (json["service_area"] is String
+                ? (jsonDecode(json["service_area"]) is List<dynamic>
+                    ? (jsonDecode(json["service_area"]) as List<dynamic>)
+                        .map((e) => int.tryParse(e.toString()) ?? 0)
+                        .toList()
+                    : [
+                        int.tryParse(json["service_area"]) ?? 0
+                      ]) // If it's a single int in string form
+                : (json["service_area"] is int
+                    ? [
+                        json["service_area"]
+                      ] // If it's a single integer, wrap in a list
+                    : (json["service_area"] as List<dynamic>)
+                        .map((e) => int.tryParse(e.toString()) ?? 0)
+                        .toList()))
+            : [],
+        address: json["address"],
+
+        // ✅ Fix latitude/longitude conversion issues
+        latitude:
+            (json["latitude"] != null && json["latitude"].toString().isNotEmpty)
+                ? double.tryParse(json["latitude"].toString())
+                : null,
+        longitude: (json["longitude"] != null &&
+                json["longitude"].toString().isNotEmpty)
+            ? double.tryParse(json["longitude"].toString())
+            : null,
+
+        sellerAddress: json["seller_address"],
+        postCode: json["post_code"],
+        username: json["username"],
+        businessName: json["businessName"],
+        businessGstNumber: json["businessGstNumber"],
+        businessPhoneNumber: json["businessPhoneNumber"],
+        businessEmail: json["businessEmail"],
+        businessFullAddress: json["businessFullAddress"],
+        businessDescription: json["businessDescription"],
+        sellerBusinessImg: (json["seller_business_img"] != null &&
+                json["seller_business_img"] is String &&
+                json["seller_business_img"].isNotEmpty)
+            ? json["seller_business_img"]
+            : '',
+        workingCategories: json["working_categories"] != null
+            ? (json["working_categories"] is String
+                ? jsonDecode(json["working_categories"])
+                    .map((e) => e.toString())
+                    .join(",")
+                : json["working_categories"].toString())
+            : null,
+
+        // ✅ Fix `user_service_area` parsing issue
+        userServiceArea: (json["user_service_area"] is List)
+            ? (json["user_service_area"] as List)
+                .map((e) => UserServiceArea.fromJson(e))
+                .toList()
+            : [],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "name": name,
+        "image": image,
+        "country_id": countryId,
+        "phone": phone,
+        "service_city": serviceCity,
+        "service_area": serviceArea,
+        "address": address,
+        "latitude": latitude,
+        "longitude": longitude,
+        "seller_address": sellerAddress,
+        "post_code": postCode,
+        "username": username,
+        "businessName": businessName,
+        "businessGstNumber": businessGstNumber,
+        "businessPhoneNumber": businessPhoneNumber,
+        "businessEmail": businessEmail,
+        "businessFullAddress": businessFullAddress,
+        "businessDescription": businessDescription,
+        "seller_business_img": sellerBusinessImg,
+        "working_categories": workingCategories,
+        "user_service_area": userServiceArea?.map((e) => e.toJson()).toList(),
+      };
+}
+
+class UserServiceArea {
+  UserServiceArea({
+    this.id,
+    this.serviceArea,
+    this.serviceCityId,
+    this.countryId,
+    this.status,
+    this.createdAt,
+    this.updatedAt,
+  });
+
+  int? id;
+  String? serviceArea;
+  int? serviceCityId;
+  int? countryId;
+  int? status;
+  DateTime? createdAt;
+  DateTime? updatedAt;
+
+  factory UserServiceArea.fromJson(Map<String, dynamic> json) =>
+      UserServiceArea(
+        id: json["id"] as int?,
+        serviceArea: json["service_area"],
+        serviceCityId: json["service_city_id"] as int?,
+        countryId: json["country_id"] as int?,
+        status: json["status"] as int?,
+        createdAt: json["created_at"] != null
+            ? DateTime.parse(json["created_at"])
+            : null,
+        updatedAt: json["updated_at"] != null
+            ? DateTime.parse(json["updated_at"])
+            : null,
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "service_area": serviceArea,
+        "service_city_id": serviceCityId,
+        "country_id": countryId,
+        "status": status,
+        "created_at": createdAt?.toIso8601String(),
+        "updated_at": updatedAt?.toIso8601String(),
       };
 }

@@ -14,6 +14,7 @@ import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:qixer/view/utils/others_helper.dart';
 import 'package:qixer/view/utils/responsive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SignupCountryStates extends StatefulWidget {
   const SignupCountryStates({
@@ -72,7 +73,7 @@ class _SignupCountryStatesState extends State<SignupCountryStates> {
                     maxLines: 4,
                     overflow: TextOverflow.ellipsis,
                     text: TextSpan(
-                        text: asProvider.getString("I agree to") + " ",
+                        text: "${AppLocalizations.of(context)!.iAgreeTo} ",
                         style: TextStyle(
                           color: cc.black5,
                           fontWeight: FontWeight.w400,
@@ -86,13 +87,15 @@ class _SignupCountryStatesState extends State<SignupCountryStates> {
                                   ));
                                   FocusScope.of(context).unfocus();
                                 },
-                              text: asProvider.getString("Terms & Conditions"),
+                              text: AppLocalizations.of(context)!
+                                  .termsAndCondition,
                               style: TextStyle(
                                 color: cc.primaryColor,
                                 fontWeight: FontWeight.w600,
                               )),
                           TextSpan(
-                              text: "${" " + asProvider.getString("and")} ",
+                              text:
+                                  "${" ${AppLocalizations.of(context)!.and}"} ",
                               style: TextStyle(color: cc.black5)),
                           TextSpan(
                               recognizer: TapGestureRecognizer()
@@ -102,7 +105,7 @@ class _SignupCountryStatesState extends State<SignupCountryStates> {
                                   ));
                                   FocusScope.of(context).unfocus();
                                 },
-                              text: asProvider.getString("Privacy policy"),
+                              text: AppLocalizations.of(context)!.privacyPolicy,
                               style: TextStyle(
                                 color: cc.primaryColor,
                                 fontWeight: FontWeight.w600,
@@ -117,11 +120,11 @@ class _SignupCountryStatesState extends State<SignupCountryStates> {
               ),
               Consumer<SignupService>(
                 builder: (context, provider, child) => CommonHelper()
-                    .buttonOrange(lnProvider.getString("Sign Up"), () {
+                    .buttonOrange(AppLocalizations.of(context)!.signUp, () {
                   if (termsAgree == false) {
                     OthersHelper().showToast(
-                        asProvider.getString(
-                            "You must agree with the terms and conditions to register"),
+                        AppLocalizations.of(context)!
+                            .youMustAgreeWithTheTermsAndConditionsToRegister,
                         Colors.black);
                   } else {
                     if (provider.isloading == false) {
@@ -138,8 +141,8 @@ class _SignupCountryStatesState extends State<SignupCountryStates> {
                           selectedAreaId == null) {
                         OthersHelper().showSnackBar(
                             context,
-                            asProvider
-                                .getString("You must select a state and area"),
+                            AppLocalizations.of(context)!
+                                .youMustSelectAStateAndArea,
                             cc.warningColor);
                         return;
                       }

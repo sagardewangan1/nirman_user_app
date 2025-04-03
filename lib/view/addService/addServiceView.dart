@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/foundation.dart';
@@ -221,7 +222,7 @@ class _AddServiceViewState extends State<AddServiceView> {
 
     addServiceController?.setCatId(categoryId.toString());
     addServiceController?.getSelectedCategory(
-        category_id: addServiceController.selectedCatIds);
+        category_id: addServiceController.catIds);
 
     if (categoryId != null) {}
 
@@ -299,8 +300,9 @@ class _AddServiceViewState extends State<AddServiceView> {
                         child: ListView(
                           padding: EdgeInsets.symmetric(horizontal: 8.0),
                           children: [
-                            CommonHelper()
-                                .labelCommon2("Categories", isRequired: true),
+                            CommonHelper().labelCommon2(
+                                AppLocalizations.of(context)!.categories,
+                                isRequired: true),
                             SizedBox(height: 10),
                             categoryController.isLoading
                                 ? OthersHelper().showLoading(cc.primaryColor)
@@ -325,7 +327,7 @@ class _AddServiceViewState extends State<AddServiceView> {
                                                   .getSelectedCategory(
                                                       category_id:
                                                           addServiceController
-                                                              .selectedCatIds);
+                                                              .catIds);
                                             },
                                             child: Column(
                                               crossAxisAlignment:
@@ -384,8 +386,7 @@ class _AddServiceViewState extends State<AddServiceView> {
                                   ),
                             SizedBox(
                                 height: addServiceController
-                                            .selectedSubCategoryList.length ==
-                                        0
+                                        .selectedSubCategoryList.isEmpty
                                     ? 0
                                     : 10),
                             // Container(
@@ -463,25 +464,21 @@ class _AddServiceViewState extends State<AddServiceView> {
                             // ),
                             // sub category
                             // sub category name
-                            addServiceController
-                                        .selectedSubCategoryList.length ==
-                                    0
+                            addServiceController.selectedSubCategoryList.isEmpty
                                 ? Offstage()
-                                : CommonHelper().labelCommon2("Sub Categories",
+                                : CommonHelper().labelCommon2(
+                                    AppLocalizations.of(context)!.subcategories,
                                     isRequired: true),
                             SizedBox(
                                 height: addServiceController
-                                            .selectedSubCategoryList.length ==
-                                        0
+                                        .selectedSubCategoryList.isEmpty
                                     ? 0
                                     : 10),
                             addServiceController.isLoading
                                 ? OthersHelper().showLoading(cc.primaryColor)
                                 : SizedBox(
                                     height: addServiceController
-                                                .selectedSubCategoryList
-                                                .length ==
-                                            0
+                                            .selectedSubCategoryList.isEmpty
                                         ? 0
                                         : 160,
                                     child: ListView.builder(
@@ -560,174 +557,173 @@ class _AddServiceViewState extends State<AddServiceView> {
                                   ),
                             SizedBox(
                                 height: addServiceController
-                                            .selectedSubCategoryList.length ==
-                                        0
+                                        .selectedSubCategoryList.isEmpty
                                     ? 0
                                     : 10),
-                            // Container(
-                            //   decoration: BoxDecoration(
-                            //     color: Colors.white,
-                            //     borderRadius: BorderRadius.circular(8.0),
-                            //   ),
-                            //   child: DropdownSearch<dynamic>(
-                            //     items: addServiceController
-                            //         .selectedSubCategoryList, // ✅ Updated list
-                            //     dropdownBuilder: (context, selectedItem) {
-                            //       return Text(
-                            //         selectedItem?["name"] ??
-                            //             "Select Sub Category",
-                            //       );
-                            //     },
-                            //     popupProps: PopupProps.menu(
-                            //       itemBuilder: (context, item, isSelected) {
-                            //         return Container(
-                            //           color: Colors.white,
-                            //           child: Padding(
-                            //             padding: const EdgeInsets.symmetric(
-                            //                 horizontal: 15.0, vertical: 5.0),
-                            //             child: Text(item["name"] ?? ''),
-                            //           ),
-                            //         );
-                            //       },
-                            //       fit: FlexFit.loose,
-                            //     ),
-                            //     onChanged: (dynamic data) {
-                            //       print(
-                            //           "Selected Sub Category ===> ${data?["id"]}");
-                            //
-                            //       addServiceController
-                            //           .setSubCatId(data?['id'].toString());
-                            //       serviceProvider.getSelectedCategory(
-                            //           subCategory_id: data['id'].toString());
-                            //
-                            //       print(
-                            //           "Selected Sub Category  ===> ${addServiceController.selectedSubCatName}");
-                            //     },
-                            //     dropdownDecoratorProps: DropDownDecoratorProps(
-                            //       dropdownSearchDecoration: InputDecoration(
-                            //         focusedBorder: OutlineInputBorder(
-                            //           borderSide: BorderSide(
-                            //               color: ConstantColors().greyFive,
-                            //               width: 1),
-                            //           borderRadius: BorderRadius.circular(8.0),
-                            //         ),
-                            //         enabledBorder: OutlineInputBorder(
-                            //           borderSide: BorderSide(
-                            //               color: ConstantColors().greyFive,
-                            //               width: 1),
-                            //           borderRadius: BorderRadius.circular(8.0),
-                            //         ),
-                            //       ),
-                            //     ),
-                            //     itemAsString: (dynamic item) => item["name"],
-                            //     selectedItem: addServiceController
-                            //         .selectedSubCategoryList
-                            //         .firstWhere(
-                            //       (item) =>
-                            //           item["id"].toString() ==
-                            //           addServiceController.selectedSubIds,
-                            //       orElse: () =>
-                            //           {"id": 0, "name": "Select Sub Category"},
-                            //     ),
-                            //   ),
-                            // ),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              child: DropdownSearch<dynamic>(
+                                items: addServiceController
+                                    .selectedSubCategoryList, // ✅ Updated list
+                                dropdownBuilder: (context, selectedItem) {
+                                  return Text(
+                                    selectedItem?["name"] ??
+                                        "Select Sub Category",
+                                  );
+                                },
+                                popupProps: PopupProps.menu(
+                                  itemBuilder: (context, item, isSelected) {
+                                    return Container(
+                                      color: Colors.white,
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 15.0, vertical: 5.0),
+                                        child: Text(item["name"] ?? ''),
+                                      ),
+                                    );
+                                  },
+                                  fit: FlexFit.loose,
+                                ),
+                                onChanged: (dynamic data) {
+                                  print(
+                                      "Selected Sub Category ===> ${data?["id"]}");
+
+                                  addServiceController
+                                      .setSubCatId(data?['id'].toString());
+                                  serviceProvider.getSelectedCategory(
+                                      subCategory_id: data['id'].toString());
+
+                                  print(
+                                      "Selected Sub Category  ===> ${addServiceController.selectedSubCatName}");
+                                },
+                                dropdownDecoratorProps: DropDownDecoratorProps(
+                                  dropdownSearchDecoration: InputDecoration(
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: ConstantColors().greyFive,
+                                          width: 1),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: ConstantColors().greyFive,
+                                          width: 1),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                  ),
+                                ),
+                                itemAsString: (dynamic item) => item["name"],
+                                selectedItem: addServiceController
+                                    .selectedSubCategoryList
+                                    .firstWhere(
+                                  (item) =>
+                                      item["id"].toString() ==
+                                      addServiceController.selectedSubIds,
+                                  orElse: () =>
+                                      {"id": 0, "name": "Select Sub Category"},
+                                ),
+                              ),
+                            ),
 
                             // sub child category
-                            // serviceProvider.selectedChildCategoryList.isEmpty
-                            //     ? Offstage()
-                            //     : SizedBox(height: 15),
-                            // // child category
-                            // serviceProvider.selectedChildCategoryList.isEmpty
-                            //     ? Offstage()
-                            //     : CommonHelper().labelCommon2(
-                            //         "Child Categories",
-                            //         isRequired: true),
-                            // serviceProvider.selectedChildCategoryList.isEmpty
-                            //     ? Offstage()
-                            //     : SizedBox(height: 10),
-                            // if (serviceProvider
-                            //     .selectedChildCategoryList.isEmpty)
-                            //   Offstage()
-                            // else
-                            //   Container(
-                            //     decoration: BoxDecoration(
-                            //       color: Colors.white,
-                            //       borderRadius: BorderRadius.circular(8.0),
-                            //     ),
-                            //     child: DropdownSearch<dynamic>(
-                            //       dropdownBuilder: (context, selectedItem) {
-                            //         return Text(
-                            //           selectedItem?["name"] ??
-                            //               "Select Sub Child Category",
-                            //         );
-                            //       },
-                            //       items:
-                            //           serviceProvider.selectedChildCategoryList,
-                            //       popupProps: PopupProps.menu(
-                            //         itemBuilder: (context, item, isSelected) {
-                            //           return Container(
-                            //             color: Colors.white,
-                            //             child: Padding(
-                            //               padding: const EdgeInsets.symmetric(
-                            //                   horizontal: 15.0, vertical: 5.0),
-                            //               child: Text(item.name),
-                            //             ),
-                            //           );
-                            //         },
-                            //         fit: FlexFit.loose,
-                            //       ),
-                            //       onChanged: (data) {
-                            //         if (data != null) {
-                            //           addServiceController.setChildCatId(
-                            //               data?['id'].toString());
-                            //           serviceProvider.selectedChildCategoryList
-                            //               .clear();
-                            //           serviceProvider.selectedChildCategoryList
-                            //               .add(data);
-                            //           print(
-                            //               "✅ Selected Child Category: ${serviceProvider.selectedChildCategoryList}");
-                            //         }
-                            //       },
-                            //       dropdownDecoratorProps:
-                            //           DropDownDecoratorProps(
-                            //         dropdownSearchDecoration: InputDecoration(
-                            //           focusedBorder: OutlineInputBorder(
-                            //             borderSide: BorderSide(
-                            //                 color: ConstantColors().greyFive,
-                            //                 width: 1),
-                            //             borderRadius:
-                            //                 BorderRadius.circular(8.0),
-                            //           ),
-                            //           enabledBorder: OutlineInputBorder(
-                            //             borderSide: BorderSide(
-                            //                 color: ConstantColors().greyFive,
-                            //                 width: 1),
-                            //             borderRadius:
-                            //                 BorderRadius.circular(8.0),
-                            //           ),
-                            //         ),
-                            //       ),
-                            //       itemAsString: (dynamic item) => item["name"],
-                            //       selectedItem:
-                            //           addServiceController.selectedChildCatName,
-                            //     ),
-                            //   ),
+                            serviceProvider.selectedChildCategoryList.isEmpty
+                                ? Offstage()
+                                : SizedBox(height: 15),
+                            // child category
+                            serviceProvider.selectedChildCategoryList.isEmpty
+                                ? Offstage()
+                                : CommonHelper().labelCommon2(
+                                    "Child Categories",
+                                    isRequired: true),
+                            serviceProvider.selectedChildCategoryList.isEmpty
+                                ? Offstage()
+                                : SizedBox(height: 10),
+                            if (serviceProvider
+                                .selectedChildCategoryList.isEmpty)
+                              Offstage()
+                            else
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                                child: DropdownSearch<dynamic>(
+                                  dropdownBuilder: (context, selectedItem) {
+                                    return Text(
+                                      selectedItem?["name"] ??
+                                          "Select Sub Child Category",
+                                    );
+                                  },
+                                  items:
+                                      serviceProvider.selectedChildCategoryList,
+                                  popupProps: PopupProps.menu(
+                                    itemBuilder: (context, item, isSelected) {
+                                      return Container(
+                                        color: Colors.white,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 15.0, vertical: 5.0),
+                                          child: Text(item.name),
+                                        ),
+                                      );
+                                    },
+                                    fit: FlexFit.loose,
+                                  ),
+                                  onChanged: (data) {
+                                    if (data != null) {
+                                      addServiceController.setChildCatId(
+                                          data?['id'].toString());
+                                      serviceProvider.selectedChildCategoryList
+                                          .clear();
+                                      serviceProvider.selectedChildCategoryList
+                                          .add(data);
+                                      print(
+                                          "✅ Selected Child Category: ${serviceProvider.selectedChildCategoryList}");
+                                    }
+                                  },
+                                  dropdownDecoratorProps:
+                                      DropDownDecoratorProps(
+                                    dropdownSearchDecoration: InputDecoration(
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: ConstantColors().greyFive,
+                                            width: 1),
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: ConstantColors().greyFive,
+                                            width: 1),
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
+                                      ),
+                                    ),
+                                  ),
+                                  itemAsString: (dynamic item) => item["name"],
+                                  selectedItem:
+                                      addServiceController.selectedChildCatName,
+                                ),
+                              ),
                             // Service Name
                             CommonHelper().labelCommon2(
-                                asProvider.getString("Service Name"),
+                                AppLocalizations.of(context)!.serviceName,
                                 isRequired: true),
                             SizedBox(height: 10),
                             CustomInput(
                               controller: _serviceName,
                               validation: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return asProvider.getString(
-                                      "Please enter your service name");
+                                  return AppLocalizations.of(context)!
+                                      .pleaseEnterYourServiceName;
                                 }
                                 return null;
                               },
-                              hintText: asProvider
-                                  .getString("Enter your service name"),
+                              hintText: AppLocalizations.of(context)!
+                                  .enterYourServiceName,
                               textInputAction: TextInputAction.next,
                             ),
                             // SizedBox(height: 15),
@@ -748,18 +744,21 @@ class _AddServiceViewState extends State<AddServiceView> {
                             // ),
                             SizedBox(height: 15),
                             // Service Name
-                            CommonHelper().labelCommon2("Service Experience",
+                            CommonHelper().labelCommon2(
+                                AppLocalizations.of(context)!.serviceExperience,
                                 isRequired: true),
                             SizedBox(height: 10),
                             CustomInput(
                               controller: _serviceExperience,
                               validation: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return "Please enter your service experience";
+                                  return AppLocalizations.of(context)!
+                                      .pleaseEnterYourServiceExperience;
                                 }
                                 return null;
                               },
-                              hintText: "Enter your service experience",
+                              hintText: AppLocalizations.of(context)!
+                                  .enterYourServiceExperience,
                               textInputAction: TextInputAction.next,
                             ),
                             // SizedBox(height: 15),
@@ -940,8 +939,8 @@ class _AddServiceViewState extends State<AddServiceView> {
                                               CrossAxisAlignment.start,
                                           children: [
                                             CommonHelper().labelCommon(
-                                                lnProvider
-                                                    .getString("Choose State"),
+                                                AppLocalizations.of(context)!
+                                                    .chooseState,
                                                 isRequired: true),
                                             Consumer<StateDropdownService>(
                                               builder: (context, p, child) =>
@@ -982,7 +981,8 @@ class _AddServiceViewState extends State<AddServiceView> {
                                               CrossAxisAlignment.start,
                                           children: [
                                             CommonHelper().labelCommon(
-                                                "Choose City",
+                                                AppLocalizations.of(context)!
+                                                    .chooseCity,
                                                 isRequired: true),
                                             Consumer<AreaDropdownService>(
                                               builder: (context, p, child) =>
@@ -1011,7 +1011,9 @@ class _AddServiceViewState extends State<AddServiceView> {
                                                             .isNotEmpty
                                                         ? p.selectedCity
                                                             .join(',')
-                                                        : 'Select Cities'),
+                                                        : AppLocalizations.of(
+                                                                context)!
+                                                            .selectCity),
                                               ),
                                             ),
                                           ],
@@ -1019,30 +1021,35 @@ class _AddServiceViewState extends State<AddServiceView> {
                                       ],
                                     )),
                             SizedBox(height: 15),
-                            CommonHelper().labelCommon2("Service Price",
+                            CommonHelper().labelCommon2(
+                                AppLocalizations.of(context)!.servicePrice,
                                 isRequired: true),
                             SizedBox(height: 10),
                             CustomInput(
                               controller: _servicePrice,
-                              isNumberField: true,
+                              isNumberField: false,
                               validation: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Enter Service Price';
+                                  return AppLocalizations.of(context)!
+                                      .enterServicePrice;
                                 }
                                 return null;
                               },
-                              hintText: "Enter Service Price",
+                              hintText: AppLocalizations.of(context)!
+                                  .enterServicePrice,
                               textInputAction: TextInputAction.next,
                             ),
                             SizedBox(height: 15),
-                            CommonHelper().labelCommon2("Service  Overview",
+                            CommonHelper().labelCommon2(
+                                AppLocalizations.of(context)!.serviceOverview,
                                 isRequired: true),
                             SizedBox(height: 10),
                             CustomInput(
                               controller: _serviceOverview,
                               validation: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Enter Service Overview';
+                                  return AppLocalizations.of(context)!
+                                      .enterServiceOverview;
                                 }
                                 return null;
                               },
@@ -1052,7 +1059,8 @@ class _AddServiceViewState extends State<AddServiceView> {
                               },
                               counterText:
                                   "${addServiceController.currentOverviewLength}/${addServiceController.totalLength}",
-                              hintText: "Enter Service Overview",
+                              hintText: AppLocalizations.of(context)!
+                                  .enterServiceOverview,
                               textInputAction: TextInputAction.next,
                             ),
                             // Container(
@@ -1185,7 +1193,8 @@ class _AddServiceViewState extends State<AddServiceView> {
                             //   ),
                             // ),
                             SizedBox(height: 15),
-                            CommonHelper().labelCommon2("Service Images",
+                            CommonHelper().labelCommon2(
+                                AppLocalizations.of(context)!.serviceImage,
                                 isRequired: true),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
@@ -1340,7 +1349,7 @@ class _AddServiceViewState extends State<AddServiceView> {
                                   padding: const EdgeInsets.all(8.0),
                                   child: Text(
                                     textAlign: TextAlign.center,
-                                    "Add Image",
+                                    AppLocalizations.of(context)!.addImage,
                                     style: TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w500,
@@ -1357,15 +1366,15 @@ class _AddServiceViewState extends State<AddServiceView> {
                     child: SizedBox(
                       height: 55,
                       child: CommonHelper().buttonOrange(
-                        "Continue",
+                        AppLocalizations.of(context)!.continueText,
                         () async {
                           // OthersHelper()
                           //     .showToast("Service Added", cc.successColor);
                           if (serviceProvider.isLoading == false) {
                             // Ensure category IDs are not null
 
-                            Map<String, String> images = {};
-                            Map<String, String> imageUrls = {};
+                            // Map<String, String> images = {};
+                            // Map<String, String> imageUrls = {};
                             //
                             // // Handle image selection
                             // if (getImageController.files.isNotEmpty) {
@@ -1388,11 +1397,18 @@ class _AddServiceViewState extends State<AddServiceView> {
                                 addServiceController.selectedCatIds == '0' ||
                                 addServiceController.selectedSubIds == null ||
                                 addServiceController.selectedSubIds == '0') {
-                              String message =
-                                  "Category and Subcategory Required";
+                              String message = AppLocalizations.of(context)!
+                                  .categoryAndSubcategoryRequired;
                               OthersHelper()
                                   .showToast(message, cc.warningColor);
                               return;
+                            }
+
+                            if (_serviceOverview.text.length < 150) {
+                              return OthersHelper().showToast(
+                                  AppLocalizations.of(context)!
+                                      .serviceOverviewMust150Char,
+                                  cc.warningColor);
                             }
 
                             if (_formKey.currentState?.validate() ?? false) {
@@ -1433,22 +1449,26 @@ class _AddServiceViewState extends State<AddServiceView> {
                                   context,
                                   body,
                                   isLogged,
-                                  imagePath: getImageController.fileSingle
-                                      ?.path, // ✅ Pass only one image
+                                  imagePath:
+                                      getImageController.fileSingle?.path ??
+                                          '', // ✅ Pass only one image
                                   images:
                                       serviceImage, // ✅ This should be a required list
                                 );
 
                                 if (success) {
                                   OthersHelper().showToast(
-                                      "Service Updated", cc.successColor);
+                                      AppLocalizations.of(context)!
+                                          .successfullyUpdated,
+                                      cc.successColor);
                                   getImageController.removeFile();
                                   addServiceController.resetCategories();
 
                                   Navigator.pop(context);
                                 } else {
                                   OthersHelper().showToast(
-                                      "Failed to Update service",
+                                      AppLocalizations.of(context)!
+                                          .failedUpdateService,
                                       cc.errorColor);
                                 }
                               } else {

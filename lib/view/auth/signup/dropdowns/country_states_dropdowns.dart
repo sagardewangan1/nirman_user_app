@@ -67,7 +67,7 @@ class _CountryStatesDropdownsState extends State<CountryStatesDropdowns> {
   }
 }
 
-dropdownPlaceholder({required String hintText, textWidth}) {
+dropdownPlaceholder({required String hintText, textWidth, textOverflow}) {
   return Container(
     width: double.infinity,
     padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
@@ -80,7 +80,7 @@ dropdownPlaceholder({required String hintText, textWidth}) {
       SizedBox(
         width: textWidth,
         child: CommonHelper().paragraphCommon(lnProvider.getString(hintText),
-            textAlign: TextAlign.left),
+            textAlign: TextAlign.left, textOverFlow: textOverflow),
       ),
       const Icon(Icons.keyboard_arrow_down)
     ]),

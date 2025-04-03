@@ -83,7 +83,7 @@ class DbService {
   }
 
 //get all saved item ======>
-  getAllSaveditem() async {
+  Future<List<Map<String, Object?>>> getAllSaveditem() async {
     var connection = await getdatabase;
     return await connection.query('savedItem_table');
   }

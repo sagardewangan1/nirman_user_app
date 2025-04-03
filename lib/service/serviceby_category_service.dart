@@ -1,18 +1,19 @@
 import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:qixer/data/network/network_api_services.dart';
-import 'package:qixer/model/recent_service_model.dart';
-import 'package:qixer/model/service_search_model.dart';
+import 'package:qixer/model/service_by_filter_model.dart';
 import 'package:qixer/model/serviceby_category_model.dart';
 import 'package:qixer/model/sub_category_model.dart';
+import 'package:qixer/service/cityAndAreaController/cityAndAreaController.dart';
 import 'package:qixer/service/common_service.dart';
 import 'package:qixer/service/db/db_service.dart';
 import 'package:qixer/view/utils/others_helper.dart';
 import 'package:qixer/view/utils/responsive.dart';
+import 'package:qixer/model/recent_service_model.dart' as recent;
+import 'package:qixer/model/service_search_model.dart' as search;
 
 class ServiceByCategoryService with ChangeNotifier {
   var serviceMap = [];
@@ -88,12 +89,12 @@ class ServiceByCategoryService with ChangeNotifier {
     if (connection) {
       //if connection is ok
       var response = await http.get(Uri.parse(apiLink));
-
       // final decodedResponse = jsonDecode(response.body);
       // print(decodedResponse["all_services"]["data"].toString());
 
       var jsonDataServiceList =
           jsonDecode(response.body)['all_services']['data'];
+      printLargeResponse(jsonDecode(response.body));
       print(jsonDataServiceList[0]['seller_for_mobile'].toString());
 
       if (response.statusCode == 201) {
@@ -129,12 +130,10 @@ class ServiceByCategoryService with ChangeNotifier {
 
         if (isrefresh) {
           //if refreshed, then remove all service from list and insert new data
-          setServiceList(
-              data.allServices.data, averageRateList, imageList, false);
+          setServiceList(data, averageRateList, imageList, false);
         } else {
           //else add new data
-          setServiceList(
-              data.allServices.data, averageRateList, imageList, true);
+          setServiceList(data, averageRateList, imageList, true);
         }
 
         currentPage++;
@@ -154,9 +153,11 @@ class ServiceByCategoryService with ChangeNotifier {
   fetchServiceBySubCateId(context, categoryId, subCatId,
       {bool isrefresh = false}) async {
     //=================>
+    var areaId =
+        Provider.of<CityAndAreaController>(context, listen: false).cityId;
     String apiLink;
     apiLink =
-        '$baseApi/service-list/category-subcategory-rating-sort-by-search/?cat=$categoryId&subcat=${subCatId ?? ""}&page=$currentPage';
+        '$baseApi/service-list/category-subcategory-rating-sort-by-search/?cat=$categoryId&subcat=${subCatId ?? ""}&page=$currentPage&area_Id=${areaId ?? ''}';
     //====================>
     print("url-======> $apiLink");
     if (isrefresh) {
@@ -213,12 +214,10 @@ class ServiceByCategoryService with ChangeNotifier {
 
         if (isrefresh) {
           //if refreshed, then remove all service from list and insert new data
-          setServiceList(
-              data.allServices.data, averageRateList, imageList, false);
+          setServiceList(data, averageRateList, imageList, false);
         } else {
           //else add new data
-          setServiceList(
-              data.allServices.data, averageRateList, imageList, true);
+          setServiceList(data, averageRateList, imageList, true);
         }
 
         currentPage++;
@@ -235,47 +234,89 @@ class ServiceByCategoryService with ChangeNotifier {
     }
   }
 
-  setServiceList(data, averageRateList, imageList, bool addnewData) {
-    if (addnewData == false) {
-      //make the list empty first so that existing data doesn't stay
+  setServiceList(ServicebyCategoryModel data, averageRateList, imageList,
+      bool addnewData) {
+    if (!addnewData) {
+      // Clear the list if not appending new data
       serviceMap = [];
       notifyListeners();
     }
-    for (int i = 0; i < data.length; i++) {
-      var seller = data[i].sellerForMobile;
-      // Skip this iteration if sellerForMobile is null OR empty
-      if (seller == null && seller?.toJson().isEmpty ?? true) {
-        continue;
-      }
-      //
-      // print(
-      //     "\nnew data printing ==========> ${data[i].title} && ${seller.toJson()} <============");
-      // //
-      List processedServiceAreas = data[i].serviceAreas is List<ServiceAreas>
-          ? data[i]
-              .serviceAreas
-              .map((area) => area.serviceArea ?? "Unknown")
-              .toList()
+
+    // Loop through each service in the data
+    for (int i = 0; i < data.allServices.data.length; i++) {
+      var serviceItem = data.allServices.data[i];
+      SellerForMobile? seller = serviceItem.sellerForMobile;
+
+      // If seller is null, set a demo seller object using fromJson
+      seller ??= SellerForMobile(
+          id: 0,
+          name: "Demo Seller",
+          image: "",
+          countryId: 0,
+          phone: "0000000000",
+          serviceCity: "Unknown",
+          serviceArea: [],
+          address: "No Address",
+          latitude: 0.0,
+          longitude: 0.0,
+          sellerAddress: "No Address",
+          postCode: "000000",
+          username: "demo_user",
+          businessName: "Demo Business",
+          businessGstNumber: "GST000000",
+          businessPhoneNumber: "0000000000",
+          businessEmail: "demo@email.com",
+          businessFullAddress: "Demo City",
+          businessDescription: "This is a demo seller",
+          sellerBusinessImg: "",
+          workingCategories: "[]",
+          userServiceArea: []);
+
+      // Process service areas safely using the correct index from serviceItem
+      List processedServiceAreas =
+          (serviceItem.serviceAreas is List<search.ServiceAreas>)
+              ? serviceItem.serviceAreas
+                      ?.map((area) => area.serviceArea ?? "Unknown")
+                      .toList() ??
+                  []
+              : [];
+
+      // Process user service areas from seller safely
+      List userAreas = (seller?.userServiceArea is List<recent.UserServiceArea>)
+          ? seller?.userServiceArea!
+                  .map((area) => area.serviceArea ?? "Unknown")
+                  .toList() ??
+              []
           : [];
+
+      // Add the service information into the serviceMap
       serviceMap.add({
-        'serviceId': data[i].id,
-        'title': data[i].title,
-        'name': data[i]
-            .sellerForMobile
-            .name, // Assuming sellerForMobile is a List and using first seller
-        'price': data[i].price,
+        'serviceId': serviceItem.id,
+        'title': serviceItem.title,
+        'name': seller?.name ?? "Unknown",
+        'price': serviceItem.price,
         'rating': averageRateList[i],
         'image': imageList[i],
         'isSaved': false,
-        'sellerId': data[i].sellerId,
-        'experience': data[i].experience,
-        'status': data[i].status,
-        'whatsappNumber': data[i].sellerForMobile.phone,
-        'callNumber': data[i].sellerForMobile.phone,
-        "serviceArea": processedServiceAreas
+        'sellerId': serviceItem.sellerId,
+        'experience': serviceItem.experience,
+        'status': serviceItem.status,
+        'whatsappNumber': seller?.phone ?? "N/A",
+        'callNumber': seller?.phone ?? "N/A",
+        "serviceArea": processedServiceAreas,
+        "businessName": seller?.businessName,
+        "businessGstNumber": seller?.businessGstNumber,
+        "businessPhoneNumber": seller?.businessPhoneNumber,
+        "businessEmail": seller?.businessEmail,
+        "businessFullAddress": seller?.businessFullAddress,
+        "businessDescription": seller?.businessDescription,
+        "businessImage": seller?.sellerBusinessImg,
+        "userAreas": userAreas
       });
-      checkIfAlreadySaved(
-          data[i].id, data[i].title, seller.name, serviceMap.length - 1);
+
+      // Call the function to check if the service is already saved
+      checkIfAlreadySaved(serviceItem.id, serviceItem.title,
+          seller?.name ?? "Unknown", serviceMap.length - 1);
     }
   }
 
@@ -289,6 +330,17 @@ class ServiceByCategoryService with ChangeNotifier {
 
   saveOrUnsave(int serviceId, String title, image, int price, String sellerName,
       double rating, int index, BuildContext context, sellerId, exp) async {
+    print("serviceId: $serviceId");
+    print("title: $title");
+    print("image: $image");
+    print("price: $price");
+    print("sellerName: $sellerName");
+    print("rating: $rating");
+    print("index: $index");
+    print("context: $context");
+    print("sellerId: $sellerId");
+    print("exp: $exp");
+
     var newListMap = serviceMap;
     alreadySaved = await DbService().saveOrUnsave(
         serviceId,

@@ -34,12 +34,14 @@ class FilterCategoryService with ChangeNotifier {
 
   fetchCategory({String? location}) async {
     try {
-      var response = await http.get(
-          Uri.parse('$baseApi/category?cat_area_id=${location.toString()}'));
-
+      String url =
+          '$baseApi/category?cat_area_id=${location != 'null' ? location.toString() : ''}';
+      var response = await http.get(Uri.parse(url));
+      debugPrint("app url ===> $url ");
       if (response != null) {
         var decodedData = jsonDecode(response.body);
         if (decodedData != null && decodedData["categories"] != null) {
+          debugPrint("${decodedData}");
           _categoryDataModel = CategoryDataModel.fromJson(decodedData);
           return true;
         } else {

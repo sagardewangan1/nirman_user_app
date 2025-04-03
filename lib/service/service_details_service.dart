@@ -5,10 +5,9 @@ import 'package:http/http.dart' as http;
 import 'package:qixer/model/service_details_model.dart';
 import 'package:qixer/service/common_service.dart';
 import 'package:qixer/view/utils/others_helper.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ServiceDetailsService with ChangeNotifier {
-  var serviceAllDetails;
-
   var sellerId;
 
   bool isloading = false;
@@ -25,50 +24,69 @@ class ServiceDetailsService with ChangeNotifier {
     notifyListeners();
   }
 
-  fetchServiceDetails(serviceId) async {
+  ServiceDetailsModel _serviceDetailsModel = ServiceDetailsModel();
+  ServiceDetailsModel get serviceDetailsModel => _serviceDetailsModel;
+
+  Future<bool> fetchServiceDetails(serviceId) async {
     setLoadingTrue();
+    print("============> Calling Service Details <==================");
+
     try {
       var connection = await checkConnection();
-      if (connection) {
-        // reviewList = [];
-        //internet connection is on
-        var header = {
-          //if header type is application/json then the data should be in jsonEncode method
-          "Accept": "application/json",
-          // "Content-Type": "application/json"
-        };
+      if (!connection) {
+        print("❌ No Internet Connection.");
+        return false;
+      }
 
-        var response = await http.get(
-            Uri.parse('$baseApi/service-details/$serviceId'),
-            headers: header);
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var token = prefs.getString('shashaktnirmantoken');
+      var deviceToken = prefs.getString('sashaktNirmaanDeviceToken');
 
-        debugPrint(
-            "Actual service details data===> ${response.body.toString()}\n");
-        if (response.statusCode == 201) {
-          // serviceAllDetails =
-          //     ServiceDetailsModel.fromJson(jsonDecode(response.body));
-          var data = ServiceDetailsModel.fromJson(jsonDecode(response.body));
+      if (token == null) {
+        print("❌ Token not found.");
+        return false;
+      }
 
-          serviceAllDetails = data;
-          sellerId = jsonDecode(response.body)['service_details']
-              ['seller_for_mobile']['id'];
-          // for (int i = 0; i < data.serviceReviews.length; i++) {
-          //   reviewList.add({'rating': data.serviceReviews[i].rating, 'message':data.serviceReviews[i].message,});
-          // }
-          print(
-              "service details ==> ${serviceAllDetails.serviceDetails.seller.about}");
-          notifyListeners();
-          setLoadingFalse();
-        } else {
-          serviceAllDetails = 'error';
+      var header = {
+        "Accept": "application/json",
+        "Authorization": "Bearer $token",
+        'device_token': deviceToken.toString()
+      };
 
-          setLoadingFalse();
-          OthersHelper().showToast('Something went wrong', Colors.black);
-          notifyListeners();
-        }
+      String url = '$baseApi/service-details/$serviceId';
+      var response = await http.get(
+        Uri.parse(url),
+        headers: header,
+      );
+
+      debugPrint("url ===> $url\n");
+      debugPrint("header ===> $header\n");
+      debugPrint(
+          "Actual service details data===> ${response.body.toString()}\n");
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        _serviceDetailsModel =
+            ServiceDetailsModel.fromJson(jsonDecode(response.body));
+
+        sellerId = jsonDecode(response.body)['service_details']
+            ['seller_for_mobile']['id'];
+
+        notifyListeners();
+        return true;
+      } else {
+        print("⚠️ API Error: ${response.statusCode}");
+        OthersHelper().showToast('Something went wrong', Colors.black);
+        return false;
       }
     } catch (e, stackTrace) {
-      print("error $stackTrace");
+      print("❌ Exception: $e");
+      print("StackTrace: $stackTrace");
+      OthersHelper().showToast("Error fetching details", Colors.red);
+      return false;
+    } finally {
+      setLoadingFalse();
+      notifyListeners();
+      print("🔄 fetchServiceDetails Execution Completed.");
     }
   }
 }

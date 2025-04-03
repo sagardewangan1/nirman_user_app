@@ -5,9 +5,13 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+
 
     <application
-        android:label="Shashakt Nirman"
+        android:label="Sashakt Nirmaan"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
 
@@ -71,10 +75,18 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="nirmaan_notifications"/>
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/snotification_icon" />
+
 
         <meta-data android:name="com.phonepe.android.sdk.isUAT" android:value="true"/>
         <meta-data android:name="com.phonepe.android.sdk.isSimulator" android:value="true"/>
-        <meta-data android:name="com.phonepe.android.sdk.MerchantId" android:value="PGTESTPAYUAT"/>
+<!--        <meta-data android:name="com.phonepe.android.sdk.MerchantId" android:value="PGTESTPAYUAT77"/> &lt;!&ndash; Development&ndash;&gt;-->
+        <meta-data android:name="com.phonepe.android.sdk.MerchantId" android:value="M227DQKVXSPAZ"/>  Production
         <!--        <meta-data android:name="com.phonepe.android.sdk.AppId" android:value="appId"/>-->
     </application>
 

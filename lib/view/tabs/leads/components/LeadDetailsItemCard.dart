@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:qixer/view/utils/common_helper.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LeadsDetailItemCard extends StatelessWidget {
   const LeadsDetailItemCard({
@@ -86,7 +87,9 @@ class LeadsDetailItemCard extends StatelessWidget {
                           ),
                           Gap(3),
                           Text(
-                            isNew ? "NEW LEAD" : "OPENED LEAD",
+                            isNew
+                                ? AppLocalizations.of(context)!.newLead
+                                : AppLocalizations.of(context)!.openedLeads,
                             style: TextStyle(
                                 fontWeight: FontWeight.w400,
                                 color: isNew ? cc.white : cc.primaryColor,
@@ -208,7 +211,7 @@ class LeadsDetailItemCard extends StatelessWidget {
                                   ),
                                   SizedBox(width: 5),
                                   Text(
-                                    'Whatsapp',
+                                    AppLocalizations.of(context)!.whatsapp,
                                     style: TextStyle(
                                       color: Colors.black,
                                       fontSize: 12,
@@ -246,7 +249,7 @@ class LeadsDetailItemCard extends StatelessWidget {
                                   ),
                                   SizedBox(width: 5),
                                   Text(
-                                    'Call Now',
+                                    AppLocalizations.of(context)!.callNow,
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 12,

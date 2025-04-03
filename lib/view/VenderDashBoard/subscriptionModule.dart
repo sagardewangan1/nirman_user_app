@@ -1,17 +1,24 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:qixer/service/app_string_service.dart';
-import 'package:qixer/service/profile_service.dart';
+import 'package:qixer/model/PaymentModal.dart';
+import 'package:qixer/service/payementService/PhonePeService.dart';
+import 'package:qixer/service/vendorDashboardService/vendorDashboardService.dart';
+import 'package:qixer/view/home/landing_page.dart';
+import 'package:qixer/view/services/components/desc_from_html.dart';
 import 'package:qixer/view/utils/common_helper.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:qixer/view/utils/others_helper.dart';
-
-import '../services/components/desc_from_html.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../service/addServiceProvider/addServicerProvider.dart';
+import '../../service/home_services/category_service.dart';
 
 class SubscriptionModule extends StatefulWidget {
-  const SubscriptionModule({super.key});
+  final List<Map<String, dynamic>>? catIds;
+  final String? navFrom;
+  const SubscriptionModule({super.key, this.catIds, this.navFrom});
 
   @override
   State<SubscriptionModule> createState() => _SubscriptionModuleState();
@@ -20,121 +27,245 @@ class SubscriptionModule extends StatefulWidget {
 class _SubscriptionModuleState extends State<SubscriptionModule> {
   ConstantColors cc = ConstantColors();
 
-  final List<Map<String, dynamic>> subscriptionPlans = [
-    {
-      "type": "Free",
-      "desc": '''
-        <h4>Free Service 🆓</h4>
-        <ul>
-            <li>Access to basic features</li>
-            <li>Limited service availability</li>
-            <li>Ads may be displayed</li>
-            <li>No priority support</li>
-        </ul>
-      ''',
-      "price": "0/month",
-      "typeText": "Your Current Plan",
-      "typebgColor": Colors.grey[300],
-      "typeTextColor": Colors.black,
-      "isActive": true,
-    },
-    {
-      "type": "Premium",
-      "desc": '''
-        <h4>Premium Service ⭐</h4>
-        <ul>
-            <li>Full access to all features</li>
-            <li>No ads, smooth experience</li>
-            <li>Priority customer support</li>
-            <li>Exclusive tools & content</li>
-        </ul>
-      ''',
-      "price": "500/month",
-      "typeText": "Upgrade Now",
-      "typebgColor": Colors.blue,
-      "typeTextColor": Colors.white,
-      "isActive": false,
-    },
-    {
-      "type": "Gold",
-      "desc": '''
-        <h4>Gold Service 🏆</h4>
-        <ul>
-            <li>All premium features included</li>
-            <li>Personalized support</li>
-            <li>Early access to new features</li>
-            <li>Exclusive webinars and events</li>
-        </ul>
-      ''',
-      "price": "1000/month",
-      "typeText": "Best Value",
-      "typebgColor": Colors.orange,
-      "typeTextColor": Colors.white,
-      "isActive": false,
-    },
-    {
-      "type": "Platinum",
-      "desc": '''
-        <h4>Platinum Service 💎</h4>
-        <ul>
-            <li>All gold features included</li>
-            <li>Dedicated account manager</li>
-            <li>Custom integrations</li>
-            <li>VIP customer service</li>
-        </ul>
-      ''',
-      "price": "2000/month",
-      "typeText": "Elite Plan",
-      "typebgColor": Colors.purple,
-      "typeTextColor": Colors.white,
-      "isActive": false,
-    },
-  ];
+  final PhonePeService phonePeService = PhonePeService();
+
+  String userId = '';
+  firstLoad() async {
+    if (mounted) {
+      final vendorController =
+          Provider.of<VendorDashboardService>(context, listen: false);
+      await vendorController.getSubscriptions();
+      final pref = await SharedPreferences.getInstance();
+      userId = pref.getString("shashaktnirmanUserId") ?? '';
+      print("catlist======>${widget.catIds}");
+    }
+  }
+
+  @override
+  void initState() {
+    firstLoad();
+    super.initState();
+    phonePeService.initializePhonePe();
+  }
+
+  Color getTypeTextColor(String typeText) {
+    switch (typeText.toLowerCase()) {
+      case "free":
+        return Colors.green;
+      case "upgrade now":
+        return Colors.blue;
+      case "best value":
+        return Colors.orange;
+      case "elite":
+        return Colors.purple;
+      default:
+        return Colors.grey.shade400; // Default color for unknown types
+    }
+  }
+
+  void startPhonePePayment({required int payAmount}) async {
+    String transactionId =
+        "TXN${DateTime.now().millisecondsSinceEpoch}"; // Generate unique txn ID
+    int amount = payAmount; // ₹500
+    PaymentModal? result =
+        await phonePeService.startTransaction(transactionId, amount);
+    if (result != null && result.success == true) {
+      if (kDebugMode) {
+        print("payement merchantId===> ${result.data?.merchantId}");
+        print(
+            "payement merchantTransactionId===> ${result.data?.merchantTransactionId}");
+        print("payement transactionId===> ${result.data?.transactionId}");
+        print("payement amount===> ${result.data?.amount}");
+        print("payement state===> ${result.data?.state}");
+        print("payement responseCode===> ${result.data?.responseCode}");
+      }
+      final vendorProvider =
+          Provider.of<VendorDashboardService>(context, listen: false);
+      var body = {
+        'subscription_id': vendorProvider.subscriptionList[0]["id"].toString(),
+        'payment_gateway': 'PhonePe',
+        'transaction_id': result.data?.transactionId.toString(),
+        'payment_status': result.success.toString(),
+      };
+      await vendorProvider.buySubscriptions(body).then(
+        (value) {
+          print("value====> $value");
+          if (value) {
+            OthersHelper().showToast(
+                AppLocalizations.of(context)!.subscriptionSuccessMsg,
+                cc.successColor);
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LandingPage(),
+                ));
+          } else {
+            OthersHelper().showToast(
+                AppLocalizations.of(context)!.subscriptionFailedMsg,
+                cc.errorColor);
+          }
+        },
+      );
+
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Payment Successful!")));
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Payment Failed!")));
+    }
+  }
+
+  void handlePayment(
+      {String selectedPaymentMethod = "", required int payAmount}) {
+    if (selectedPaymentMethod == "PhonePe") {
+      startPhonePePayment(payAmount: payAmount);
+      // } else if (selectedPaymentMethod == "COD") {
+      //   ScaffoldMessenger.of(context)
+      //       .showSnackBar(SnackBar(content: Text("COD Selected")));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Please select a payment method!")));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AppStringService>(
-      builder: (context, asProvider, child) {
-        return Consumer<ProfileService>(
-          builder: (context, profileProvider, child) {
-            return Scaffold(
-              appBar: CommonHelper().appbarCommon(
-                "Subscription Module",
-                context,
-                () => Navigator.pop(context),
-              ),
-              body: SmartRefresher(
-                controller: RefreshController(),
-                child: ListView.builder(
-                  padding: const EdgeInsets.all(8.0),
-                  itemCount: subscriptionPlans.length,
-                  itemBuilder: (context, index) {
-                    var plan = subscriptionPlans[index];
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 10.0),
-                      child: InkWell(
-                        onTap: () {},
-                        child: SubscriptionCard(
-                          cc: cc,
-                          freePlan: plan["desc"],
-                          type: plan["type"],
-                          typebgColor: plan["typebgColor"],
-                          typeText: plan["typeText"],
-                          price: plan["price"],
-                          typeTextColor: plan["typeTextColor"],
-                          onTapPremium: () => print(
-                              "Premium Type Selected====> ${plan['type']}"),
-                          isActive: plan["isActive"],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            );
-          },
-        );
+    final addServiceController = Provider.of<AddServiceController>(context);
+    final categoryController = Provider.of<CategoryService>(context);
+    return WillPopScope(
+      onWillPop: () async {
+        if (widget.navFrom == "Register") {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => LandingPage()));
+          return true;
+        } else {
+          Navigator.pop(context);
+          return true;
+        }
       },
+      child: Consumer<VendorDashboardService>(
+        builder: (context, vendorProvider, child) {
+          return Scaffold(
+              appBar: CommonHelper().appbarCommon(
+                AppLocalizations.of(context)!.subscriptions,
+                context,
+                () {
+                  if (widget.navFrom == "Register") {
+                    categoryController.clearLists();
+                    addServiceController.resetCategories();
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => LandingPage()));
+                  } else {
+                    Navigator.pop(context);
+                  }
+                },
+              ),
+              body: vendorProvider.isLoading
+                  ? Center(child: OthersHelper().showLoading(cc.primaryColor))
+                  : vendorProvider.subscriptionList.isNotEmpty
+                      ? vendorProvider.subscriptionList[0]["type"] !=
+                                  "banner top" ||
+                              vendorProvider.subscriptionList[0]["type"] !=
+                                  "banner bottom"
+                          ? Consumer<VendorDashboardService>(
+                              builder: (contextProvider, value, child) {
+                                var plan = vendorProvider.subscriptionList[0];
+                                List<dynamic>? sellerList =
+                                    plan["seller"] as List<dynamic>?;
+                                bool isSubscribed = sellerList?.any((seller) =>
+                                        seller["seller_id"].toString() ==
+                                        userId) ??
+                                    false;
+
+                                debugPrint(
+                                    "is subscribed =====> $isSubscribed");
+
+                                return Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10.0),
+                                      child: SubscriptionCard(
+                                        isLoading: vendorProvider.isLoading,
+                                        cc: cc,
+                                        freePlan: vendorProvider
+                                                .subscriptionList[0]["desc"] ??
+                                            "No description", // Handle null values
+                                        type: vendorProvider.subscriptionList[0]
+                                                ["title"] ??
+                                            "N/A",
+                                        typebgColor: Colors.yellow.shade800,
+                                        typeText:
+                                            vendorProvider.subscriptionList[0]
+                                                    ["typeText"] ??
+                                                "",
+                                        price: "${vendorProvider.subscriptionList[0]["price"]?.toString()}/${vendorProvider.subscriptionList[0]["type"]}" ??
+                                            "0", // Convert price to string safely
+                                        typeTextColor: Colors.white,
+                                        onTapPremium: () async {
+                                          if (!isSubscribed) {
+                                            handlePayment(
+                                                selectedPaymentMethod:
+                                                    "PhonePe",
+                                                payAmount: vendorProvider
+                                                        .subscriptionList[0]
+                                                    ["price"]);
+                                          } else {
+                                            OthersHelper().showToast(
+                                                AppLocalizations.of(context)!
+                                                    .alreadyPaid,
+                                                cc.warningColor);
+                                          }
+                                        },
+                                        isActive: false,
+                                        btnText: isSubscribed
+                                            ? AppLocalizations.of(context)!
+                                                .alreadyPaid
+                                            : AppLocalizations.of(context)!
+                                                .payNow,
+                                      ),
+                                    ),
+                                    // Gap(30),
+                                    // InkWell(
+                                    //   onTap: () {
+                                    //     if (widget.navFrom == "Register") {
+                                    //       categoryController.clearLists();
+                                    //       addServiceController.resetCategories();
+                                    //       Navigator.push(
+                                    //           context,
+                                    //           MaterialPageRoute(
+                                    //               builder: (context) =>
+                                    //                   LandingPage()));
+                                    //     } else {
+                                    //       Navigator.pop(context);
+                                    //     }
+                                    //   },
+                                    //   child: Text(
+                                    //     "Pay Letter",
+                                    //     style: TextStyle(
+                                    //         color: cc.primaryColor,
+                                    //         fontSize: 16,
+                                    //         fontWeight: FontWeight.w500),
+                                    //   ),
+                                    // ),
+                                  ],
+                                );
+                              },
+                            )
+                          : Center(
+                              child: Text(
+                                textAlign: TextAlign.center,
+                                AppLocalizations.of(context)!
+                                    .noSubscriptionAddedHere,
+                                style: TextStyle(
+                                    fontSize: 14, fontWeight: FontWeight.w500),
+                              ),
+                            )
+                      : Offstage());
+        },
+      ),
     );
   }
 }
@@ -151,90 +282,128 @@ class SubscriptionCard extends StatelessWidget {
     required this.typeTextColor,
     this.onTapPremium,
     this.isActive,
+    required this.isLoading,
+    required this.btnText,
   });
 
   final ConstantColors cc;
   final String freePlan;
   final String type;
   final String typeText;
+  final String btnText;
   final String price;
   final Color typebgColor;
   final Color typeTextColor;
   final VoidCallback? onTapPremium;
   final bool? isActive;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12.0),
-          color: isActive == true ? Colors.orange.shade50 : cc.white,
-          boxShadow: [
-            BoxShadow(
-              color: cc.greyFive,
-              blurRadius: 3,
-              offset: Offset(0, 1),
-            )
-          ],
-          border: Border.all(
-              width: 1, color: isActive == true ? cc.primaryColor : cc.black6)),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  type,
-                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w600),
-                ),
-                Gap(10),
-                isActive == true
-                    ? Icon(
-                        Icons.check_circle,
-                        size: 14,
-                        color: cc.successColor,
-                      )
-                    : Offstage(),
+    return Stack(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12.0),
+              color: isActive == true ? Colors.orange.shade50 : cc.white,
+              boxShadow: [
+                BoxShadow(
+                  color: cc.greyFive,
+                  blurRadius: 3,
+                  offset: Offset(0, 1),
+                )
               ],
-            ),
-            Gap(10),
-            Text(
-              "INR $rupeeSymbol$price",
-              style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.w400),
-            ),
-            Gap(10),
-            InkWell(
-              onTap: onTapPremium,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: typebgColor,
-                  borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                  width: 1,
+                  color: isActive == true ? cc.primaryColor : cc.black6)),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      textAlign: TextAlign.center,
+                      type,
+                      style: TextStyle(
+                          fontSize: 16.0, fontWeight: FontWeight.w600),
+                    ),
+                    Gap(10),
+                    isActive == true
+                        ? Icon(
+                            Icons.check_circle,
+                            size: 14,
+                            color: cc.successColor,
+                          )
+                        : Offstage(),
+                  ],
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0, vertical: 5.0),
-                  child: Text(
-                    typeText,
-                    style: TextStyle(
-                        color: typeTextColor,
-                        fontWeight: FontWeight.w400,
-                        fontSize: 14),
+                // Gap(10),
+                // Text(
+                //   "INR $rupeeSymbol$price",
+                //   style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.w400),
+                // ),
+                Gap(10),
+                InkWell(
+                  onTap: onTapPremium,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: typebgColor,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8.0, vertical: 5.0),
+                      child: Text(
+                        "INR $rupeeSymbol$price",
+                        style: TextStyle(
+                            color: typeTextColor,
+                            fontWeight: FontWeight.w400,
+                            fontSize: 14),
+                      ),
+                    ),
                   ),
                 ),
-              ),
+                Gap(10),
+                DescInHtml(
+                  cc: cc,
+                  desc: freePlan,
+                ),
+                Gap(10),
+                Center(
+                  child: InkWell(
+                    onTap: onTapPremium,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: cc.primaryColor,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8.0, vertical: 5.0),
+                        child: Text(
+                          btnText,
+                          style: TextStyle(
+                              color: typeTextColor,
+                              fontWeight: FontWeight.w400,
+                              fontSize: 14),
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              ],
             ),
-            Gap(10),
-            DescInHtml(
-              cc: cc,
-              desc: freePlan,
-            ),
-          ],
+          ),
         ),
-      ),
+        isLoading
+            ? Center(child: OthersHelper().showLoading(cc.primaryColor))
+            : Offstage()
+      ],
     );
   }
 }

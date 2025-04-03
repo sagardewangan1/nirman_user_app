@@ -4,6 +4,7 @@ import 'package:qixer/helper/extension/string_extension.dart';
 import 'package:qixer/view/utils/common_helper.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:qixer/view/utils/others_helper.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MyServiceCard extends StatelessWidget {
   final String featureImage;
@@ -81,7 +82,7 @@ class MyServiceCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 4.0),
                       Text(
-                        "Created: $createdDate",
+                        "${AppLocalizations.of(context)!.createdDate} : ${createdDate.split(" ")[0]}",
                         style: const TextStyle(
                           fontSize: 12,
                           color: Colors.grey,
@@ -107,8 +108,8 @@ class MyServiceCard extends StatelessWidget {
                         color: Colors.blue,
                         size: 16,
                       ),
-                      label: const Text(
-                        "Edit",
+                      label: Text(
+                        AppLocalizations.of(context)!.editCity,
                         style: TextStyle(color: Colors.blue, fontSize: 14),
                       ),
                     ),
@@ -119,49 +120,51 @@ class MyServiceCard extends StatelessWidget {
                         color: Colors.red,
                         size: 16,
                       ),
-                      label: const Text(
-                        "Delete",
+                      label: Text(
+                        AppLocalizations.of(context)!.delete,
                         style: TextStyle(color: Colors.red, fontSize: 14),
                       ),
                     ),
                   ],
                 ),
                 // Active/Deactive Toggle
-                InkWell(
-                  onTap: onToggleActive,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: isActive
-                            ? [
-                                Colors.green.shade400,
-                                Colors.green.shade700,
-                              ]
-                            : [
-                                Colors.grey.shade400,
-                                Colors.grey.shade600,
-                              ],
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 5),
-                      child: Text(
-                        isActive ? "Active" : "DeActive",
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors
-                              .white, // Ensures contrast with the green background
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ),
-                )
+                // InkWell(
+                //   onTap: onToggleActive,
+                //   child: Container(
+                //     decoration: BoxDecoration(
+                //       color: Colors.white,
+                //       borderRadius: BorderRadius.circular(20),
+                //       gradient: LinearGradient(
+                //         begin: Alignment.topLeft,
+                //         end: Alignment.bottomRight,
+                //         colors: isActive
+                //             ? [
+                //                 Colors.green.shade400,
+                //                 Colors.green.shade700,
+                //               ]
+                //             : [
+                //                 Colors.grey.shade400,
+                //                 Colors.grey.shade600,
+                //               ],
+                //       ),
+                //     ),
+                //     child: Padding(
+                //       padding: const EdgeInsets.symmetric(
+                //           horizontal: 10, vertical: 5),
+                //       child: Text(
+                //         isActive
+                //             ? AppLocalizations.of(context)!.active
+                //             : AppLocalizations.of(context)!.deactive,
+                //         style: TextStyle(
+                //           fontSize: 14,
+                //           color: Colors
+                //               .white, // Ensures contrast with the green background
+                //           fontWeight: FontWeight.w500,
+                //         ),
+                //       ),
+                //     ),
+                //   ),
+                // )
               ],
             ),
           ],

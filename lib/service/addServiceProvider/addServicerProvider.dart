@@ -62,7 +62,7 @@ class AddServiceController extends ChangeNotifier {
 
   setLoadingTrue() {
     _isLoading = true;
-    notifyListeners();
+    // notifyListeners();
   }
 
   setLoadingFalse() {
@@ -115,6 +115,18 @@ class AddServiceController extends ChangeNotifier {
     notifyListeners();
   }
 
+  List<String> _catIds = [];
+  List<String> get catIds => _catIds;
+
+  void setCatIDForSend(String catId) {
+    if (!_catIds.contains(catId)) {
+      _catIds.add(catId);
+    } else {
+      _catIds.remove(catId);
+    }
+    notifyListeners();
+  }
+
   List<dynamic> _selectedCategoryList = [];
   List<dynamic> get selectedCategoryList => _selectedCategoryList;
 
@@ -125,7 +137,7 @@ class AddServiceController extends ChangeNotifier {
   List<dynamic> get selectedChildCategoryList => _selectedChildCategoryList;
 
   Future<bool> getSelectedCategory(
-      {String? category_id, String? subCategory_id}) async {
+      {List<String>? category_id, String? subCategory_id}) async {
     setLoadingTrue();
     var connection = await checkConnection();
     if (!connection) {
@@ -155,7 +167,7 @@ class AddServiceController extends ChangeNotifier {
         "Content-Type": "application/json",
         "Authorization": "Bearer $token",
       };
-      print("headers===> $headers");
+      print("headers===> $headers and url =====> $url");
       setLoadingFalse();
       var response = await http.get(Uri.parse(url), headers: headers);
       if (response.statusCode == 200) {
@@ -194,8 +206,8 @@ class AddServiceController extends ChangeNotifier {
               "⚠️ API response status is false: ${responseData["message"] ?? "No message"}");
         }
       }
-    } catch (e) {
-      print("❌ Exception: $e");
+    } catch (e, stackTrace) {
+      print("❌ Exception: $e and $stackTrace");
       setLoadingFalse();
     }
     return false;
@@ -312,6 +324,8 @@ class AddServiceController extends ChangeNotifier {
     _selectedCategoryList.clear();
     _selectedSubCategoryList.clear();
     _selectedChildCategoryList.clear();
+
+    _catIds.clear();
 
     notifyListeners(); // ✅ UI update karega
   }
@@ -437,10 +451,11 @@ class AddServiceController extends ChangeNotifier {
         } else {
           print("⚠️ Image file not found at path: $imagePath");
         }
-      } else if (images is String && images.startsWith("http")) {
-        // ✅ If imagePath is empty and "images" is a URL, send it as a form field
-        request.fields['image'] = images;
       }
+      // else if (images is String && images.startsWith("http")) {
+      //   // ✅ If imagePath is empty and "images" is a URL, send it as a form field
+      //   request.fields['image'] = images;
+      // }
 
       // // ✅ Handle Single Image Upload
       // if (imagePath != null && imagePath.isNotEmpty) {

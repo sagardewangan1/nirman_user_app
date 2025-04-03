@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:qixer/view/auth/login/login.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:qixer/view/utils/responsive.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SignupHelper {
   ConstantColors cc = ConstantColors();
@@ -13,7 +14,7 @@ class SignupHelper {
       children: [
         RichText(
           text: TextSpan(
-            text: lnProvider.getString('Have an account?') + '  ',
+            text: '${AppLocalizations.of(context)!.haveAnAccount}  ',
             style: const TextStyle(color: Color(0xff646464), fontSize: 14),
             children: <TextSpan>[
               TextSpan(
@@ -24,7 +25,7 @@ class SignupHelper {
                           MaterialPageRoute(
                               builder: (context) => const LoginPage()));
                     },
-                  text: lnProvider.getString('Sign in'),
+                  text: AppLocalizations.of(context)!.signIn,
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 14,

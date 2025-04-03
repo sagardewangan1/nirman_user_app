@@ -97,19 +97,23 @@ class Datum {
   Datum({
     this.id,
     this.serviceCity,
+    this.serviceArea,
   });
 
   dynamic id;
   dynamic serviceCity;
+  dynamic serviceArea;
 
   factory Datum.fromJson(Map<dynamic, dynamic> json) => Datum(
         id: json["id"],
         serviceCity: json["service_city"],
+        serviceArea: json["service_area"],
       );
 
   Map<dynamic, dynamic> toJson() => {
         "id": id,
-        "service_city": serviceCity,
+        "service_city": serviceArea,
+        "service_area": serviceArea,
       };
 }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:qixer/helper/contactFeatures.dart';
@@ -10,7 +11,7 @@ import 'package:qixer/view/utils/common_helper.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:qixer/view/utils/others_helper.dart';
 import 'package:qixer/view/utils/responsive.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../home/components/service_card.dart';
 
 class ServiceCategoryPage extends StatelessWidget {
@@ -99,7 +100,7 @@ class ServiceCategoryPage extends StatelessWidget {
                                                   as List<dynamic>)
                                               .map((area) => area.toString())
                                               .toList()
-                                          : ["NA"];
+                                          : [];
 
                                   return Column(
                                     children: [
@@ -124,12 +125,13 @@ class ServiceCategoryPage extends StatelessWidget {
                                           padding: const EdgeInsets.all(5.0),
                                           child: ServiceCard(
                                             cc: cc,
-                                            imageLink: service['image'] ??
-                                                placeHolderUrl,
+                                            imageLink:
+                                                service['businessImage'] ??
+                                                    placeHolderUrl,
                                             rating:
                                                 twoDouble(service['rating']),
                                             title: service['title'],
-                                            sellerName: service['name'],
+                                            sellerName: service['businessName'],
                                             price: service['price'],
                                             buttonText: 'Book Now',
                                             width: double.infinity,
@@ -137,15 +139,16 @@ class ServiceCategoryPage extends StatelessWidget {
                                             pressed: () {
                                               provider.saveOrUnsave(
                                                 service['serviceId'],
-                                                service['title'],
+                                                service['title'].toString(),
                                                 service['image'],
                                                 service['price'].round(),
-                                                service['sellerName'],
+                                                service['businessName']
+                                                    .toString(),
                                                 twoDouble(service['rating']),
                                                 i,
                                                 context,
                                                 service['sellerId'],
-                                                service['experience'],
+                                                service['experience'] ?? '',
                                               );
                                             },
                                             isSaved: service['isSaved'] == true,
@@ -176,7 +179,7 @@ class ServiceCategoryPage extends StatelessWidget {
                                                   context,
                                                   provider.serviceMap[i]
                                                       ['callNumber'],
-                                                  "Hello Sir,How can i help you ?");
+                                                  "Hello, I am interested in your service *${provider.serviceMap[i]['title']}*.");
                                               print(
                                                   "on Tap Whatsapp ====> ${provider.serviceMap[i]['callNumber']}");
                                             },
@@ -196,9 +199,20 @@ class ServiceCategoryPage extends StatelessWidget {
                         : Container(
                             alignment: Alignment.center,
                             height: screenHeight - 140,
-                            child: Text(
-                                lnProvider.getString("No service available")),
-                          ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Image.asset(
+                                  "assets/images/nodata.png",
+                                  fit: BoxFit.contain,
+                                ),
+                                Gap(10),
+                                Text(AppLocalizations.of(context)!
+                                    .noServiceProviderInYourArea),
+                              ],
+                            ),
+                          )
                   ],
                 ),
               ),

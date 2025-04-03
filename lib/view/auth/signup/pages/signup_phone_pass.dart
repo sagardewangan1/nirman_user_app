@@ -7,6 +7,7 @@ import 'package:qixer/service/rtl_service.dart';
 import 'package:qixer/view/auth/signup/signup_helper.dart';
 import 'package:qixer/view/utils/common_helper.dart';
 import 'package:qixer/view/utils/constant_styles.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SignupPhonePass extends StatefulWidget {
   const SignupPhonePass(
@@ -50,12 +51,12 @@ class _SignupPhonePassState extends State<SignupPhonePass> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 //Phone number field
-                CommonHelper().labelCommon(asProvider.getString("Phone")),
+                CommonHelper().labelCommon(AppLocalizations.of(context)!.phone),
                 Consumer<RtlService>(
                   builder: (context, rtlP, child) => IntlPhoneField(
                     controller: widget.numberController,
                     decoration: SignupHelper().phoneFieldDecoration(),
-                    searchText: asProvider.getString("Search country"),
+                    searchText: AppLocalizations.of(context)!.searchCountry,
                     initialCountryCode: provider.countryCode,
                     disableLengthCheck: true,
                     textAlign: rtlP.direction == 'ltr'
@@ -218,8 +219,8 @@ class _SignupPhonePassState extends State<SignupPhonePass> {
                   height: 13,
                 ),
 
-                CommonHelper().buttonOrange(asProvider.getString("Continue"),
-                    () {
+                CommonHelper().buttonOrange(
+                    AppLocalizations.of(context)!.continueText, () {
                   final valid = _formKey.currentState?.validate();
                   if (valid != true) {
                     return;

@@ -2,12 +2,17 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qixer/service/rtl_service.dart';
+import 'package:qixer/view/utils/others_helper.dart';
 
 class ImageBig extends StatelessWidget {
   const ImageBig(
-      {super.key, required this.serviceName, required this.imageLink});
+      {super.key,
+      required this.serviceName,
+      required this.imageLink,
+      this.fit = BoxFit.cover});
   final serviceName;
   final imageLink;
+  final BoxFit fit;
 
   @override
   Widget build(BuildContext context) {
@@ -17,9 +22,11 @@ class ImageBig extends StatelessWidget {
             height: 295,
             width: double.infinity,
             child: CachedNetworkImage(
+              fit: fit,
               imageUrl: imageLink,
-              errorWidget: (context, url, error) => const Icon(Icons.error),
-              fit: BoxFit.cover,
+              placeholder: (context, url) => Image.network(placeHolderUrl),
+              errorWidget: (context, url, error) =>
+                  Image.network(placeHolderUrl),
             )),
         Container(
           height: 295,

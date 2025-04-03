@@ -13,15 +13,15 @@ import '../../model/PaymentModal.dart';
 
 class PhonePeService {
 // ✅ Use "SANDBOX" for testing and "PRODUCTION" for live transactions
-  final String environment = "SANDBOX"; // Development
-// final String environment = "PRODUCTION"; // Production
+//   final String environment = "SANDBOX"; // Development
+  final String environment = "PRODUCTION"; // Production
   final String appId = "";
-  final String merchantId = "PGTESTPAYUAT"; // Development
-// final String merchantId = "M22W8Q546PWLY"; // Production
+  // final String merchantId = "PGTESTPAYUAT77"; // Development
+  final String merchantId = "M227DQKVXSPAZ"; // Production
   String checkSum = "";
   bool enableLogging = true;
-  final String saltKey = "099eb0cd-02cf-4e2a-8aca-3e6c6aff0399"; // Development
-// final String saltKey = "d8814597-b930-486b-9846-0105b62bfb7e"; // Production
+  // final String saltKey = "14fa5465-f8a7-443f-8477-f986b8fcfde9"; // Development
+  final String saltKey = "fe2830c4-25d0-4078-8e3b-46de68781e28"; // Production
   final String saltIndex = "1";
   final String packageName = "com.shashaktnirmanuserapp";
   final String callBackUrl = "https://sashaktnirmaan.com/";
@@ -76,10 +76,10 @@ class PhonePeService {
     final requestData = {
       "merchantId": merchantId,
       "merchantTransactionId": merchantTransactionId,
-      "merchantUserId": "user456",
+      "merchantUserId": "Admin",
       "amount": amount * 100,
       "callbackUrl": callBackUrl,
-      "mobileNumber": "9999999999",
+      "mobileNumber": "9981165924",
       "paymentInstrument": {"type": "PAY_PAGE"}
     };
     // return requestData;
@@ -121,10 +121,10 @@ class PhonePeService {
   // }
 
   Future<PaymentModal> checkStatus(String txnId) async {
-    final String url =
-        "https://api-preprod.phonepe.com/apis/pg-sandbox/pg/v1/status/$merchantId/$txnId";
     // final String url =
-    //     "https://api.phonepe.com/apis/hermes/pg/v1/status/$merchantId/$txnId";
+    //     "https://api-preprod.phonepe.com/apis/pg-sandbox/pg/v1/status/$merchantId/$txnId";
+    final String url =
+        "https://api.phonepe.com/apis/hermes/pg/v1/status/$merchantId/$txnId";
     String hash = sha256
         .convert(utf8.encode("/pg/v1/status/$merchantId/$txnId$saltKey"))
         .toString();
@@ -138,7 +138,7 @@ class PhonePeService {
 
     try {
       var response = await http.get(Uri.parse(url), headers: headers);
-
+      print("PhonePe Body response=======> ${response.body}");
       var jsonResponse = jsonDecode(response.body);
       return PaymentModal.fromJson(jsonResponse);
     } catch (e) {

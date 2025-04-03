@@ -15,6 +15,7 @@ import 'package:qixer/view/utils/responsive.dart';
 
 import '../../model/google_places_model.dart';
 import 'custom_button.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LocationFromGoogle extends StatelessWidget {
   final selectedValue;
@@ -69,7 +70,8 @@ class LocationFromGoogle extends StatelessWidget {
                               horizontal: 20, vertical: 10),
                           child: CustomInput(
                             textInputAction: TextInputAction.done,
-                            hintText: "Search Location",
+                            hintText:
+                                AppLocalizations.of(context)!.searchLocation,
                             icon: "assets/icons/search.png",
                             onChanged: (value) {
                               scheduleTimeout?.cancel();

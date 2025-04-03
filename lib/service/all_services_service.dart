@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:qixer/model/CategoryDataModel.dart';
+import 'package:qixer/model/recent_service_model.dart';
 import 'package:qixer/model/service_by_filter_model.dart';
 import 'package:qixer/model/service_search_model.dart';
 import 'package:qixer/model/sub_category_model.dart';
+import 'package:qixer/service/cityAndAreaController/cityAndAreaController.dart';
 import 'package:qixer/service/common_service.dart';
 import 'package:qixer/service/db/db_service.dart';
 import 'package:qixer/service/home_services/category_service.dart';
@@ -135,6 +137,13 @@ class AllServicesService with ChangeNotifier {
     notifyListeners();
   }
 
+  String? _searchText;
+  String? get searchText => _searchText;
+  setSearch(BuildContext context, newValue) {
+    _searchText = newValue;
+    fetchAllService(context);
+  }
+
   setTotalPage(newPageNumber) {
     totalPages = newPageNumber;
     notifyListeners();
@@ -185,7 +194,7 @@ class AllServicesService with ChangeNotifier {
   List<Subcategories> _subCatList = [];
   List<Subcategories> get subCatList => _subCatList;
 
-  Future<bool> fetchSubcategory(categoryId) async {
+  Future<bool> fetchSubcategory(String categoryId) async {
     setSelectedCategoryId(int.parse(categoryId));
     //make sub category list to default first
     if (selectedCategoryId == 0) {
@@ -203,7 +212,7 @@ class AllServicesService with ChangeNotifier {
       }
       var url = Uri.parse('$baseApi/category/sub-category/$categoryId');
       var response = await http.get(url);
-
+      debugPrint("url =====> $url\n  response =======> ${response.body}");
       if (response.statusCode == 200 || response.statusCode == 201) {
         defaultSubcategory();
         var data = SubcategoryModel.fromJson(jsonDecode(response.body));
@@ -231,131 +240,169 @@ class AllServicesService with ChangeNotifier {
     }
   }
 
-  fetchServiceByFilter(context, {bool isrefresh = false}) async {
-    if (isrefresh) {
-      //making the list empty first to show loading bar (we are showing loading bar while the product list is empty)
-      //we are make the list empty when the sub category or brand is selected because then the refresh is true
-      serviceMap = [];
-      notifyListeners();
+  Future<bool> fetchServiceByFilter(BuildContext context,
+      {bool isrefresh = false}) async {
+    try {
+      if (isrefresh) {
+        // Making the list empty first to show loading bar
+        serviceMap = [];
+        notifyListeners();
 
-      setLoadingTrue();
-      setCurrentPage(1);
-    } else {
-      // if (currentPage > 2) {
-      //   refreshController.loadNoData();
-      //   return false;
-      // }
-    }
-    // serviceMap = [];
-    // Future.delayed(const Duration(microseconds: 500), () {
-    //   notifyListeners();
-    // });
-    var connection = await checkConnection();
-    if (connection) {
-      //if connection is ok
+        setLoadingTrue();
+        setCurrentPage(1);
+      }
+
+      var connection = await checkConnection();
+      if (!connection) {
+        print("❌ No internet connection.");
+        return false;
+      }
+
+      // Construct API URL
       String url =
-          "$baseApi/service-list/category-subcategory-rating-sort-by-search/?cat=$selectedCategoryId&subcat=$selectedSubcatId&rating=$selectedRatingId&sortby=$selectedSortbyId&page=$currentPage";
+          "$baseApi/service-list/category-subcategory-rating-sort-by-search/?cat=$selectedCategoryId&subcat=$selectedSubcatId&rating=$selectedRatingId&sortby=$selectedSortbyId&page=$currentPage&searchText=${searchText == null ? '' : searchText}";
+
+      print("🌍 Fetching from URL: $url\n");
+
       var response = await http.get(Uri.parse(url));
 
-      print("URL =====> $url");
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        var decodedResponse = jsonDecode(response.body);
 
-      if (response.statusCode == 201) {
-        var data = ServiceByFilterModel.fromJson(jsonDecode(response.body));
+        // printLargeResponse(
+        //     "actual data ===> ${decodedResponse["all_services"]["data"][0]["seller_for_mobile"]["seller_business_img"].runtimeType}");
+
+        ServiceByFilterModel serviceByFilterModel =
+            ServiceByFilterModel.fromJson(decodedResponse);
         print(
-            "data from model ===> ${data.allServices.data[0].serviceAreas?.map(
-          (e) => e.serviceArea,
-        )}");
+            "✅ Data received: ${serviceByFilterModel.allServices.data.length} services");
 
-        setTotalPage(data.allServices.lastPage);
-        for (int i = 0; i < data.allServices.data.length; i++) {
-          String? serviceImage;
+        setTotalPage(serviceByFilterModel.allServices.lastPage);
 
-          if (data.serviceImage.length > i) {
-            serviceImage = data.serviceImage[i]?.imgUrl;
-          } else {
-            serviceImage = null;
-          }
+        List<double> averageRateList = [];
+        List<String?> imageList = [];
+
+        for (int i = 0; i < serviceByFilterModel.allServices.data.length; i++) {
+          String? serviceImage = (serviceByFilterModel.serviceImage.length > i)
+              ? serviceByFilterModel.serviceImage[i]?.imgUrl
+              : null;
 
           int totalRating = 0;
-          for (int j = 0;
-              j < data.allServices.data[i].reviewsForMobile.length;
-              j++) {
-            totalRating = totalRating +
-                data.allServices.data[i].reviewsForMobile[j].rating!.toInt();
+          for (var review
+              in serviceByFilterModel.allServices.data[i].reviewsForMobile) {
+            totalRating += review.rating?.toInt() ?? 0;
           }
-          double averageRate = 0;
 
-          if (data.allServices.data[i].reviewsForMobile.isNotEmpty) {
-            averageRate = (totalRating /
-                data.allServices.data[i].reviewsForMobile.length);
-          }
+          double averageRate = (serviceByFilterModel
+                  .allServices.data[i].reviewsForMobile.isNotEmpty)
+              ? totalRating /
+                  serviceByFilterModel
+                      .allServices.data[i].reviewsForMobile.length
+              : 0;
+
           averageRateList.add(averageRate);
           imageList.add(serviceImage);
         }
 
         if (isrefresh) {
-          //if refreshed, then remove all service from list and insert new data
           setServiceList(
-              data.allServices.data, averageRateList, imageList, false);
+              serviceByFilterModel, averageRateList, imageList, false);
         } else {
-          //else add new data
           setServiceList(
-              data.allServices.data, averageRateList, imageList, true);
+              serviceByFilterModel, averageRateList, imageList, true);
         }
 
         currentPage++;
-        imageList = [];
-        averageRateList = [];
         setCurrentPage(currentPage);
         setLoadingFalse();
+
         return true;
       } else {
+        serviceMap.clear();
+        print("❌ API Error: ${response.statusCode} - ${response.body}");
         setLoadingFalse();
         return false;
       }
+    } catch (e, stackTrace) {
+      print("❌ Exception in fetchServiceByFilter: $e");
+      print("📌 StackTrace: $stackTrace");
+      setLoadingFalse();
+      return false;
     }
   }
 
-  setServiceList(
-    data,
-    averageRateList,
-    imageList,
-    bool addnewData,
+  void setServiceList(
+    ServiceByFilterModel data,
+    List<double> averageRateList,
+    List<String?> imageList,
+    bool addNewData,
   ) {
-    if (addnewData == false) {
-      //make the list empty first so that existing data doesn't stay
-      serviceMap = [];
+    try {
+      if (!addNewData) {
+        serviceMap = [];
+        notifyListeners();
+      }
+
+      for (int i = 0; i < data.allServices.data.length; i++) {
+        // print(
+        //     "data after for loop ===> ${data.allServices.data[i].id} ${data.allServices.data[i].sellerForMobile?.sellerBusinessImg}\n\n");
+        try {
+          List processedServiceAreas = data.allServices.data[i].serviceAreas
+                  ?.map((area) => area.serviceArea ?? "Unknown")
+                  .toList() ??
+              [];
+
+          List<String> userServiceAreas = data
+                  .allServices.data[i].sellerForMobile?.userServiceArea
+                  ?.map((area) => area.serviceArea ?? "Unknown")
+                  .toList() ??
+              [];
+
+          serviceMap.add({
+            'serviceId': data.allServices.data[i].id,
+            'title': data.allServices.data[i].title,
+            'sellerName': data.allServices.data[i].sellerForMobile?.name,
+            'price': data.allServices.data[i].price,
+            'rating': averageRateList[i],
+            'image': imageList[i],
+            'isSaved': false,
+            'sellerId': data.allServices.data[i].sellerId,
+            'experience': data.allServices.data[i].experience,
+            'status': data.allServices.data[i].status,
+            'whatsappNumber': data.allServices.data[i].sellerForMobile?.phone,
+            'callNumber': data.allServices.data[i].sellerForMobile?.phone,
+            "serviceArea": processedServiceAreas,
+            "businessName":
+                data.allServices.data[i].sellerForMobile?.businessName,
+            "businessGstNumber":
+                data.allServices.data[i].sellerForMobile?.businessGstNumber,
+            "businessPhoneNumber":
+                data.allServices.data[i].sellerForMobile?.businessPhoneNumber,
+            "businessEmail":
+                data.allServices.data[i].sellerForMobile?.businessEmail,
+            "businessFullAddress":
+                data.allServices.data[i].sellerForMobile?.businessFullAddress,
+            "businessDescription":
+                data.allServices.data[i].sellerForMobile?.businessDescription,
+            "businessImage":
+                data.allServices.data[i].sellerForMobile?.sellerBusinessImg,
+            "userAreas": userServiceAreas
+          });
+
+          checkIfAlreadySaved(
+              data.allServices.data[i].id,
+              data.allServices.data[i].title,
+              data.allServices.data[i].sellerForMobile?.name,
+              serviceMap.length - 1);
+        } catch (innerError, innerStackTrace) {
+          print("⚠️ Error processing service at index $i: $innerError");
+          print("📌 StackTrace: $innerStackTrace");
+        }
+      }
       notifyListeners();
-    }
-
-    for (int i = 0; i < data.length; i++) {
-      /// ✅ Convert `List<ServiceAreas>` to `List<String>` (Extract `service_area`)
-      List processedServiceAreas = data[i].serviceAreas is List<ServiceAreas>
-          ? data[i]
-              .serviceAreas
-              .map((area) => area.serviceArea ?? "Unknown")
-              .toList()
-          : [];
-
-      serviceMap.add({
-        'serviceId': data[i].id,
-        'title': data[i].title,
-        'sellerName': data[i].sellerForMobile.name,
-        'price': data[i].price,
-        'rating': averageRateList[i],
-        'image': imageList[i],
-        'isSaved': false,
-        'sellerId': data[i].sellerId,
-        'experience': data[i].experience,
-        'status': data[i].status,
-        'whatsappNumber': data[i].sellerForMobile.phone,
-        'callNumber': data[i].sellerForMobile.phone,
-        "serviceArea": processedServiceAreas
-      });
-      // print("✅ Processed service areas: ${serviceMap.last["serviceArea"]}");
-
-      checkIfAlreadySaved(data[i].id, data[i].title,
-          data[i].sellerForMobile.name, serviceMap.length - 1);
+    } catch (e, stackTrace) {
+      print("❌ Exception in setServiceList: $e");
+      print("📌 StackTrace: $stackTrace");
     }
   }
 
@@ -383,5 +430,106 @@ class AllServicesService with ChangeNotifier {
     newListMap[index]['isSaved'] = alreadySaved;
     serviceMap = newListMap;
     notifyListeners();
+  }
+
+  void resetFilters() {
+    selectedCategory = lnProvider.getString('Select Category');
+    selectedCategoryId = 0;
+
+    selectedSubcat = lnProvider.getString('Select Subcategory');
+    selectedSubcatId = 0;
+
+    selectedRating = 'All';
+    selectedRatingId = 0;
+
+    selectedSortby = 'All';
+    selectedSortbyId = '';
+
+    serviceMap = [];
+    averageRateList = [];
+    imageList = [];
+    currentPage = 1;
+    _searchText = null;
+
+    notifyListeners();
+  }
+
+  Future<bool> fetchAllService(BuildContext context,
+      {bool isRefresh = false}) async {
+    try {
+      if (isRefresh) {
+        serviceMap = [];
+        notifyListeners(); // 🔹 Ensure UI updates
+        setLoadingTrue();
+        setCurrentPage(1);
+      }
+
+      var connection = await checkConnection();
+      if (!connection) {
+        print("❌ No internet connection.");
+        setLoadingFalse();
+        notifyListeners();
+        return false;
+      }
+
+      String url =
+          "$baseApi/service-list/category-subcategory-rating-sort-by-search?searchText=${searchText ?? ''}";
+
+      print("🌍 Fetching from URL: $url\n");
+
+      var response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        var decodedResponse = jsonDecode(response.body);
+        ServiceByFilterModel serviceByFilterModel =
+            ServiceByFilterModel.fromJson(decodedResponse);
+
+        print(
+            "✅ Data received: ${serviceByFilterModel.allServices.data.length} services");
+
+        setTotalPage(serviceByFilterModel.allServices.lastPage);
+
+        List<double> averageRateList = [];
+        List<String?> imageList = [];
+
+        for (var service in serviceByFilterModel.allServices.data) {
+          String? serviceImage = serviceByFilterModel.serviceImage
+              .firstWhere((img) => img != null, orElse: () => null)
+              ?.imgUrl;
+
+          int totalRating = service.reviewsForMobile
+              .fold(0, (sum, review) => sum + (review.rating?.toInt() ?? 0));
+
+          double averageRate = service.reviewsForMobile.isNotEmpty
+              ? totalRating / service.reviewsForMobile.length
+              : 0;
+
+          averageRateList.add(averageRate);
+          imageList.add(serviceImage);
+        }
+
+        setServiceList(
+            serviceByFilterModel, averageRateList, imageList, !isRefresh);
+
+        currentPage++;
+        setCurrentPage(currentPage);
+        setLoadingFalse();
+
+        notifyListeners(); // 🔹 Ensure UI updates after fetching data
+        return true;
+      } else {
+        serviceMap.clear();
+        print("❌ API Error: ${response.statusCode} - ${response.body}");
+        setLoadingFalse();
+        notifyListeners(); // 🔹 Ensure UI updates on error
+        return false;
+      }
+    } catch (e, stackTrace) {
+      print("❌ Exception in fetchAllService: $e");
+      print("📌 StackTrace: $stackTrace");
+      setLoadingFalse();
+      notifyListeners(); // 🔹 Ensure UI updates on error
+      return false;
+    }
   }
 }

@@ -14,11 +14,13 @@ String siteLink = "https://sashaktnirmaan.com"; // Production
 String get baseApi => '$siteLink/api/v1';
 String rupeeSymbol = '\u20B9';
 
-String placeHolderUrl = 'https://i.postimg.cc/rpsKNndW/New-Project.png';
-String appLogoIcon = 'assets/images/nirmanlogo.jpeg';
-String appIconUrl =
-    'https://sashaktnirmaan.com/assets/uploads/media-uploader/app_logo.jpeg';
-String placeHolderUrl2 = 'https://i.postimg.cc/mgZ1SD5P/Untitled-design.jpg';
+// String placeHolderUrl = 'https://i.postimg.cc/rpsKNndW/New-Project.png';
+String placeHolderUrl =
+    'https://img.freepik.com/premium-vector/default-image-icon-vector-missing-picture-page-website-design-mobile-app-no-photo-available_87543-11093.jpg';
+String appLogoIcon = 'https://i.postimg.cc/mZNNdXd2/icon.png';
+String appIconUrl = 'https://i.postimg.cc/mZNNdXd2/icon.png';
+String placeHolderUrl2 =
+    'https://img.freepik.com/premium-vector/default-image-icon-vector-missing-picture-page-website-design-mobile-app-no-photo-available_87543-11093.jpg';
 String loadMoreGif = 'https://i.postimg.cc/FsTXxr5r/target-4755-128.gif';
 String userPlaceHolderUrl =
     'https://i.postimg.cc/ZYQp5Xv1/blank-profile-picture-gb26b7fbdf-1280.png';
@@ -155,5 +157,16 @@ extension EnquiryTypeExtension on EnquiryType {
       default:
         return "";
     }
+  }
+}
+
+printLargeResponse(String responseBody) {
+  const int chunkSize = 1000; // Ek bar me sirf 1000 characters print honge
+  for (int i = 0; i < responseBody.length; i += chunkSize) {
+    print(responseBody.substring(
+        i,
+        i + chunkSize > responseBody.length
+            ? responseBody.length
+            : i + chunkSize));
   }
 }

@@ -180,6 +180,15 @@ class SellerForMobile {
     this.sellerAddress,
     this.postCode,
     this.username,
+    this.businessName,
+    this.businessGstNumber,
+    this.businessPhoneNumber,
+    this.businessEmail,
+    this.businessFullAddress,
+    this.businessDescription,
+    this.sellerBusinessImg,
+    this.workingCategories,
+    this.userServiceArea,
   });
 
   int? id;
@@ -188,23 +197,64 @@ class SellerForMobile {
   int? countryId;
   String? phone;
   String? serviceCity;
-  String? serviceArea;
+  List<dynamic>? serviceArea;
   String? address;
   double? latitude;
   double? longitude;
   String? sellerAddress;
   String? postCode;
   String? username;
+  String? businessName;
+  String? businessGstNumber;
+  String? businessPhoneNumber;
+  String? businessEmail;
+  String? businessFullAddress;
+  String? businessDescription;
+  String? sellerBusinessImg;
+  String? workingCategories;
+  List<UserServiceArea>? userServiceArea;
 
   factory SellerForMobile.fromJson(Map<String, dynamic> json) =>
       SellerForMobile(
-        id: json["id"]?.toString().tryToParse.toInt(),
+        id: json["id"] as int?,
         name: json["name"],
         image: json["image"],
-        countryId: json["country_id"]?.toString().tryToParse.toInt(),
+        countryId: json["country_id"] as int?,
         phone: json["phone"],
-        serviceCity: json["service_city"]?.toString(),
-        serviceArea: json["service_area"]?.toString(),
+        serviceCity: json["service_city"],
+        serviceArea: () {
+          if (json["service_area"] == null || json["service_area"] == "") {
+            return [];
+          } else if (json["service_area"] is String) {
+            String serviceAreaStr = json["service_area"].toString().trim();
+
+            // Case: Direct number as string (e.g., "684")
+            if (RegExp(r'^\d+$').hasMatch(serviceAreaStr)) {
+              return [int.tryParse(serviceAreaStr) ?? 0];
+            }
+
+            // Case: JSON-encoded list as a string (e.g., '["684", "685"]')
+            try {
+              var decodedList = jsonDecode(serviceAreaStr);
+              if (decodedList is List) {
+                return decodedList
+                    .map((e) => int.tryParse(e.toString()) ?? 0)
+                    .toList();
+              }
+            } catch (e) {
+              return [];
+            }
+          }
+          // Case: Already a List (e.g., ["684", "685"])
+          else if (json["service_area"] is List) {
+            return (json["service_area"] as List<dynamic>)
+                .map((e) => int.tryParse(e.toString()) ?? 0)
+                .toList();
+          }
+
+          return [];
+        }(),
+
         address: json["address"],
         latitude: json["latitude"] != null
             ? double.tryParse(json["latitude"].toString())
@@ -215,6 +265,23 @@ class SellerForMobile {
         sellerAddress: json["seller_address"],
         postCode: json["post_code"],
         username: json["username"],
+        businessName: json["businessName"],
+        businessGstNumber: json["businessGstNumber"],
+        businessPhoneNumber: json["businessPhoneNumber"],
+        businessEmail: json["businessEmail"],
+        businessFullAddress: json["businessFullAddress"],
+        businessDescription: json["businessDescription"],
+        sellerBusinessImg: (json["seller_business_img"] != null &&
+                json["seller_business_img"] is String &&
+                json["seller_business_img"].isNotEmpty)
+            ? json["seller_business_img"]
+            : '',
+        workingCategories: json["working_categories"],
+        userServiceArea: json["user_service_area"] != null
+            ? (json["user_service_area"] as List)
+                .map((e) => UserServiceArea.fromJson(e))
+                .toList()
+            : [], // ✅ Convert user_service_area JSON array to List<UserServiceArea>
       );
 
   Map<String, dynamic> toJson() => {
@@ -224,13 +291,23 @@ class SellerForMobile {
         "country_id": countryId,
         "phone": phone,
         "service_city": serviceCity,
-        "service_area": serviceArea,
+        "service_area":
+            jsonEncode(serviceArea), // ✅ Convert List<int> back to JSON string
         "address": address,
         "latitude": latitude,
         "longitude": longitude,
         "seller_address": sellerAddress,
         "post_code": postCode,
         "username": username,
+        "businessName": businessName,
+        "businessGstNumber": businessGstNumber,
+        "businessPhoneNumber": businessPhoneNumber,
+        "businessEmail": businessEmail,
+        "businessFullAddress": businessFullAddress,
+        "businessDescription": businessDescription,
+        "seller_business_img": sellerBusinessImg,
+        "working_categories": workingCategories,
+        "user_service_area": userServiceArea?.map((e) => e.toJson()).toList(),
       };
 }
 
@@ -259,5 +336,50 @@ class Image {
         "path": path,
         "img_url": imgUrl,
         "img_alt": imgAlt,
+      };
+}
+
+class UserServiceArea {
+  UserServiceArea({
+    this.id,
+    this.serviceArea,
+    this.serviceCityId,
+    this.countryId,
+    this.status,
+    this.createdAt,
+    this.updatedAt,
+  });
+
+  int? id;
+  String? serviceArea;
+  int? serviceCityId;
+  int? countryId;
+  int? status;
+  DateTime? createdAt;
+  DateTime? updatedAt;
+
+  factory UserServiceArea.fromJson(Map<String, dynamic> json) =>
+      UserServiceArea(
+        id: json["id"] as int?,
+        serviceArea: json["service_area"],
+        serviceCityId: json["service_city_id"] as int?,
+        countryId: json["country_id"] as int?,
+        status: json["status"] as int?,
+        createdAt: json["created_at"] != null
+            ? DateTime.parse(json["created_at"])
+            : null,
+        updatedAt: json["updated_at"] != null
+            ? DateTime.parse(json["updated_at"])
+            : null,
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "service_area": serviceArea,
+        "service_city_id": serviceCityId,
+        "country_id": countryId,
+        "status": status,
+        "created_at": createdAt?.toIso8601String(),
+        "updated_at": updatedAt?.toIso8601String(),
       };
 }

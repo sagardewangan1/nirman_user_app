@@ -11,6 +11,7 @@ class CustomInput extends StatelessWidget {
   final FocusNode? focusNode;
   final bool isNumberField;
   final String? icon;
+  final String? iconSuffix;
   final double paddingHorizontal;
   final double paddingVertical;
   final double marginBottom;
@@ -19,6 +20,7 @@ class CustomInput extends StatelessWidget {
   int? maxLines;
   int? minLines;
   Color? color;
+  final VoidCallback? onTapSuffix;
 
   CustomInput(
       {super.key,
@@ -37,7 +39,9 @@ class CustomInput extends StatelessWidget {
       this.paddingVertical = 18,
       this.maxLines,
       this.minLines,
-      this.color});
+      this.color,
+      this.iconSuffix,
+      this.onTapSuffix});
 
   @override
   Widget build(BuildContext context) {
@@ -72,6 +76,25 @@ class CustomInput extends StatelessWidget {
                             image: DecorationImage(
                                 image: AssetImage(icon!),
                                 fit: BoxFit.fitHeight),
+                          ),
+                        ),
+                      ],
+                    )
+                  : null,
+              suffixIcon: iconSuffix != null
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        InkWell(
+                          onTap: onTapSuffix,
+                          child: Container(
+                            height: 22.0,
+                            width: 40.0,
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  image: AssetImage(iconSuffix!),
+                                  fit: BoxFit.fitHeight),
+                            ),
                           ),
                         ),
                       ],

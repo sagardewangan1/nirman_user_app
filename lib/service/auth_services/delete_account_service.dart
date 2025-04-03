@@ -4,27 +4,55 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'package:qixer/helper/SharedPreferencesHelper.dart';
 import 'package:qixer/helper/extension/string_extension.dart';
+import 'package:qixer/service/auth_services/facebook_login_service.dart';
+import 'package:qixer/service/auth_services/google_sign_service.dart';
 import 'package:qixer/service/common_service.dart';
+import 'package:qixer/service/getImageController.dart';
 import 'package:qixer/service/profile_service.dart';
+import 'package:qixer/view/home/homepage_helper.dart';
+import 'package:qixer/view/selectionRole/selectionRoleView.dart';
 import 'package:qixer/view/utils/others_helper.dart';
 import 'package:qixer/view/utils/responsive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DeleteAccountService with ChangeNotifier {
   bool isloading = false;
-  var deactivateReasonDropdownList = ['Vacation', 'Personal reason'];
-  var deactivateReasonDropdownIndexList = ['Vacation', 'Vacation'];
-  var selecteddeactivateReason = 'Vacation';
-  var selecteddeactivateReasonId = 'Vacation';
+  var deactivateReasonDropdownList = [
+    'Concern about my data',
+    'Want to create second account',
+    'Too many ads',
+    "Can't find leads",
+    'Privacy concern',
+    'Too Busy',
+    'Something Else',
+  ];
 
-  setdeactivateReasonValue(value) {
-    selecteddeactivateReason = value;
-    notifyListeners();
+  var selecteddeactivateReason = 'Concern about my data';
+
+  var deactivateReasonDropdownIndexList = [
+    'concern_data',
+    'second_account',
+    'too_many_ads',
+    'no_leads',
+    'privacy_concern',
+    'too_busy',
+    'something_else',
+  ];
+
+  var selecteddeactivateReasonId = 'concern_data';
+
+  void setdeactivateReasonValue(String? newValue) {
+    if (newValue != null) {
+      selecteddeactivateReason = newValue;
+      notifyListeners();
+    }
   }
 
-  setSelecteddeactivateReasonId(value) {
-    selecteddeactivateReasonId = value;
+  void setSelecteddeactivateReasonId(String id) {
+    selecteddeactivateReasonId = id;
     notifyListeners();
   }
 
@@ -38,7 +66,7 @@ class DeleteAccountService with ChangeNotifier {
     notifyListeners();
   }
 
-  deleteAccount(BuildContext context, password, description) async {
+  deleteAccount(BuildContext context, String description) async {
     var connection = await checkConnection();
     if (connection) {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -51,46 +79,52 @@ class DeleteAccountService with ChangeNotifier {
         "Authorization": "Bearer $token",
       };
       setLoadingTrue();
-      if (baseApi == 'https://sashaktnirmaan.com/api/v1') {
-        await Future.delayed(const Duration(seconds: 1));
-        OthersHelper()
-            .showToast('This feature is turned off in test mode', Colors.black);
-        setLoadingFalse();
-        return;
-      }
-      var response = await http.post(
-        Uri.parse(
-            '$baseApi/account-delete?reason=$selecteddeactivateReasonId&description=$description&password=$password'),
-        headers: header,
-      );
+      // if (baseApi == 'https://sashaktnirmaan.com/api/v1') {
+      //   await Future.delayed(const Duration(seconds: 1));
+      //   OthersHelper().showToast(
+      //       AppLocalizations.of(context)!.thisFeatureIsTurnedOffForDemoApp,
+      //       Colors.black);
+      //   setLoadingFalse();
+      //   return;
+      // }
+      var body = {
+        "reason": selecteddeactivateReason,
+        "description": description.toString()
+      };
+      var response = await http.post(Uri.parse('$baseApi/account-delete'),
+          headers: header, body: body);
       if (response.statusCode == 201) {
         try {
+          SharedPreferencesHelper.clearData();
+          //if logged in by google then logout from it
+          // GoogleSignInService().logOutFromGoogleLogin();
+          // //if logged in by facebook then logout from it
+          // FacebookLoginService().logoutFromFacebook();
+          notifyListeners();
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => SelectionRoleView(hasBackButton: false),
+              ));
           final data = jsonDecode(response.body);
           if (data['message'] != null) {
             OthersHelper().showToast(data['message'], Colors.black);
           }
-        } catch (e) {}
-        var appleId = sPref.getString("appleId");
-        var appleUserToken = sPref.getString("userToken");
-
-        await appleTokenRevoke(
-          appleUserToken,
-          appleId,
-        );
-        // Navigator.pushAndRemoveUntil<dynamic>(
-        //   context,
-        //   MaterialPageRoute<dynamic>(
-        //     builder: (BuildContext context) => const LoginPage(
-        //       hasBackButton: false,
-        //     ),
-        //   ),
-        //   (route) => false,
+        } catch (e) {
+          debugPrint("error====> $e");
+        }
+        // var appleId = sPref.getString("appleId");
+        // var appleUserToken = sPref.getString("userToken");
+        //
+        // await appleTokenRevoke(
+        //   appleUserToken,
+        //   appleId,
         // );
-
         // clear profile data =====>
         Provider.of<ProfileService>(context, listen: false)
             .setEverythingToDefault();
-
+        Provider.of<GetImageController>(context, listen: false)
+            .removeBannerImages();
         clear();
         setLoadingFalse();
       } else {
@@ -103,7 +137,8 @@ class DeleteAccountService with ChangeNotifier {
           }
         } catch (e) {}
         debugPrint(response.body.toString());
-        OthersHelper().showToast('Something went wrong', Colors.black);
+        OthersHelper().showToast(
+            AppLocalizations.of(context)!.somethingWentWrong, Colors.black);
         setLoadingFalse();
       }
     }

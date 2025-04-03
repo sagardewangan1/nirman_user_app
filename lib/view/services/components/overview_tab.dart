@@ -1,13 +1,15 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:qixer/service/service_details_service.dart';
 import 'package:qixer/view/services/components/desc_from_html.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class OverviewTab extends StatelessWidget {
-  const OverviewTab({super.key, required this.provider});
+  const OverviewTab({super.key, this.provider});
 
-  final provider;
+  final ServiceDetailsService? provider;
   @override
   Widget build(BuildContext context) {
     ConstantColors cc = ConstantColors();
@@ -17,7 +19,7 @@ class OverviewTab extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
-              "Key Feature",
+              AppLocalizations.of(context)!.keyFeature,
               style: TextStyle(
                   color: Colors.black,
                   fontSize: 14,
@@ -25,13 +27,14 @@ class OverviewTab extends StatelessWidget {
             ),
             DescInHtml(
               cc: cc,
-              desc: provider.serviceAllDetails.serviceDetails.description,
+              desc: provider?.serviceDetailsModel.serviceDetails
+                  ?.sellerForMobile.businessDescription,
             ),
             const SizedBox(
               height: 10,
             ),
             Text(
-              "Office Address",
+              AppLocalizations.of(context)!.officeAddress,
               style: TextStyle(
                   color: Colors.black,
                   fontSize: 14,
@@ -42,8 +45,8 @@ class OverviewTab extends StatelessWidget {
               child: Text(
                   textAlign: TextAlign.left,
                   overflow: TextOverflow.visible,
-                  provider.serviceAllDetails.serviceDetails.seller.address
-                          .toString() ??
+                  provider?.serviceDetailsModel.serviceDetails?.sellerForMobile
+                          .businessFullAddress ??
                       "",
                   style: TextStyle(
                       color: cc.black3,

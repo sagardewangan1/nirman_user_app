@@ -10,7 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ProfileEditService with ChangeNotifier {
   bool isloading = false;
 
-  String countryCode = 'BD';
+  String countryCode = 'IN';
 
   setCountryCode(code) {
     countryCode = code ?? countryCode;
@@ -103,7 +103,7 @@ class ProfileEditService with ChangeNotifier {
       OthersHelper().showToast('Profile updated successfully', Colors.black);
 
       await Provider.of<ProfileService>(context, listen: false)
-          .getProfileDetails(isFromProfileupdatePage: true);
+          .getProfileDetails(isFromProfileupdatePage: true, context: context);
       Navigator.pop(context);
       return true;
     } else {

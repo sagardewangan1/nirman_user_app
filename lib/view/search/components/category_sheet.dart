@@ -17,6 +17,7 @@ import '../../../service/filter_category_service.dart';
 import '../../../service/filter_services_service.dart';
 import '../../utils/constant_colors.dart';
 import '../../utils/responsive.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CategorySheet extends StatelessWidget {
   const CategorySheet({super.key});
@@ -61,7 +62,7 @@ class CategorySheet extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   16.toHeight,
-                  const FieldLabel(label: "Category"),
+                  FieldLabel(label: AppLocalizations.of(context)!.category),
                   CustomFutureWidget(
                     function: fc.shouldFC
                         ? fc.fetchCategory(
@@ -73,7 +74,8 @@ class CategorySheet extends StatelessWidget {
                         valueListenable: sfm.selectedCategories,
                         builder: (context, category, child) {
                           return CustomDropdown(
-                            hintText: "Select Category",
+                            hintText:
+                                AppLocalizations.of(context)!.selectCategory,
                             listData: fc.categoryDataModel.categories
                                     ?.map((e) => e.name ?? "")
                                     .toList() ??
@@ -89,7 +91,7 @@ class CategorySheet extends StatelessWidget {
                         }),
                   ),
                   12.toHeight,
-                  const FieldLabel(label: "Subcategory"),
+                  FieldLabel(label: AppLocalizations.of(context)!.subcategory),
                   CustomFutureWidget(
                     shimmer: OthersHelper().showLoading(cc.primaryColor),
                     isLoading: fc.subCatLoading,
@@ -97,45 +99,46 @@ class CategorySheet extends StatelessWidget {
                         valueListenable: sfm.selectedSubcategory,
                         builder: (context, subcategory, child) =>
                             CustomDropdown(
-                              hintText: "Select subcategory",
+                              hintText: AppLocalizations.of(context)!
+                                  .selectSubCategory,
                               listData: fc.subcategoryModel.subCategories
                                   ?.map((e) => e.name ?? "")
                                   .toList(),
                               onChanged: (name) {
                                 sfm.selectedSubcategory.value =
                                     fc.getSubCat(name);
-                                fc.fetchChildCategory(
-                                    sfm.selectedSubcategory.value?.id);
-                                sfm.selectedChildCategory.value = null;
+                                // fc.fetchChildCategory(
+                                //     sfm.selectedSubcategory.value?.id);
+                                // sfm.selectedChildCategory.value = null;
                               },
                               value: subcategory?.name,
                             )),
                   ),
                   12.toHeight,
-                  fc.childCategoryModel.childCategory.length == 0
-                      ? Offstage()
-                      : const FieldLabel(label: "Child-category"),
-                  fc.childCategoryModel.childCategory.length == 0
-                      ? Offstage()
-                      : CustomFutureWidget(
-                          shimmer: OthersHelper().showLoading(cc.primaryColor),
-                          isLoading: fc.childCatLoading,
-                          child: ValueListenableBuilder<ChildCategory?>(
-                              valueListenable: sfm.selectedChildCategory,
-                              builder: (context, childCategory, child) =>
-                                  CustomDropdown(
-                                    hintText: "Select child-category",
-                                    listData: fc
-                                        .childCategoryModel.childCategory
-                                        .map((e) => e.name ?? "")
-                                        .toList(),
-                                    onChanged: (name) {
-                                      sfm.selectedChildCategory.value =
-                                          fc.getChildCat(name);
-                                    },
-                                    value: childCategory?.name,
-                                  )),
-                        ),
+                  // fc.childCategoryModel.childCategory.length == 0
+                  //     ? Offstage()
+                  //     : const FieldLabel(label: "Child-category"),
+                  // fc.childCategoryModel.childCategory.length == 0
+                  //     ? Offstage()
+                  //     : CustomFutureWidget(
+                  //         shimmer: OthersHelper().showLoading(cc.primaryColor),
+                  //         isLoading: fc.childCatLoading,
+                  //         child: ValueListenableBuilder<ChildCategory?>(
+                  //             valueListenable: sfm.selectedChildCategory,
+                  //             builder: (context, childCategory, child) =>
+                  //                 CustomDropdown(
+                  //                   hintText: "Select child-category",
+                  //                   listData: fc
+                  //                       .childCategoryModel.childCategory
+                  //                       .map((e) => e.name ?? "")
+                  //                       .toList(),
+                  //                   onChanged: (name) {
+                  //                     sfm.selectedChildCategory.value =
+                  //                         fc.getChildCat(name);
+                  //                   },
+                  //                   value: childCategory?.name,
+                  //                 )),
+                  //       ),
 
                   // ====================>
 
@@ -148,10 +151,11 @@ class CategorySheet extends StatelessWidget {
                             onPressed: () {
                               Provider.of<FilterServicesService>(context,
                                       listen: false)
-                                  .setCategoryFilters();
+                                  .setClearCategoryFilters();
                               context.popFalse;
                             },
-                            child: Text(lnProvider.getString("Clear Filter"))),
+                            child: Text(
+                                AppLocalizations.of(context)!.clearFilter)),
                       ),
                       16.toWidth,
                       Expanded(
@@ -168,7 +172,8 @@ class CategorySheet extends StatelessWidget {
                                           sfm.selectedChildCategory.value);
                               context.popFalse;
                             },
-                            child: Text(lnProvider.getString("Apply Filter"))),
+                            child: Text(
+                                AppLocalizations.of(context)!.applyFilter)),
                       ),
                     ],
                   ),

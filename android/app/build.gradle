@@ -36,6 +36,9 @@ if (keystorePropertiesFile.exists()) {
     throw new GradleException("❌ ERROR: keystore.properties file missing!")
 }
 
+apply plugin: 'com.google.gms.google-services'
+
+
 android {
     namespace = "com.shashaktnirmanuserapp"
     compileSdk = 35
@@ -77,6 +80,10 @@ android {
             minifyEnabled false
             shrinkResources false
             signingConfig signingConfigs.release
+            // proguard
+//            minifyEnabled true // Enables ProGuard
+//            shrinkResources true // Removes unused resources
+//            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 }
@@ -91,8 +98,11 @@ dependencies {
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'com.facebook.android:facebook-login:latest.release'
     implementation 'com.google.firebase:firebase-messaging:21.1.0'
+    implementation 'com.pusher:push-notifications-android:${ANDROID_SDK_VERSION}'
+    testImplementation 'junit:junit:4.12'
     implementation 'com.pusher:push-notifications-android:1.9.0'
     implementation 'phonepe.intentsdk.android.release:IntentSDK:3.1.0'
+
 }
 
 

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:qixer/service/app_string_service.dart';
 
 import '../../utils/constant_colors.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SectionTitle extends StatelessWidget {
   const SectionTitle({
@@ -41,7 +42,7 @@ class SectionTitle extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text(
-                      asProvider.getString('See all'),
+                      AppLocalizations.of(context)!.seeAll,
                       style: TextStyle(
                         color: cc.primaryColor,
                         fontSize: 15,
@@ -116,7 +117,7 @@ class CategoryTitle extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text(
-                      asProvider.getString('See all'),
+                      AppLocalizations.of(context)!.seeAll,
                       style: TextStyle(
                         color: cc.white,
                         fontSize: 12,
@@ -179,7 +180,7 @@ class CategoryTitle2 extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text(
-                      asProvider.getString('See all'),
+                      AppLocalizations.of(context)!.seeAll,
                       style: TextStyle(
                         color: cc.primaryColor,
                         fontSize: 12,

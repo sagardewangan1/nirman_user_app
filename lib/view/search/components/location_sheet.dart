@@ -4,6 +4,7 @@ import 'package:qixer/helper/extension/context_extension.dart';
 import 'package:qixer/helper/extension/int_extension.dart';
 import 'package:qixer/helper/extension/widget_extension.dart';
 import 'package:qixer/service/common_service.dart';
+import 'package:qixer/service/home_services/category_service.dart';
 import 'package:qixer/service/jobs_service/recent_jobs_service.dart';
 import 'package:qixer/view/search/service_filter_model.dart';
 import 'package:qixer/view/utils/common_helper.dart';
@@ -14,6 +15,7 @@ import 'package:qixer/view/utils/responsive.dart';
 
 import '../../../service/filter_services_service.dart';
 import '../../utils/constant_colors.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LocationSheet extends StatelessWidget {
   const LocationSheet({super.key});
@@ -56,7 +58,7 @@ class LocationSheet extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 FieldLabel(
-                  label: lnProvider.getString("Type"),
+                  label: AppLocalizations.of(context)!.type,
                 ),
                 ValueListenableBuilder<String?>(
                   valueListenable: sfm.serviceType,
@@ -73,7 +75,7 @@ class LocationSheet extends StatelessWidget {
                 ),
                 16.toHeight,
                 FieldLabel(
-                  label: lnProvider.getString("Distance"),
+                  label: AppLocalizations.of(context)!.distance,
                 ),
                 ValueListenableBuilder<int>(
                   valueListenable: sfm.distance,
@@ -116,7 +118,8 @@ class LocationSheet extends StatelessWidget {
                             );
                             context.popFalse;
                           },
-                          child: Text(lnProvider.getString("Clear Filter"))),
+                          child:
+                              Text(AppLocalizations.of(context)!.clearFilter)),
                     ),
                     16.toWidth,
                     Expanded(
@@ -132,7 +135,8 @@ class LocationSheet extends StatelessWidget {
                             );
                             context.popFalse;
                           },
-                          child: Text(lnProvider.getString("Apply Filter"))),
+                          child:
+                              Text(AppLocalizations.of(context)!.applyFilter)),
                     ),
                   ],
                 ),
@@ -184,7 +188,7 @@ class LocationSheet2 extends StatelessWidget {
           Center(
             child: Text(
               textAlign: TextAlign.center,
-              "Select Your City Here",
+              AppLocalizations.of(context)!.selectYourCityHere,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -206,14 +210,17 @@ class LocationSheet2 extends StatelessWidget {
                         padding: const EdgeInsets.all(5.0),
                         child: InkWell(
                           onTap: () {
-                            provider.setCityID(0, 'Select City');
+                            provider.setCityID(
+                                0, AppLocalizations.of(context)!.selectCity);
                             Navigator.pop(context);
+                            Provider.of<CategoryService>(contexts,
+                                    listen: false)
+                                .fetchCategory(location_id: '0');
                           },
-                          child: Text('Select City'),
+                          child: Text(AppLocalizations.of(context)!.selectCity),
                         ),
                       );
                     } else {
-                      // Get the city data, adjusting the index to account for the "Select City" option
                       final cities =
                           provider.allCitiesDataModel.data?[index - 1];
                       return Padding(
@@ -222,7 +229,12 @@ class LocationSheet2 extends StatelessWidget {
                           onTap: () {
                             provider.setCityID(cities?.id ?? 0,
                                 cities?.serviceArea.toString() ?? '');
-                            runAtHome(context);
+
+                            Provider.of<CategoryService>(contexts,
+                                    listen: false)
+                                .fetchCategory(
+                                    location_id: cities?.id.toString() ?? '');
+
                             Navigator.pop(context);
                           },
                           child: Text(

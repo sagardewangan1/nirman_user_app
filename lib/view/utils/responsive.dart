@@ -14,12 +14,12 @@ var _chatSellerId;
 late SharedPreferences sPref;
 
 String get getToken {
-  debugPrint(sPref.getString("token").toString());
-  return sPref.getString("token") ?? "";
+  debugPrint(sPref.getString("shashaktnirmantoken").toString());
+  return sPref.getString("shashaktnirmantoken") ?? "";
 }
 
 setToken(token) {
-  sPref.setString("token", token ?? "");
+  sPref.setString("shashaktnirmantoken", token ?? "");
 }
 
 get commonAuthHeader => {'Authorization': 'Bearer $getToken'};

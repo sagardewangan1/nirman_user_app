@@ -84,13 +84,13 @@ class _ServiceByLocationState extends State<ServiceByLocation> {
                                 child: ServiceCard(
                                   cc: cc,
                                   imageLink: fsProvider.serviceMap[index]
-                                          ['image'] ??
+                                          ['businessImage'] ??
                                       placeHolderUrl,
                                   rating: twoDouble(
                                       fsProvider.serviceMap[index]['rating']),
                                   title: fsProvider.serviceMap[index]['title'],
                                   sellerName: fsProvider.serviceMap[index]
-                                      ['sellerName'],
+                                      ['businessName'],
                                   price: fsProvider.serviceMap[index]['price'],
                                   buttonText: 'Enquiry Now',
                                   width: double.infinity,
@@ -103,7 +103,7 @@ class _ServiceByLocationState extends State<ServiceByLocation> {
                                       fsProvider.serviceMap[index]['price']
                                           .round(),
                                       fsProvider.serviceMap[index]
-                                          ['sellerName'],
+                                          ['businessName'],
                                       twoDouble(fsProvider.serviceMap[index]
                                           ['rating']),
                                       index,
@@ -148,7 +148,7 @@ class _ServiceByLocationState extends State<ServiceByLocation> {
                                         context,
                                         fsProvider.serviceMap[index]
                                             ['callNumber'],
-                                        "Hello Sir,How can i help you ?");
+                                        "Hello, I am interested in your service *${fsProvider.serviceMap[index]['title']}*.");
                                     print(
                                         "on Tap Whatsapp ====> ${fsProvider.serviceMap[index]['callNumber']}");
                                   },

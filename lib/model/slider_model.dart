@@ -11,12 +11,12 @@ String sliderModelToJson(SliderModel data) => json.encode(data.toJson());
 
 class SliderModel {
   SliderModel({
-    required this.sliderDetails,
-    required this.imageUrl,
+    this.sliderDetails,
+    this.imageUrl,
   });
 
-  List<SliderDetail> sliderDetails;
-  List<ImageUrl> imageUrl;
+  List<SliderDetail>? sliderDetails;
+  List<ImageUrl>? imageUrl;
 
   factory SliderModel.fromJson(Map<String, dynamic> json) => SliderModel(
         sliderDetails: List<SliderDetail>.from(
@@ -27,8 +27,8 @@ class SliderModel {
 
   Map<String, dynamic> toJson() => {
         "slider-details":
-            List<dynamic>.from(sliderDetails.map((x) => x.toJson())),
-        "image_url": List<dynamic>.from(imageUrl.map((x) => x.toJson())),
+            List<dynamic>.from(sliderDetails?.map((x) => x.toJson()) ?? []),
+        "image_url": List<dynamic>.from(imageUrl?.map((x) => x.toJson()) ?? []),
       };
 }
 

@@ -25,7 +25,8 @@ class AreaDropdown extends StatelessWidget {
                     child: const AreaDropdownPopup());
               });
         },
-        child: dropdownPlaceholder(hintText: p.selectedArea),
+        child: dropdownPlaceholder(
+            hintText: p.selectedArea, textOverflow: TextOverflow.ellipsis),
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:qixer/helper/SharedPreferencesHelper.dart';
 import 'package:qixer/helper/extension/context_extension.dart';
 import 'package:qixer/helper/extension/int_extension.dart';
 import 'package:qixer/view/intro/intro_helper.dart';
@@ -8,7 +9,7 @@ import 'package:qixer/view/utils/common_helper.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:qixer/view/utils/responsive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../home/landing_page.dart';
 
 class IntroductionPage extends StatefulWidget {
@@ -57,44 +58,46 @@ class _IntroductionPageState extends State<IntroductionPage> {
                 itemBuilder: (context, index) {
                   return Container(
                     margin: const EdgeInsets.symmetric(horizontal: 20),
+                    alignment: Alignment.center,
                     child: Column(
-                      children: [
-                        // Container(
-                        //   width: double.infinity,
-                        //   height:
-                        //       screenHeight < fourinchScreenHeight ? 130 : 260,
-                        //   margin: const EdgeInsets.only(bottom: 24),
-                        //   decoration: BoxDecoration(
-                        //     image: DecorationImage(
-                        //       image: AssetImage(IntroHelper().getImage(i)),
-                        //       fit: BoxFit.fitHeight,
-                        //     ),
-                        //   ),
-                        // ),
-                        CommonHelper().profileImage(
-                          IntroHelper().getImage(index),
-                          screenHeight < fourinchScreenHeight ? 130 : 260,
-                          double.infinity,
-                          fit: BoxFit.fitHeight,
-                        ),
-                        Gap(28),
-                        Text(
-                          IntroHelper().geTitle(index),
-                          style: TextStyle(
-                              color: cc.greyPrimary,
-                              fontSize: 19,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(
-                          height: 7,
-                        ),
-
-                        // Subtitle =============>
-                        CommonHelper().paragraphCommon(
-                            IntroHelper().geSubTitle(index),
-                            textAlign: TextAlign.center)
-                      ],
-                    ),
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Container(
+                          //   width: double.infinity,
+                          //   height:
+                          //       screenHeight < fourinchScreenHeight ? 130 : 260,
+                          //   margin: const EdgeInsets.only(bottom: 24),
+                          //   decoration: BoxDecoration(
+                          //     image: DecorationImage(
+                          //       image: AssetImage(IntroHelper().getImage(i)),
+                          //       fit: BoxFit.fitHeight,
+                          //     ),
+                          //   ),
+                          // ),
+                          CommonHelper().profileImage(
+                            IntroHelper().getImage(index),
+                            screenHeight < fourinchScreenHeight ? 160 : 290,
+                            double.infinity,
+                            fit: BoxFit.fitHeight,
+                          ),
+                          //   Gap(28),
+                          //   Text(
+                          //     IntroHelper().geTitle(index, context),
+                          //     style: TextStyle(
+                          //         color: cc.greyPrimary,
+                          //         fontSize: 19,
+                          //         fontWeight: FontWeight.bold),
+                          //   ),
+                          //   const SizedBox(
+                          //     height: 7,
+                          //   ),
+                          //
+                          //   // Subtitle =============>
+                          //   CommonHelper().paragraphCommon(
+                          //       IntroHelper().geSubTitle(index, context),
+                          //       textAlign: TextAlign.center)
+                        ]),
                   );
                 }),
           ),
@@ -141,8 +144,7 @@ class _IntroductionPageState extends State<IntroductionPage> {
                 child: InkWell(
                   onTap: () async {
                     context.toUntilPage(const LandingPage());
-                    SharedPreferences prefs =
-                        await SharedPreferences.getInstance();
+                    SharedPreferencesHelper.clearData();
                     // prefs.setBool('intro', true);
                   },
                   child: Container(
@@ -153,7 +155,7 @@ class _IntroductionPageState extends State<IntroductionPage> {
                         border: Border.all(color: cc.primaryColor, width: 1.5),
                         borderRadius: BorderRadius.circular(7)),
                     child: Text(
-                      lnProvider.getString('Skip'),
+                      AppLocalizations.of(context)!.skip,
                       style: TextStyle(
                           color: cc.primaryColor,
                           fontSize: 15,
@@ -190,7 +192,7 @@ class _IntroductionPageState extends State<IntroductionPage> {
                           color: cc.primaryColor,
                           borderRadius: BorderRadius.circular(8)),
                       child: Text(
-                        lnProvider.getString('Continue'),
+                        AppLocalizations.of(context)!.continueText,
                         style: const TextStyle(
                             color: Colors.white,
                             fontSize: 15,

@@ -12,8 +12,6 @@ import '../utils/common_helper.dart';
 import '../utils/constant_styles.dart';
 
 class HomepageHelper {
-  static ValueNotifier<int> tabIndex = ValueNotifier(0);
-
   static ValueNotifier<bool> viewMap = ValueNotifier(false);
   changeMapView(value) {
     debugPrint(

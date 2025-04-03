@@ -1,28 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
+import 'package:qixer/model/navigationModel.dart';
 import 'package:qixer/service/app_string_service.dart';
 import 'package:qixer/service/auth_services/signUpVendorService.dart';
 import 'package:qixer/service/dropdowns_services/area_dropdown_service.dart';
 import 'package:qixer/service/dropdowns_services/country_dropdown_service.dart';
 import 'package:qixer/service/dropdowns_services/state_dropdown_services.dart';
+import 'package:qixer/service/getImageController.dart';
 import 'package:qixer/service/profile_service.dart';
 import 'package:qixer/view/utils/common_helper.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:qixer/view/utils/others_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../../service/country_states_service.dart';
 import '../../auth/signup/components/country_states_dropdowns.dart';
+import '../../auth/signup/dropdowns/area_dropdown_popup.dart';
+import '../../auth/signup/dropdowns/country_states_dropdowns.dart';
+import '../../auth/signup/dropdowns/state_dropdown_popup.dart';
 import '../../utils/custom_input.dart';
+import '../../utils/responsive.dart';
 
 class BusinessProfileEdit extends StatefulWidget {
-  const BusinessProfileEdit({super.key});
+  final NavigationModel navigationModel;
+  const BusinessProfileEdit({super.key, required this.navigationModel});
 
   @override
   State<BusinessProfileEdit> createState() => _BusinessProfileEditState();
 }
 
 class _BusinessProfileEditState extends State<BusinessProfileEdit> {
+  String businessProfileImages = '';
+
   // Basic Details
   TextEditingController businessNameController = TextEditingController();
   TextEditingController businessMobileNumberController =
@@ -49,27 +61,36 @@ class _BusinessProfileEditState extends State<BusinessProfileEdit> {
   firstLoad() async {
     final profileController =
         Provider.of<ProfileService>(context, listen: false);
-    await profileController.getProfileDetails(isFromProfileupdatePage: true);
+    await profileController.getProfileDetails(
+        isFromProfileupdatePage: true, context: context);
     print(
-        "country id===> ${profileController.profileDetails.userDetails.country.id.toString()}");
+        "gst id===> ${profileController.profileDetails.userDetails.businessGstNumber} ${profileController.profileDetails.userDetails.businessGstNumber.runtimeType}");
+
     addDetails(
-      businessName: profileController.profileDetails.userDetails.businessName,
-      businessAddress:
-          profileController.profileDetails.userDetails.businessFullAddress,
-      businessDescription:
-          profileController.profileDetails.userDetails.businessDescription,
-      businessGSTNumber:
-          profileController.profileDetails.userDetails.businessGstNumber,
-      businessEmail: profileController.profileDetails.userDetails.businessEmail,
-      phoneNumber:
-          profileController.profileDetails.userDetails.businessPhoneNumber,
-      countryId: profileController.profileDetails.userDetails.country.id,
-      countryName: profileController.profileDetails.userDetails.country.country,
-      cityId: profileController.profileDetails.userDetails.city.id,
-      cityName: profileController.profileDetails.userDetails.city.serviceCity,
-      areaId: profileController.profileDetails.userDetails.area.id,
-      areaName: profileController.profileDetails.userDetails.area.serviceArea,
-    );
+        businessName: profileController.profileDetails.userDetails.businessName,
+        businessAddress:
+            profileController.profileDetails.userDetails.businessFullAddress,
+        businessDescription:
+            profileController.profileDetails.userDetails.businessDescription,
+        businessGSTNumber:
+            (profileController.profileDetails.userDetails.businessGstNumber !=
+                        null &&
+                    profileController.profileDetails.userDetails
+                        .businessGstNumber!.isNotEmpty)
+                ? profileController.profileDetails.userDetails.businessGstNumber
+                : '',
+        businessEmail:
+            profileController.profileDetails.userDetails.businessEmail,
+        phoneNumber:
+            profileController.profileDetails.userDetails.businessPhoneNumber,
+        // countryId: profileController.profileDetails.userDetails.country.id,
+        // countryName:
+        //     profileController.profileDetails.userDetails.country.country,
+        // cityId: profileController.profileDetails.userDetails.city.id,
+        // cityName: profileController.profileDetails.userDetails.city.serviceCity,
+        // areaId: 12,
+        // areaName: "Test",
+        businessProfileImage: profileController.businessProfile);
     final pref = await SharedPreferences.getInstance();
     userType = pref.getString("shashaktnirmanusertype");
     print("userType =====> $userType ${userType.runtimeType}");
@@ -82,33 +103,39 @@ class _BusinessProfileEditState extends State<BusinessProfileEdit> {
       String? businessEmail,
       String? businessAddress,
       String? businessDescription,
-      int? countryId,
-      String? countryName,
-      int? cityId,
-      String? cityName,
-      int? areaId,
-      String? areaName}) {
+      // int? countryId,
+      // String? countryName,
+      // int? cityId,
+      // String? cityName,
+      // int? areaId,
+      // String? areaName,
+      String? businessProfileImage}) {
     businessNameController.text = businessName.toString();
     gstNumberController.text = businessGSTNumber.toString();
     businessMobileNumberController.text = phoneNumber.toString();
     businessEmailController.text = businessEmail.toString();
     businessAddressController.text = businessAddress.toString();
     businessDescriptionController.text = businessDescription.toString();
-    context.read<CountryDropdownService>().setSelectedCountryId(countryId);
-    context.read<CountryDropdownService>().setCountryValue(countryName);
-    context.read<StateDropdownService>().setSelectedStatesId(cityId);
-    context.read<StateDropdownService>().setStatesValue(cityName);
-    context.read<AreaDropdownService>().setSelectedAreaId(areaId);
-    context.read<AreaDropdownService>().setAreaValue(areaName);
+    // context.read<CountryDropdownService>().setSelectedCountryId(countryId);
+    // context.read<CountryDropdownService>().setCountryValue(countryName);
+    // context.read<StateDropdownService>().setSelectedStatesId(cityId);
+    // context.read<StateDropdownService>().setStatesValue(cityName);
+    // context.read<AreaDropdownService>().setSelectedAreaId(areaId);
+    // context.read<AreaDropdownService>().setAreaValue(areaName);
+    businessProfileImages = businessProfileImage ?? '';
+    print("business profile image ======> $businessProfileImages");
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
+    final getImageController = Provider.of<GetImageController>(context);
+    Size size = MediaQuery.of(context).size;
     return Consumer<ProfileService>(
       builder: (context, profileController, child) {
         return Scaffold(
-          appBar:
-              CommonHelper().appbarCommon2("Edit Business Profile", context),
+          appBar: CommonHelper().appbarCommon2(
+              AppLocalizations.of(context)!.editBusinessProfile, context),
           body: profileController.isloading
               ? Center(
                   child: OthersHelper().showLoading(cc.primaryColor),
@@ -116,6 +143,58 @@ class _BusinessProfileEditState extends State<BusinessProfileEdit> {
               : ListView(
                   padding: EdgeInsets.zero,
                   children: [
+                    Gap(10),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: InkWell(
+                        onTap: () {
+                          getImageController
+                              .chooseImage(); // User taps to choose a new image
+                        },
+                        child: Container(
+                          height: 150,
+                          width: size.width,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: cc.white,
+                            borderRadius: BorderRadius.circular(8.0),
+                            border: Border.all(width: 1, color: cc.black6),
+                          ),
+                          child: getImageController.fileSingle != null
+                              ? Image.file(
+                                  getImageController.fileSingle!,
+                                  fit: BoxFit.contain,
+                                  height: 150,
+                                  width: size.width,
+                                )
+                              : (businessProfileImages != ''
+                                  ? CommonHelper().profileImage(
+                                      fit: BoxFit.contain,
+                                      businessProfileImages,
+                                      150,
+                                      size.width)
+                                  : Icon(Icons.image_search,
+                                      size: 50,
+                                      color: Colors
+                                          .grey)), // ✅ Default icon agar kuch na ho
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: 8.0,
+                        right: 8.0,
+                      ),
+                      child: Text(
+                        textAlign: TextAlign.right,
+                        "(Tap here to change the image)",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: cc.black5,
+                        ),
+                      ),
+                    ),
+                    Gap(10),
                     Consumer<AppStringService>(
                       builder: (context, asProvider, child) => Form(
                         key: _formKey,
@@ -138,19 +217,20 @@ class _BusinessProfileEditState extends State<BusinessProfileEdit> {
 
                                   // Business Name
                                   CommonHelper().labelCommon(
-                                      asProvider.getString("Business Name"),
+                                      AppLocalizations.of(context)!
+                                          .businessName,
                                       isRequired: true),
                                   CustomInput(
                                     controller: businessNameController,
                                     validation: (value) {
                                       if (value == null || value.isEmpty) {
-                                        return asProvider.getString(
-                                            "Please enter your business name");
+                                        return AppLocalizations.of(context)!
+                                            .enterYourBusinessName;
                                       }
                                       return null;
                                     },
-                                    hintText: asProvider
-                                        .getString("Enter your business name"),
+                                    hintText: AppLocalizations.of(context)!
+                                        .enterYourBusinessName,
                                     icon: 'assets/icons/business.png',
                                     textInputAction: TextInputAction.next,
                                   ),
@@ -158,20 +238,20 @@ class _BusinessProfileEditState extends State<BusinessProfileEdit> {
 
                                   // GST Number
                                   CommonHelper().labelCommon(
-                                      asProvider
-                                          .getString("Business GST Number"),
-                                      isRequired: true),
+                                    AppLocalizations.of(context)!
+                                        .businessGstNumber,
+                                  ),
                                   CustomInput(
                                     controller: gstNumberController,
-                                    validation: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return asProvider.getString(
-                                            "Please enter your GST number");
-                                      }
-                                      return null;
-                                    },
-                                    hintText: asProvider
-                                        .getString("Enter your GST Number"),
+                                    // validation: (value) {
+                                    //   if (value == null || value.isEmpty) {
+                                    //     return AppLocalizations.of(context)!
+                                    //         .pleaseEnterYourGstNumber;
+                                    //   }
+                                    //   return null;
+                                    // },
+                                    hintText: AppLocalizations.of(context)!
+                                        .enterYourGstNumber,
                                     icon: 'assets/icons/gstn.png',
                                     textInputAction: TextInputAction.next,
                                   ),
@@ -179,8 +259,8 @@ class _BusinessProfileEditState extends State<BusinessProfileEdit> {
 
                                   // Phone Number
                                   CommonHelper().labelCommon(
-                                      asProvider
-                                          .getString("Business Phone Number"),
+                                      AppLocalizations.of(context)!
+                                          .businessPhoneNumber,
                                       isRequired: true),
                                   CustomInput(
                                     controller: businessMobileNumberController,
@@ -191,13 +271,13 @@ class _BusinessProfileEditState extends State<BusinessProfileEdit> {
                                     maxLength: 10,
                                     validation: (value) {
                                       if (value == null || value.isEmpty) {
-                                        return asProvider.getString(
-                                            "Please enter your Phone number");
+                                        return AppLocalizations.of(context)!
+                                            .pleaseEnterYourPhoneNumber;
                                       }
                                       return null;
                                     },
-                                    hintText: asProvider
-                                        .getString("Enter your Phone Number"),
+                                    hintText: AppLocalizations.of(context)!
+                                        .enterYourPhoneNumber,
                                     icon: 'assets/icons/phone.png',
                                     textInputAction: TextInputAction.next,
                                   ),
@@ -205,25 +285,173 @@ class _BusinessProfileEditState extends State<BusinessProfileEdit> {
 
                                   // Email Number
                                   CommonHelper().labelCommon(
-                                      asProvider.getString("Business Email"),
+                                      AppLocalizations.of(context)!
+                                          .businessEmail,
                                       isRequired: true),
                                   CustomInput(
                                     controller: businessEmailController,
                                     validation: (value) {
                                       if (value == null || value.isEmpty) {
-                                        return asProvider.getString(
-                                            "Please enter your Business Email");
+                                        return AppLocalizations.of(context)!
+                                            .pleaseEnterYourBusinessEmail;
                                       }
                                       return null;
                                     },
-                                    hintText: asProvider
-                                        .getString("Enter your Business Email"),
+                                    hintText: AppLocalizations.of(context)!
+                                        .enterYourBusinessEmail,
                                     icon: 'assets/icons/email.png',
                                     textInputAction: TextInputAction.next,
                                   ),
-                                  const SizedBox(height: 18),
-
-                                  const CountryStatesDropdowns(),
+                                  // const SizedBox(height: 18),
+                                  //
+                                  // Consumer<CountryStatesService>(
+                                  //     builder: (context, provider, child) =>
+                                  //         Column(
+                                  //           crossAxisAlignment:
+                                  //               CrossAxisAlignment.start,
+                                  //           children: [
+                                  //             //dropdown and search box
+                                  //             // const SizedBox(
+                                  //             //   width: 17,
+                                  //             // ),
+                                  //
+                                  //             // // Country dropdown ===============>
+                                  //             // Column(
+                                  //             //   crossAxisAlignment:
+                                  //             //       CrossAxisAlignment.start,
+                                  //             //   children: [
+                                  //             //     CommonHelper().labelCommon(
+                                  //             //         'Choose Country',
+                                  //             //         isRequired: true),
+                                  //             //     Consumer<CountryDropdownService>(
+                                  //             //       builder: (context, p, child) =>
+                                  //             //           InkWell(
+                                  //             //         onTap: () {
+                                  //             //           // p.fetchCountries(context, isrefresh: true);
+                                  //             //           showModalBottomSheet(
+                                  //             //               context: context,
+                                  //             //               isScrollControlled: true,
+                                  //             //               builder: (BuildContext
+                                  //             //                   context) {
+                                  //             //                 return SizedBox(
+                                  //             //                     height: screenHeight /
+                                  //             //                             2 +
+                                  //             //                         MediaQuery.of(
+                                  //             //                                     context)
+                                  //             //                                 .viewInsets
+                                  //             //                                 .bottom /
+                                  //             //                             2,
+                                  //             //                     child:
+                                  //             //                         const CountryDropdownPopup());
+                                  //             //               });
+                                  //             //         },
+                                  //             //         child: dropdownPlaceholder(
+                                  //             //           hintText: p.selectedCountry,
+                                  //             //         ),
+                                  //             //       ),
+                                  //             //     )
+                                  //             //   ],
+                                  //             // ),
+                                  //
+                                  //             // const SizedBox(
+                                  //             //   height: 25,
+                                  //             // ),
+                                  //             // States dropdown ===============>
+                                  //             Column(
+                                  //               crossAxisAlignment:
+                                  //                   CrossAxisAlignment.start,
+                                  //               children: [
+                                  //                 CommonHelper().labelCommon(
+                                  //                     AppLocalizations.of(
+                                  //                             context)!
+                                  //                         .chooseState,
+                                  //                     isRequired: true),
+                                  //                 Consumer<
+                                  //                     StateDropdownService>(
+                                  //                   builder:
+                                  //                       (context, p, child) =>
+                                  //                           InkWell(
+                                  //                     onTap: () {
+                                  //                       // p.fetchStates(context, isrefresh: true);
+                                  //                       showModalBottomSheet(
+                                  //                           context: context,
+                                  //                           isScrollControlled:
+                                  //                               true,
+                                  //                           builder:
+                                  //                               (BuildContext
+                                  //                                   context) {
+                                  //                             return SizedBox(
+                                  //                                 height: screenHeight /
+                                  //                                         2 +
+                                  //                                     MediaQuery.of(context)
+                                  //                                             .viewInsets
+                                  //                                             .bottom /
+                                  //                                         2,
+                                  //                                 child:
+                                  //                                     const StateDropdownPopup());
+                                  //                           });
+                                  //                     },
+                                  //                     child: dropdownPlaceholder(
+                                  //                         hintText:
+                                  //                             p.selectedState),
+                                  //                   ),
+                                  //                 )
+                                  //               ],
+                                  //             ),
+                                  //
+                                  //             const SizedBox(
+                                  //               height: 25,
+                                  //             ),
+                                  //
+                                  //             // Area dropdown ===============>
+                                  //             Column(
+                                  //               crossAxisAlignment:
+                                  //                   CrossAxisAlignment.start,
+                                  //               children: [
+                                  //                 CommonHelper().labelCommon(
+                                  //                     AppLocalizations.of(
+                                  //                             context)!
+                                  //                         .chooseCity,
+                                  //                     isRequired: true),
+                                  //                 Consumer<AreaDropdownService>(
+                                  //                   builder:
+                                  //                       (context, p, child) =>
+                                  //                           InkWell(
+                                  //                     onTap: () {
+                                  //                       // p.fetchArea(context, isrefresh: true);
+                                  //                       showModalBottomSheet(
+                                  //                           context: context,
+                                  //                           isScrollControlled:
+                                  //                               true,
+                                  //                           builder:
+                                  //                               (BuildContext
+                                  //                                   context) {
+                                  //                             return SizedBox(
+                                  //                                 height: screenHeight /
+                                  //                                         2 +
+                                  //                                     MediaQuery.of(context)
+                                  //                                             .viewInsets
+                                  //                                             .bottom /
+                                  //                                         2,
+                                  //                                 child:
+                                  //                                     const AreaDropdownPopup2());
+                                  //                           });
+                                  //                     },
+                                  //                     child: dropdownPlaceholder(
+                                  //                         hintText: p
+                                  //                                 .selectedCity
+                                  //                                 .isNotEmpty
+                                  //                             ? p.selectedCity
+                                  //                                 .join(',')
+                                  //                             : AppLocalizations
+                                  //                                     .of(context)!
+                                  //                                 .selectCity),
+                                  //                   ),
+                                  //                 ),
+                                  //               ],
+                                  //             )
+                                  //           ],
+                                  //         )),
                                   //Agreement checkbox ===========>
                                   const SizedBox(
                                     height: 17,
@@ -270,27 +498,28 @@ class _BusinessProfileEditState extends State<BusinessProfileEdit> {
                                   const SizedBox(height: 18),
                                   // Address
                                   CommonHelper().labelCommon(
-                                      asProvider.getString("Business Address"),
+                                      AppLocalizations.of(context)!
+                                          .businessAddress,
                                       isRequired: true),
                                   CustomInput(
                                     controller: businessAddressController,
                                     validation: (value) {
                                       if (value == null || value.isEmpty) {
-                                        return asProvider.getString(
-                                            "Please enter your Business Address");
+                                        return AppLocalizations.of(context)!
+                                            .pleaseEnterYourBusinessAddress;
                                       }
                                       return null;
                                     },
-                                    hintText: asProvider.getString(
-                                        "Enter your Business Address"),
+                                    hintText: AppLocalizations.of(context)!
+                                        .enterYourBusinessAddress,
                                     // icon: 'assets/icons/address.png',
                                     textInputAction: TextInputAction.next,
                                   ),
                                   const SizedBox(height: 18),
                                   // Description
                                   CommonHelper().labelCommon(
-                                      asProvider
-                                          .getString("Business Description"),
+                                      AppLocalizations.of(context)!
+                                          .businessDescription,
                                       isRequired: true),
                                   Consumer<SignupVendorService>(
                                     builder: (context, sginupProvider, child) {
@@ -301,8 +530,8 @@ class _BusinessProfileEditState extends State<BusinessProfileEdit> {
                                         maxLength: 500,
                                         validation: (value) {
                                           if (value == null || value.isEmpty) {
-                                            return asProvider.getString(
-                                                "Please enter your Business Description");
+                                            return AppLocalizations.of(context)!
+                                                .pleaseEnterYourBusinessDescription;
                                           }
                                           return null;
                                         },
@@ -312,8 +541,8 @@ class _BusinessProfileEditState extends State<BusinessProfileEdit> {
                                           sginupProvider
                                               .setOverviewLength(p0.length);
                                         },
-                                        hintText: asProvider.getString(
-                                            "Enter your Business Description"),
+                                        hintText: AppLocalizations.of(context)!
+                                            .enterYourBusinessDescription,
                                         textInputAction: TextInputAction.next,
                                       );
                                     },
@@ -336,7 +565,7 @@ class _BusinessProfileEditState extends State<BusinessProfileEdit> {
                         child: SizedBox(
                           height: 55,
                           child: CommonHelper().buttonOrange(
-                              asProvider.getString("Continue"), () {
+                              AppLocalizations.of(context)!.continueText, () {
                             if (_formKey.currentState!.validate()) {
                               if (provider.isloading == false) {
                                 provider
@@ -350,7 +579,9 @@ class _BusinessProfileEditState extends State<BusinessProfileEdit> {
                                             .toString(),
                                         businessDescriptionController.text
                                             .toString(),
-                                        context)
+                                        context,
+                                        imagePath:
+                                            getImageController.fileSingle?.path)
                                     .then(
                                   (value) {
                                     if (value) {
@@ -361,7 +592,8 @@ class _BusinessProfileEditState extends State<BusinessProfileEdit> {
                               }
                             } else {
                               OthersHelper().showToast(
-                                  "Please Fill Required Fields",
+                                  AppLocalizations.of(context)!
+                                      .pleaseFillRequiredFields,
                                   cc.warningColor);
                             }
                           },

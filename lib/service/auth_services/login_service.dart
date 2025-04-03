@@ -13,7 +13,9 @@ import 'package:qixer/view/utils/others_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../view/auth/signup/components/email_verify_page.dart';
+import '../pushNotificationFirebase.dart';
 import 'email_verify_service.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LoginService with ChangeNotifier {
   bool isloading = false;
@@ -110,7 +112,8 @@ class LoginService with ChangeNotifier {
         await Provider.of<PushNotificationService>(context, listen: false)
             .fetchPusherCredential(context: context);
 
-        await Provider.of<ProfileService>(context, listen: false).fetchData();
+        await Provider.of<ProfileService>(context, listen: false)
+            .fetchData(context);
         //start stripe
         //============>
 
@@ -168,7 +171,8 @@ class LoginService with ChangeNotifier {
       if (response.statusCode == 201 || response.statusCode == 200) {
         if (isFromLoginPage) {
           OthersHelper().showToast(
-              "OTP Successfully Sent in Your Mobile Number",
+              AppLocalizations.of(context)!
+                  .otpSuccessfullySentInYourMobileNumber,
               ConstantColors().successColor);
         }
         setLoadingFalse();
@@ -178,7 +182,8 @@ class LoginService with ChangeNotifier {
         //Login unsuccessful ==========>
         if (isFromLoginPage) {
           OthersHelper().showToast(
-              "Invalid Mobile Number", ConstantColors().warningColor);
+              AppLocalizations.of(context)!.invalidMobileNumber,
+              ConstantColors().warningColor);
         }
         setLoadingFalse();
         return false;
@@ -199,13 +204,22 @@ class LoginService with ChangeNotifier {
 
     if (!connection) {
       OthersHelper().showToast(
-          "Check your Network Connections", ConstantColors().warningColor);
+          AppLocalizations.of(context)!.checkYourNetworkConnections,
+          ConstantColors().warningColor);
       return _otpResponseModel;
     }
+    PushNotifications.isTokenRefreshed();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var deviceToken = prefs.getString('sashaktNirmaanDeviceToken') ?? '';
 
     setLoading2();
 
-    var data = jsonEncode({'phone': mobile, 'otp': otp, 'user_type': userType});
+    var data = jsonEncode({
+      'phone': mobile,
+      'otp': otp,
+      'user_type': userType,
+      'device_token': deviceToken.toString(),
+    });
     print("otv verify body =====> $data");
     var header = {
       "Accept": "application/json",
@@ -236,8 +250,10 @@ class LoginService with ChangeNotifier {
         } else {
           setshashaktnirman_is_logged_inFalseSaveToken(token);
         }
-
         setLoading2();
+        await Provider.of<PushNotificationService>(context, listen: false)
+            .fetchPusherCredential(context: context);
+
         return _otpResponseModel;
       }
     } catch (e) {

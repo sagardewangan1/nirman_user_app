@@ -27,16 +27,14 @@ class PushNotificationService with ChangeNotifier {
 
     var pToken = Provider.of<PushNotificationService>(context, listen: false)
         .pusherToken;
-    var senderId = Provider.of<ProfileService>(context, listen: false)
-        .profileDetails
-        .userDetails
-        .id;
     var header = {
       //if header type is application/json then the data should be in jsonEncode method
       // "Accept": "application/json",
       "Content-Type": "application/json",
       "Authorization": "Bearer $pToken",
     };
+    var prefs = await SharedPreferences.getInstance();
+    var senderId = prefs.getString('shashaktnirmanUserId');
 
     var data = jsonEncode({
       "interests": ["debug-seller$sellerId"],
@@ -47,9 +45,10 @@ class PushNotificationService with ChangeNotifier {
     });
 
     var response =
-        await http.post(Uri.parse(pUrl), headers: header, body: data);
+        await http.post(Uri.parse(pUrl ?? ''), headers: header, body: data);
 
     if (response.statusCode == 200) {
+      debugPrint("response sendNotificationToSeller ======> ${response.body}");
     } else {
       debugPrint(response.body.toString());
     }
@@ -80,7 +79,7 @@ class PushNotificationService with ChangeNotifier {
     };
 
     var response = await http.get(
-        Uri.parse("$baseApi/user/chat/pusher/credentials"),
+        Uri.parse("$baseApi/seller/pusher/credentials-data"),
         headers: header);
     debugPrint(response.body.toString());
     if (response.statusCode == 201) {

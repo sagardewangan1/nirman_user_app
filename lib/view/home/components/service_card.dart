@@ -8,12 +8,15 @@ import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:qixer/service/app_string_service.dart';
 import 'package:qixer/service/booking_services/book_service.dart';
+import 'package:qixer/service/service_details_service.dart';
 import 'package:qixer/view/booking/service_personalization_page.dart';
 import 'package:qixer/view/utils/others_helper.dart';
 import 'package:qixer/view/utils/responsive.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../../service/booking_services/personalization_service.dart';
 import '../../utils/common_helper.dart';
 import '../../utils/constant_colors.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ServiceCard extends StatelessWidget {
   const ServiceCard(
@@ -101,24 +104,24 @@ class ServiceCard extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        screenWidth < fourinchScreenWidth
-                            ? Container()
-                            : AutoSizeText(
-                                '${asProvider.getString('Starts from')}:',
-                                textAlign: TextAlign.start,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  color: cc.greyFour.withOpacity(.6),
-                                  fontSize: screenWidth < fourinchScreenWidth
-                                      ? 11
-                                      : 14,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                        const SizedBox(
-                          width: 6,
-                        ),
+                        // screenWidth < fourinchScreenWidth
+                        //     ? Container()
+                        //     : AutoSizeText(
+                        //         '${asProvider.getString('Starts from')}:',
+                        //         textAlign: TextAlign.start,
+                        //         maxLines: 1,
+                        //         overflow: TextOverflow.ellipsis,
+                        //         style: TextStyle(
+                        //           color: cc.greyFour.withOpacity(.6),
+                        //           fontSize: screenWidth < fourinchScreenWidth
+                        //               ? 11
+                        //               : 14,
+                        //           fontWeight: FontWeight.w400,
+                        //         ),
+                        //       ),
+                        // const SizedBox(
+                        //   width: 6,
+                        // ),
                         InkWell(
                           onTap: onTapWhatsapp,
                           child: ClipRRect(
@@ -165,10 +168,18 @@ class ServiceCard extends StatelessWidget {
                         //   ),
                         // ),
 
-                        Icon(
-                          Icons.share,
-                          color: cc.black3,
-                          size: 22,
+                        InkWell(
+                          onTap: () {
+                            Share.share(
+                                "$title\n\n${AppLocalizations.of(context)!.shareMessage}",
+                                subject:
+                                    AppLocalizations.of(context)!.shareSubject);
+                          },
+                          child: Icon(
+                            Icons.share,
+                            color: cc.black3,
+                            size: 22,
+                          ),
                         ),
                       ],
                     ),
@@ -303,14 +314,20 @@ class ServiceCard extends StatelessWidget {
                                           // ),
                                           ElevatedButton(
                                             onPressed: () {
+                                              Provider.of<ServiceDetailsService>(
+                                                      context,
+                                                      listen: false)
+                                                  .fetchServiceDetails(
+                                                      serviceId.toString());
                                               Navigator.pop(context);
-                                              // Add your additional action here
                                             },
                                             style: ElevatedButton.styleFrom(
                                               backgroundColor:
                                                   Colors.blueAccent,
                                             ),
-                                            child: const Text('OK'),
+                                            child: Text(
+                                              AppLocalizations.of(context)!.ok,
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -323,7 +340,7 @@ class ServiceCard extends StatelessWidget {
                         );
                       },
                       child: Text(
-                        asProvider.getString(buttonText),
+                        AppLocalizations.of(context)!.bookNow,
                         style: TextStyle(
                             fontSize:
                                 screenWidth < fourinchScreenWidth ? 9 : 13,
@@ -375,35 +392,35 @@ class ServiceCardContents extends StatelessWidget {
             //service image
             CommonHelper().profileImage(imageLink, 75, 78),
 
-            rating != 0.0
-                ? Positioned(
-                    left: 8,
-                    child: Container(
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.white, width: 2),
-                          color: const Color(0xffFFC300),
-                          borderRadius: BorderRadius.circular(4)),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 6, vertical: 4),
-                      child: Row(children: [
-                        Icon(
-                          Icons.star_border,
-                          color: cc.greyFour,
-                          size: 14,
-                        ),
-                        const SizedBox(
-                          width: 3,
-                        ),
-                        Text(
-                          rating.toString(),
-                          style: TextStyle(
-                              color: cc.greyFour,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 13),
-                        )
-                      ]),
-                    ))
-                : Container(),
+            // rating != 0.0
+            //     ? Positioned(
+            //         left: 8,
+            //         child: Container(
+            //           decoration: BoxDecoration(
+            //               border: Border.all(color: Colors.white, width: 2),
+            //               color: const Color(0xffFFC300),
+            //               borderRadius: BorderRadius.circular(4)),
+            //           padding: const EdgeInsets.symmetric(
+            //               horizontal: 6, vertical: 4),
+            //           child: Row(children: [
+            //             Icon(
+            //               Icons.star_border,
+            //               color: cc.greyFour,
+            //               size: 14,
+            //             ),
+            //             const SizedBox(
+            //               width: 3,
+            //             ),
+            //             Text(
+            //               rating.toString(),
+            //               style: TextStyle(
+            //                   color: cc.greyFour,
+            //                   fontWeight: FontWeight.w600,
+            //                   fontSize: 13),
+            //             )
+            //           ]),
+            //         ))
+            //     : Container(),
           ],
         ),
         const SizedBox(
@@ -411,133 +428,140 @@ class ServiceCardContents extends StatelessWidget {
         ),
         Expanded(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment:
+                CrossAxisAlignment.start, // Ensures alignment to the start
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              //service name ======>
+              // Service Name
               Text(
-                title.toString().capitalizeEachWord(),
+                sellerName.toString().capitalizeEachWord(),
                 textAlign: TextAlign.start,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color: cc.greyFour,
-                  fontSize: 15,
+                  fontSize: 16, // Slightly larger for emphasis
                   fontWeight: FontWeight.w600,
                 ),
               ),
+              const SizedBox(height: 4),
+
+              // Title Row (with Icon)
               Row(
+                crossAxisAlignment:
+                    CrossAxisAlignment.center, // Align text & icon properly
                 children: [
                   Icon(
                     Icons.location_history_outlined,
-                    size: 12,
+                    size: 14, // Slightly increased for better visibility
                     color: cc.greyFour.withOpacity(.6),
                   ),
-                  const SizedBox(
-                    width: 6,
-                  ),
-                  Text(
-                    sellerName ?? '',
-                    textAlign: TextAlign.start,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: cc.greyFour,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
+                  const SizedBox(width: 6),
+                  Expanded(
+                    // Ensures text does not overflow
+                    child: Text(
+                      title.toString().capitalizeEachWord(),
+                      textAlign: TextAlign.start,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      style: TextStyle(
+                        color: cc.greyFour,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(
-                width: 6,
-              ),
-              address == "" || address == 'null'
-                  ? Offstage()
-                  : Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(
-                          Icons.location_on_outlined,
-                          size: 12,
-                          color: cc.greyFour.withOpacity(.6),
-                        ),
-                        const SizedBox(
-                          width: 6,
-                        ),
-                        SizedBox(
-                          width: 180,
-                          child: Text(
-                            address ?? '',
-                            textAlign: TextAlign.start,
-                            overflow: TextOverflow.visible,
-                            style: TextStyle(
-                              color: cc.greyFour,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                      ],
+              const SizedBox(height: 6),
+
+              // Address (If available)
+              if (address != null &&
+                  address.isNotEmpty &&
+                  address != 'null') ...[
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.location_on_outlined,
+                      size: 14,
+                      color: cc.greyFour.withOpacity(.6),
                     ),
-              const SizedBox(
-                width: 6,
-              ),
-              experience == '' || experience == 'null'
-                  ? Offstage()
-                  : Row(
-                      children: [
-                        Icon(
-                          Icons.real_estate_agent_outlined,
-                          size: 12,
-                          color: cc.greyFour.withOpacity(.6),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        address,
+                        textAlign: TextAlign.start,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: TextStyle(
+                          color: cc.greyFour,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400,
                         ),
-                        const SizedBox(
-                          width: 6,
-                        ),
-                        experience == '' || experience == 'null'
-                            ? Offstage()
-                            : Text(
-                                experience ?? '',
-                                textAlign: TextAlign.start,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  color: cc.greyFour,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                      ],
+                      ),
                     ),
-              const SizedBox(
-                width: 6,
-              ),
-              status == '' || status == 'null'
-                  ? Offstage()
-                  : Row(
-                      children: [
-                        Icon(
-                          Icons.event_available,
-                          size: 12,
-                          color: cc.greyFour.withOpacity(.6),
-                        ),
-                        const SizedBox(
-                          width: 6,
-                        ),
-                        Text(
-                          status == '1' ? 'Available' : 'UnAvailable',
-                          textAlign: TextAlign.start,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color:
-                                status == "1" ? cc.successColor : cc.errorColor,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ],
+                  ],
+                ),
+                const SizedBox(height: 6),
+              ],
+
+              // Experience (If available)
+              if (experience != null &&
+                  experience.isNotEmpty &&
+                  experience != 'null') ...[
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.real_estate_agent_outlined,
+                      size: 14,
+                      color: cc.greyFour.withOpacity(.6),
                     ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        experience,
+                        textAlign: TextAlign.start,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: TextStyle(
+                          color: cc.greyFour,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+              ],
+
+              // Status (If available)
+              // if (status != null && status.isNotEmpty && status != 'null') ...[
+              //   Row(
+              //     crossAxisAlignment: CrossAxisAlignment.center,
+              //     children: [
+              //       Icon(
+              //         Icons.event_available,
+              //         size: 14,
+              //         color: cc.greyFour.withOpacity(.6),
+              //       ),
+              //       const SizedBox(width: 6),
+              //       Text(
+              //         status == '1' ? 'Available' : 'Unavailable',
+              //         textAlign: TextAlign.start,
+              //         maxLines: 1,
+              //         overflow: TextOverflow.ellipsis,
+              //         style: TextStyle(
+              //           color: status == "1" ? cc.successColor : cc.errorColor,
+              //           fontSize: 12,
+              //           fontWeight: FontWeight.w400,
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ],
             ],
           ),
         ),
@@ -610,6 +634,7 @@ class ServiceCard2 extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               ServiceCardContents2(
                 cc: cc,
@@ -632,24 +657,24 @@ class ServiceCard2 extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        screenWidth < fourinchScreenWidth
-                            ? Container()
-                            : AutoSizeText(
-                                '${asProvider.getString('Starts from')}:',
-                                textAlign: TextAlign.start,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  color: cc.greyFour.withOpacity(.6),
-                                  fontSize: screenWidth < fourinchScreenWidth
-                                      ? 11
-                                      : 14,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                        const SizedBox(
-                          width: 6,
-                        ),
+                        // screenWidth < fourinchScreenWidth
+                        //     ? Container()
+                        //     : AutoSizeText(
+                        //         '${asProvider.getString('Starts from')}:',
+                        //         textAlign: TextAlign.start,
+                        //         maxLines: 1,
+                        //         overflow: TextOverflow.ellipsis,
+                        //         style: TextStyle(
+                        //           color: cc.greyFour.withOpacity(.6),
+                        //           fontSize: screenWidth < fourinchScreenWidth
+                        //               ? 11
+                        //               : 14,
+                        //           fontWeight: FontWeight.w400,
+                        //         ),
+                        //       ),
+                        // const SizedBox(
+                        //   width: 6,
+                        // ),
                         InkWell(
                           onTap: onTapWhatsapp,
                           child: ClipRRect(
@@ -696,10 +721,18 @@ class ServiceCard2 extends StatelessWidget {
                         //   ),
                         // ),
 
-                        Icon(
-                          Icons.share,
-                          color: cc.black3,
-                          size: 22,
+                        InkWell(
+                          onTap: () {
+                            Share.share(
+                                "$title\n\n${AppLocalizations.of(context)!.shareMessage}",
+                                subject:
+                                    AppLocalizations.of(context)!.shareSubject);
+                          },
+                          child: Icon(
+                            Icons.share,
+                            color: cc.black3,
+                            size: 22,
+                          ),
                         ),
                       ],
                     ),
@@ -779,7 +812,7 @@ class ServiceCard2 extends StatelessWidget {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Text(
-                                        'Thank You',
+                                        AppLocalizations.of(context)!.thankYou,
                                         style: TextStyle(
                                           fontSize: 16.0,
                                           fontWeight: FontWeight.bold,
@@ -790,7 +823,8 @@ class ServiceCard2 extends StatelessWidget {
                                       Divider(color: Colors.grey.shade300),
                                       Text(
                                         textAlign: TextAlign.center,
-                                        "Thank you for your enquiry with us, we will call you back soon.",
+                                        AppLocalizations.of(context)!
+                                            .thankYouEnquiryText,
                                         style: TextStyle(
                                           fontSize: 14.0,
                                           fontWeight: FontWeight.w500,
@@ -834,6 +868,11 @@ class ServiceCard2 extends StatelessWidget {
                                           // ),
                                           ElevatedButton(
                                             onPressed: () {
+                                              Provider.of<ServiceDetailsService>(
+                                                      context,
+                                                      listen: false)
+                                                  .fetchServiceDetails(
+                                                      serviceId.toString());
                                               Navigator.pop(context);
                                               // Add your additional action here
                                             },
@@ -841,7 +880,9 @@ class ServiceCard2 extends StatelessWidget {
                                               backgroundColor:
                                                   Colors.blueAccent,
                                             ),
-                                            child: const Text('OK'),
+                                            child: Text(
+                                                AppLocalizations.of(context)!
+                                                    .ok),
                                           ),
                                         ],
                                       ),
@@ -854,7 +895,7 @@ class ServiceCard2 extends StatelessWidget {
                         );
                       },
                       child: Text(
-                        asProvider.getString(buttonText),
+                        AppLocalizations.of(context)!.bookNow,
                         style: TextStyle(
                             fontSize:
                                 screenWidth < fourinchScreenWidth ? 9 : 13,
@@ -899,176 +940,185 @@ class ServiceCardContents2 extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Stack(
-          clipBehavior: Clip.none,
-          children: [
-            //service image
-            CommonHelper().profileImage(imageLink, 75, 78),
-
-            rating != 0.0
-                ? Positioned(
-                    left: 8,
-                    child: Container(
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.white, width: 2),
-                          color: const Color(0xffFFC300),
-                          borderRadius: BorderRadius.circular(4)),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 6, vertical: 4),
-                      child: Row(children: [
-                        Icon(
-                          Icons.star_border,
-                          color: cc.greyFour,
-                          size: 14,
-                        ),
-                        const SizedBox(
-                          width: 3,
-                        ),
-                        Text(
-                          rating.toString(),
-                          style: TextStyle(
-                              color: cc.greyFour,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 13),
-                        )
-                      ]),
-                    ))
-                : Container(),
-          ],
-        ),
+        CommonHelper().profileImage(imageLink, 75, 78),
+        // Stack(
+        //   clipBehavior: Clip.none,
+        //   children: [
+        //     //service image
+        //     // CommonHelper().profileImage(imageLink, 75, 78),
+        //
+        //     // rating != 0.0
+        //     //     ? Positioned(
+        //     //         left: 8,
+        //     //         child: Container(
+        //     //           decoration: BoxDecoration(
+        //     //               border: Border.all(color: Colors.white, width: 2),
+        //     //               color: const Color(0xffFFC300),
+        //     //               borderRadius: BorderRadius.circular(4)),
+        //     //           padding: const EdgeInsets.symmetric(
+        //     //               horizontal: 6, vertical: 4),
+        //     //           child: Row(children: [
+        //     //             Icon(
+        //     //               Icons.star_border,
+        //     //               color: cc.greyFour,
+        //     //               size: 14,
+        //     //             ),
+        //     //             const SizedBox(
+        //     //               width: 3,
+        //     //             ),
+        //     //             Text(
+        //     //               rating.toString(),
+        //     //               style: TextStyle(
+        //     //                   color: cc.greyFour,
+        //     //                   fontWeight: FontWeight.w600,
+        //     //                   fontSize: 13),
+        //     //             )
+        //     //           ]),
+        //     //         ))
+        //     //     : Container(),
+        //   ],
+        // ),
         const SizedBox(
           width: 13,
         ),
         Expanded(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment:
+                CrossAxisAlignment.start, // Ensures alignment to the start
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              //service name ======>
+              // Service Name
               Text(
-                title.toString().capitalizeEachWord(),
+                sellerName.toString().capitalizeEachWord(),
                 textAlign: TextAlign.start,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color: cc.greyFour,
-                  fontSize: 15,
+                  fontSize: 16, // Slightly larger for emphasis
                   fontWeight: FontWeight.w600,
                 ),
               ),
+              const SizedBox(height: 4),
+
+              // Title Row (with Icon)
               Row(
+                crossAxisAlignment:
+                    CrossAxisAlignment.center, // Align text & icon properly
                 children: [
                   Icon(
                     Icons.location_history_outlined,
-                    size: 12,
+                    size: 14, // Slightly increased for better visibility
                     color: cc.greyFour.withOpacity(.6),
                   ),
-                  const SizedBox(
-                    width: 6,
-                  ),
-                  Text(
-                    sellerName ?? '',
-                    textAlign: TextAlign.start,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: cc.greyFour,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
+                  const SizedBox(width: 6),
+                  Expanded(
+                    // Ensures text does not overflow
+                    child: Text(
+                      title.toString().capitalizeEachWord(),
+                      textAlign: TextAlign.start,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      style: TextStyle(
+                        color: cc.greyFour,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(
-                width: 6,
-              ),
-              address == '' || address == 'null'
-                  ? Offstage()
-                  : Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(
-                          Icons.location_on_outlined,
-                          size: 12,
-                          color: cc.greyFour.withOpacity(.6),
-                        ),
-                        const SizedBox(
-                          width: 6,
-                        ),
-                        SizedBox(
-                          width: 140,
-                          child: Text(
-                            address ?? '',
-                            textAlign: TextAlign.start,
-                            overflow: TextOverflow.visible,
-                            style: TextStyle(
-                              color: cc.greyFour,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                      ],
+              const SizedBox(height: 6),
+
+              // Address (If available)
+              if (address != null &&
+                  address.isNotEmpty &&
+                  address != 'null') ...[
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.location_on_outlined,
+                      size: 14,
+                      color: cc.greyFour.withOpacity(.6),
                     ),
-              const SizedBox(
-                width: 6,
-              ),
-              experience == '' || experience == 'null'
-                  ? Offstage()
-                  : Row(
-                      children: [
-                        Icon(
-                          Icons.real_estate_agent_outlined,
-                          size: 12,
-                          color: cc.greyFour.withOpacity(.6),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        address,
+                        textAlign: TextAlign.start,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: TextStyle(
+                          color: cc.greyFour,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400,
                         ),
-                        const SizedBox(
-                          width: 6,
-                        ),
-                        experience == '' || experience == 'null'
-                            ? Offstage()
-                            : Text(
-                                experience ?? '',
-                                textAlign: TextAlign.start,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  color: cc.greyFour,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                      ],
+                      ),
                     ),
-              const SizedBox(
-                width: 6,
-              ),
-              status == '' || status == 'null'
-                  ? Offstage()
-                  : Row(
-                      children: [
-                        Icon(
-                          Icons.event_available,
-                          size: 12,
-                          color: cc.greyFour.withOpacity(.6),
-                        ),
-                        const SizedBox(
-                          width: 6,
-                        ),
-                        Text(
-                          status == '1' ? 'Available' : 'UnAvailable',
-                          textAlign: TextAlign.start,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color:
-                                status == "1" ? cc.successColor : cc.errorColor,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ],
+                  ],
+                ),
+                const SizedBox(height: 6),
+              ],
+
+              // Experience (If available)
+              if (experience != null &&
+                  experience.isNotEmpty &&
+                  experience != 'null') ...[
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.real_estate_agent_outlined,
+                      size: 14,
+                      color: cc.greyFour.withOpacity(.6),
                     ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        experience,
+                        textAlign: TextAlign.start,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: TextStyle(
+                          color: cc.greyFour,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+              ],
+
+              // Status (If available)
+              // if (status != null && status.isNotEmpty && status != 'null') ...[
+              //   Row(
+              //     crossAxisAlignment: CrossAxisAlignment.center,
+              //     children: [
+              //       Icon(
+              //         Icons.event_available,
+              //         size: 14,
+              //         color: cc.greyFour.withOpacity(.6),
+              //       ),
+              //       const SizedBox(width: 6),
+              //       Text(
+              //         status == '1' ? 'Available' : 'Unavailable',
+              //         textAlign: TextAlign.start,
+              //         maxLines: 1,
+              //         overflow: TextOverflow.ellipsis,
+              //         style: TextStyle(
+              //           color: status == "1" ? cc.successColor : cc.errorColor,
+              //           fontSize: 12,
+              //           fontWeight: FontWeight.w400,
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ],
             ],
           ),
         ),

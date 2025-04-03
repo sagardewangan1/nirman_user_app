@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -5,14 +7,24 @@ import 'package:provider/provider.dart';
 import 'package:qixer/helper/extension/context_extension.dart';
 import 'package:qixer/model/navigationModel.dart';
 import 'package:qixer/service/auth_services/signUpVendorService.dart';
+import 'package:qixer/service/country_states_service.dart';
+import 'package:qixer/service/dropdowns_services/state_dropdown_services.dart';
+import 'package:qixer/service/getImageController.dart';
 import 'package:qixer/view/auth/signup/pages/tac_pp.dart';
 import 'package:qixer/view/chooseCategory/chooseCategorView.dart';
 import '../../../../service/app_string_service.dart';
+import '../../../../service/dropdowns_services/area_dropdown_service.dart';
 import '../../../utils/common_helper.dart';
 import '../../../utils/constant_colors.dart';
 import '../../../utils/custom_input.dart';
 import '../../../utils/others_helper.dart';
+import '../../../utils/responsive.dart';
 import '../components/country_states_dropdowns.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import '../dropdowns/area_dropdown_popup.dart';
+import '../dropdowns/country_states_dropdowns.dart';
+import '../dropdowns/state_dropdown_popup.dart';
 
 class SignupVendorBusinessDetails extends StatefulWidget {
   final TextEditingController state;
@@ -59,37 +71,29 @@ class _SignupVendorBusinessDetailsState
     }
     if (!termsAgree) {
       OthersHelper().showToast(
-        "You must agree with the terms and conditions to register",
+        AppLocalizations.of(context)!
+            .youMustAgreeWithTheTermsAndConditionsToRegister,
         Colors.black,
       );
       return;
     }
     if (businessNameController.text.isEmpty) {
-      OthersHelper()
-          .showToast('Please Enter Business Name Required', cc.warningColor);
-    }
-    // Check each field and show a toast if it's empty
-    if (businessNameController.text.isEmpty) {
-      OthersHelper()
-          .showToast('Please Enter Business Name Required', cc.warningColor);
-      return;
-    }
-
-    if (gstNumberController.text.isEmpty) {
-      OthersHelper()
-          .showToast('Please Enter GST Number Required', cc.warningColor);
-      return;
+      OthersHelper().showToast(
+          AppLocalizations.of(context)!.pleaseEnterYourBusinessName,
+          cc.warningColor);
     }
 
     if (businessAddressController.text.isEmpty) {
-      OthersHelper()
-          .showToast('Please Enter Business Address Required', cc.warningColor);
+      OthersHelper().showToast(
+          AppLocalizations.of(context)!.pleaseEnterYourBusinessAddress,
+          cc.warningColor);
       return;
     }
 
     if (businessMobileNumberController.text.isEmpty) {
       OthersHelper().showToast(
-          'Please Enter Business Mobile Number Required', cc.warningColor);
+          AppLocalizations.of(context)!.pleaseEnterYourPhoneNumber,
+          cc.warningColor);
       return;
     }
 
@@ -108,24 +112,25 @@ class _SignupVendorBusinessDetailsState
     // Proceed with signup if all fields are filled
     if (!provider.isloading) {
       provider.signupvendor(
-        widget.fullNameController?.text ?? '',
-        widget.emailController?.text ?? '',
-        widget.phoneController?.text ?? '',
-        businessNameController.text,
-        gstNumberController.text,
-        businessMobileNumberController.text,
-        businessEmailController.text,
-        businessAddressController.text,
-        businessDescriptionController.text,
-        context,
-      );
+          widget.fullNameController?.text ?? '',
+          widget.emailController?.text ?? '',
+          widget.phoneController?.text ?? '',
+          businessNameController.text,
+          gstNumberController.text,
+          businessMobileNumberController.text,
+          businessEmailController.text,
+          businessAddressController.text,
+          businessDescriptionController.text,
+          context,
+          imagePath: context.read<GetImageController>().fileSingle?.path);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     ConstantColors cc = ConstantColors();
-
+    final getImageController = Provider.of<GetImageController>(context);
+    Size size = MediaQuery.of(context).size;
     return Consumer<AppStringService>(
       builder: (context, asProvider, child) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 25),
@@ -137,53 +142,81 @@ class _SignupVendorBusinessDetailsState
             // crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Title
-
               CommonHelper().titleCommon(
-                asProvider.getString("Fill your business details"),
+                AppLocalizations.of(context)!.fillYourBusinessDetails,
+              ),
+              const SizedBox(height: 18),
+
+              InkWell(
+                onTap: () {
+                  getImageController.chooseImage();
+                },
+                child: Container(
+                  height: 150,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8.0),
+                      border: Border.all(width: 1, color: cc.black6)),
+                  child: getImageController.fileSingle != null
+                      ? Image.file(
+                          fit: BoxFit.contain,
+                          getImageController.fileSingle!,
+                          height: 150,
+                          width: size.width,
+                        )
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.image_search,
+                              size: 40,
+                              color: cc.black6,
+                            ),
+                            Text(
+                              "Tap to add Shop/Business Image",
+                              style: TextStyle(fontSize: 14, color: cc.black5),
+                            )
+                          ],
+                        ),
+                ),
               ),
               const SizedBox(height: 18),
 
               // Business Name
-              CommonHelper().labelCommon(asProvider.getString("Business Name"),
+              CommonHelper().labelCommon(
+                  AppLocalizations.of(context)!.businessName,
                   isRequired: true),
               CustomInput(
                 controller: businessNameController,
                 validation: (value) {
                   if (value == null || value.isEmpty) {
-                    return asProvider
-                        .getString("Please enter your business name");
+                    return AppLocalizations.of(context)!
+                        .pleaseEnterYourBusinessName;
                   }
                   return null;
                 },
-                hintText: asProvider.getString("Enter your business name"),
+                hintText: AppLocalizations.of(context)!.enterYourBusinessName,
                 icon: 'assets/icons/business.png',
                 textInputAction: TextInputAction.next,
               ),
               const SizedBox(height: 18),
 
               // GST Number
-              CommonHelper().labelCommon(
-                  asProvider.getString("Business GST Number"),
-                  isRequired: true),
+              CommonHelper()
+                  .labelCommon(AppLocalizations.of(context)!.businessGstNumber),
               CustomInput(
                 controller: gstNumberController,
-                validation: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Please enter GST Number";
-                  }
-                  return null;
-                },
                 maxLength: 20,
                 counterText: "",
-                hintText: asProvider.getString("Enter your GST Number"),
+                hintText: AppLocalizations.of(context)!.enterYourGstNumber,
                 icon: 'assets/icons/gstn.png',
                 textInputAction: TextInputAction.next,
               ),
               const SizedBox(height: 18),
-
               // Phone Number
               CommonHelper().labelCommon(
-                  asProvider.getString("Business Phone Number"),
+                  AppLocalizations.of(context)!.businessPhoneNumber,
                   isRequired: true),
               CustomInput(
                 controller: businessMobileNumberController,
@@ -192,30 +225,31 @@ class _SignupVendorBusinessDetailsState
                 maxLength: 10,
                 validation: (value) {
                   if (value == null || value.isEmpty) {
-                    return asProvider
-                        .getString("Please enter your Phone number");
+                    return AppLocalizations.of(context)!
+                        .pleaseEnterYourPhoneNumber;
                   }
                   return null;
                 },
-                hintText: asProvider.getString("Enter your Phone Number"),
+                hintText: AppLocalizations.of(context)!.enterYourMobileNumber,
                 icon: 'assets/icons/phone.png',
                 textInputAction: TextInputAction.next,
               ),
               const SizedBox(height: 18),
 
               // Email Number
-              CommonHelper().labelCommon(asProvider.getString("Business Email"),
+              CommonHelper().labelCommon(
+                  AppLocalizations.of(context)!.businessEmail,
                   isRequired: true),
               CustomInput(
                 controller: businessEmailController,
                 validation: (value) {
                   if (value == null || value.isEmpty) {
-                    return asProvider
-                        .getString("Please enter your Business Email");
+                    return AppLocalizations.of(context)!
+                        .pleaseEnterYourBusinessEmail;
                   }
                   return null;
                 },
-                hintText: asProvider.getString("Enter your Business Email"),
+                hintText: AppLocalizations.of(context)!.enterYourBusinessEmail,
                 icon: 'assets/icons/email.png',
                 textInputAction: TextInputAction.next,
               ),
@@ -223,24 +257,147 @@ class _SignupVendorBusinessDetailsState
 
               // Address
               CommonHelper().labelCommon(
-                  asProvider.getString("Business Address"),
+                  AppLocalizations.of(context)!.businessAddress,
                   isRequired: true),
               CustomInput(
                 controller: businessAddressController,
                 validation: (value) {
                   if (value == null || value.isEmpty) {
-                    return asProvider
-                        .getString("Please enter your Business Address");
+                    return AppLocalizations.of(context)!
+                        .pleaseEnterYourBusinessAddress;
                   }
                   return null;
                 },
-                hintText: asProvider.getString("Enter your Business Address"),
+                hintText:
+                    AppLocalizations.of(context)!.enterYourBusinessAddress,
                 // icon: 'assets/icons/address.png',
                 textInputAction: TextInputAction.next,
               ),
               const SizedBox(height: 18),
 
-              const CountryStatesDropdowns(),
+              Consumer<CountryStatesService>(
+                  builder: (context, provider, child) => Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          //dropdown and search box
+                          // const SizedBox(
+                          //   width: 17,
+                          // ),
+
+                          // // Country dropdown ===============>
+                          // Column(
+                          //   crossAxisAlignment:
+                          //       CrossAxisAlignment.start,
+                          //   children: [
+                          //     CommonHelper().labelCommon(
+                          //         'Choose Country',
+                          //         isRequired: true),
+                          //     Consumer<CountryDropdownService>(
+                          //       builder: (context, p, child) =>
+                          //           InkWell(
+                          //         onTap: () {
+                          //           // p.fetchCountries(context, isrefresh: true);
+                          //           showModalBottomSheet(
+                          //               context: context,
+                          //               isScrollControlled: true,
+                          //               builder: (BuildContext
+                          //                   context) {
+                          //                 return SizedBox(
+                          //                     height: screenHeight /
+                          //                             2 +
+                          //                         MediaQuery.of(
+                          //                                     context)
+                          //                                 .viewInsets
+                          //                                 .bottom /
+                          //                             2,
+                          //                     child:
+                          //                         const CountryDropdownPopup());
+                          //               });
+                          //         },
+                          //         child: dropdownPlaceholder(
+                          //           hintText: p.selectedCountry,
+                          //         ),
+                          //       ),
+                          //     )
+                          //   ],
+                          // ),
+
+                          // const SizedBox(
+                          //   height: 25,
+                          // ),
+                          // States dropdown ===============>
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              CommonHelper().labelCommon(
+                                  AppLocalizations.of(context)!.chooseState,
+                                  isRequired: true),
+                              Consumer<StateDropdownService>(
+                                builder: (context, p, child) => InkWell(
+                                  onTap: () {
+                                    // p.fetchStates(context, isrefresh: true);
+                                    showModalBottomSheet(
+                                        context: context,
+                                        isScrollControlled: true,
+                                        builder: (BuildContext context) {
+                                          return SizedBox(
+                                              height: screenHeight / 2 +
+                                                  MediaQuery.of(context)
+                                                          .viewInsets
+                                                          .bottom /
+                                                      2,
+                                              child:
+                                                  const StateDropdownPopup());
+                                        });
+                                  },
+                                  child: dropdownPlaceholder(
+                                      hintText: p.selectedState),
+                                ),
+                              )
+                            ],
+                          ),
+
+                          const SizedBox(
+                            height: 25,
+                          ),
+
+                          // Area dropdown ===============>
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              CommonHelper().labelCommon(
+                                  AppLocalizations.of(context)!.chooseCity,
+                                  isRequired: true),
+                              Consumer<AreaDropdownService>(
+                                builder: (context, p, child) => InkWell(
+                                  onTap: () {
+                                    // p.fetchArea(context, isrefresh: true);
+                                    showModalBottomSheet(
+                                        context: context,
+                                        isScrollControlled: true,
+                                        builder: (BuildContext context) {
+                                          return SizedBox(
+                                              height: screenHeight / 2 +
+                                                  MediaQuery.of(context)
+                                                          .viewInsets
+                                                          .bottom /
+                                                      2,
+                                              child: const AreaDropdownPopup());
+                                        });
+                                  },
+                                  child: dropdownPlaceholder(
+                                      textWidth: 200.0,
+                                      textOverflow: TextOverflow.visible,
+                                      hintText: p.selectedArea.isNotEmpty
+                                          ? p.selectedArea
+                                          : AppLocalizations.of(context)!
+                                              .selectCity),
+                                ),
+                              ),
+                            ],
+                          )
+                        ],
+                      )),
               //Agreement checkbox ===========>
               const SizedBox(
                 height: 17,
@@ -290,7 +447,7 @@ class _SignupVendorBusinessDetailsState
 
               // Description
               CommonHelper().labelCommon(
-                  asProvider.getString("Business Description"),
+                  AppLocalizations.of(context)!.businessDescription,
                   isRequired: true),
               Consumer<SignupVendorService>(
                 builder: (context, sginupProvider, child) {
@@ -300,12 +457,8 @@ class _SignupVendorBusinessDetailsState
                     maxLength: 500,
                     validation: (value) {
                       if (value == null || value.isEmpty) {
-                        return asProvider.getString(
-                            "Please enter your Business Description");
-                      }
-                      if (value.length < 150) {
-                        return asProvider.getString(
-                            "Business Description must be at \nleast 150 characters long");
+                        return AppLocalizations.of(context)!
+                            .pleaseEnterYourBusinessDescription;
                       }
                       return null;
                     },
@@ -314,8 +467,8 @@ class _SignupVendorBusinessDetailsState
                     onChanged: (p0) {
                       sginupProvider.setOverviewLength(p0.length);
                     },
-                    hintText:
-                        asProvider.getString("Enter your Business Description"),
+                    hintText: AppLocalizations.of(context)!
+                        .enterYourBusinessDescription,
                     textInputAction: TextInputAction.next,
                   );
                 },
@@ -339,7 +492,7 @@ class _SignupVendorBusinessDetailsState
                     maxLines: 4,
                     overflow: TextOverflow.ellipsis,
                     text: TextSpan(
-                        text: asProvider.getString("I agree to") + " ",
+                        text: "${AppLocalizations.of(context)!.iAgreeTo} ",
                         style: TextStyle(
                           color: cc.black5,
                           fontWeight: FontWeight.w400,
@@ -353,13 +506,15 @@ class _SignupVendorBusinessDetailsState
                                   ));
                                   FocusScope.of(context).unfocus();
                                 },
-                              text: asProvider.getString("Terms & Conditions"),
+                              text: AppLocalizations.of(context)!
+                                  .termsAndCondition,
                               style: TextStyle(
                                 color: cc.primaryColor,
                                 fontWeight: FontWeight.w600,
                               )),
                           TextSpan(
-                              text: "${" " + asProvider.getString("and")} ",
+                              text:
+                                  "${" ${AppLocalizations.of(context)!.and}"} ",
                               style: TextStyle(color: cc.black5)),
                           TextSpan(
                               recognizer: TapGestureRecognizer()
@@ -369,7 +524,7 @@ class _SignupVendorBusinessDetailsState
                                   ));
                                   FocusScope.of(context).unfocus();
                                 },
-                              text: asProvider.getString("Privacy policy"),
+                              text: AppLocalizations.of(context)!.privacyPolicy,
                               style: TextStyle(
                                 color: cc.primaryColor,
                                 fontWeight: FontWeight.w600,
@@ -383,7 +538,8 @@ class _SignupVendorBusinessDetailsState
               // Continue Button
               Consumer<SignupVendorService>(
                 builder: (context, provider, child) => CommonHelper()
-                    .buttonOrange(asProvider.getString("Continue"), () {
+                    .buttonOrange(AppLocalizations.of(context)!.continueText,
+                        () {
                   _submit(context, provider);
                 }, isloading: provider.isloading == false ? false : true),
               ),

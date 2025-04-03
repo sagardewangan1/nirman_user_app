@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutterzilla_fixed_grid/flutterzilla_fixed_grid.dart';
+import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:qixer/service/all_services_service.dart';
@@ -8,6 +9,8 @@ import 'package:qixer/view/utils/common_helper.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:qixer/view/utils/constant_styles.dart';
 import 'package:qixer/view/utils/others_helper.dart';
+import 'package:qixer/view/utils/responsive.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../service/serviceby_category_service.dart';
 import '../../services/service_by_category_page.dart';
@@ -26,9 +29,9 @@ class _AllCategoriesPageState extends State<AllCategoriesPage> {
   void initState() {
     super.initState();
     Provider.of<AllServicesService>(context, listen: false)
-        .fetchCategories(context);
-    Provider.of<AllServicesService>(context, listen: false)
-        .fetchSubcategory(widget.catId);
+        .fetchSubcategory(widget.catId.toString());
+    // Provider.of<AllServicesService>(context, listen: false)
+    //     .fetchSubcategory(widget.catId);
   }
 
   final RefreshController refreshController =
@@ -52,7 +55,7 @@ class _AllCategoriesPageState extends State<AllCategoriesPage> {
                   crossAxisCount: 2,
                   mainAxisSpacing: 19,
                   crossAxisSpacing: 19,
-                  height: 100),
+                  height: 140),
               padding: const EdgeInsets.only(top: 12),
               itemCount: provider.subCatList.length,
               shrinkWrap: true,
@@ -62,19 +65,19 @@ class _AllCategoriesPageState extends State<AllCategoriesPage> {
                     ? provider.subCatList != 'error'
                         ? CategoryCard(
                             onTap: () {
-                              final sbcProvider =
-                                  Provider.of<ServiceByCategoryService>(
-                                context,
-                                listen: false,
-                              );
-                              sbcProvider.fetchSubcategoryList(subCate.id);
+                              // final sbcProvider =
+                              //     Provider.of<ServiceByCategoryService>(
+                              //   context,
+                              //   listen: false,
+                              // );
+                              // sbcProvider.fetchSubcategoryList(subCate.id);
                               Navigator.push(
                                 context,
                                 MaterialPageRoute<void>(
                                   builder: (BuildContext context) =>
                                       ServiceCategoryPage(
                                     categoryName: subCate.name ?? '',
-                                    categoryId: subCate.id,
+                                    categoryId: widget.catId,
                                     subCatId: subCate.id,
                                   ),
                                 ),
@@ -87,7 +90,23 @@ class _AllCategoriesPageState extends State<AllCategoriesPage> {
                             imagelink: subCate.image ??
                                 "", // Correctly accessing the mobileIcon data
                           )
-                        : const Text("Something went wrong")
+                        : Container(
+                            alignment: Alignment.center,
+                            height: screenHeight - 140,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Image.asset(
+                                  "assets/images/nodata.png",
+                                  fit: BoxFit.contain,
+                                ),
+                                Gap(10),
+                                Text(AppLocalizations.of(context)!
+                                    .noServiceProviderInYourArea),
+                              ],
+                            ),
+                          )
                     : OthersHelper().showLoading(cc.primaryColor);
               },
             ),

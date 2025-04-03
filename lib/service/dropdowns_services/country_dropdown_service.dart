@@ -7,7 +7,7 @@ import 'package:qixer/model/dropdown_models/country_dropdown_model.dart';
 import 'package:qixer/service/profile_service.dart';
 import 'package:qixer/view/utils/others_helper.dart';
 
-var defaultId = '0';
+var defaultId = '';
 
 class CountryDropdownService with ChangeNotifier {
   var countryDropdownList = [];

@@ -50,7 +50,7 @@ class AreaDropdownService with ChangeNotifier {
   setAreaDefault() {
     areaDropdownList = [];
     areaDropdownIndexList = [];
-    selectedArea = 'Select Area';
+    selectedArea = 'Select City';
     selectedAreaId = defaultId;
 
     currentPage = 1;
@@ -64,6 +64,7 @@ class AreaDropdownService with ChangeNotifier {
 
   setSelectedAreaId(value) {
     selectedAreaId = value;
+    debugPrint("area id ----> $value");
     notifyListeners();
   }
 
@@ -87,7 +88,7 @@ class AreaDropdownService with ChangeNotifier {
             .userDetails
             .area
             ?.serviceArea ??
-        'Select Area';
+        'Select City';
     selectedAreaId = Provider.of<ProfileService>(context, listen: false)
             .profileDetails
             .userDetails
@@ -136,7 +137,7 @@ class AreaDropdownService with ChangeNotifier {
     } else {
       // areaDropdownList.add('Select City');
       areaDropdownIndexList.add(defaultId);
-      selectedArea = 'Select Area';
+      selectedArea = 'Select City';
       selectedAreaId = defaultId;
       notifyListeners();
       return false;
@@ -189,9 +190,11 @@ class AreaDropdownService with ChangeNotifier {
     if (isSearching) {
       setAreaDefault();
     }
-
-    var response =
-        await http.get(Uri.parse('$baseApi/area-search?q=$searchText'));
+    var selectedStateId =
+        Provider.of<StateDropdownService>(context, listen: false)
+            .selectedStateId;
+    var response = await http.get(Uri.parse(
+        '$baseApi/area-search?service_city_id=$selectedStateId&q=$searchText'));
 
     if ((response.statusCode == 200 || response.statusCode == 201) &&
         jsonDecode(response.body)['service_areas']['data'].isNotEmpty) {
@@ -207,9 +210,9 @@ class AreaDropdownService with ChangeNotifier {
       setCurrentPage(currentPage);
       return true;
     } else {
-      areaDropdownList.add('Select Area');
+      areaDropdownList.add('Select City');
       areaDropdownIndexList.add(defaultId);
-      selectedArea = 'Select Area';
+      selectedArea = 'Select City';
       selectedAreaId = defaultId;
       notifyListeners();
       return false;

@@ -1,7 +1,7 @@
 name: qixer
-description: "A new Flutter project."
+description: "A Shasakta Nirman Developed By Focus Media Software Leading Company. Ofc no 06 3rd Floor magnato mall Raipur (C.G.)"
 publish_to: 'none'
-version: 1.0.0+10
+version: 1.0.1+7
 
 environment:
   sdk: '>=3.4.3 <4.0.0'
@@ -86,13 +86,17 @@ dependencies:
   flutter_inappwebview: any
   path: any
   phonepe_payment_sdk: ^2.0.3
+  share_plus: ^10.1.4
+  flutter_launcher_icons: ^0.14.3
+  lottie: ^3.2.0
+  firebase_messaging: ^15.2.5
+  in_app_update: ^4.2.3
 
 #dev-dependencies
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
-  flutter_launcher_icons: "^0.14.2"
 
 
 
@@ -114,3 +118,4 @@ flutter:
     - assets/icons/
     - assets/icons/payment/
     - assets/svg/
+    - assets/gif/

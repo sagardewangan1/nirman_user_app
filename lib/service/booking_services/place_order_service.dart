@@ -370,7 +370,7 @@ class PlaceOrderService with ChangeNotifier {
       setLoadingFalse();
     } else {
       await Provider.of<ProfileService>(context, listen: false)
-          .getProfileDetails(isFromProfileupdatePage: true);
+          .getProfileDetails(isFromProfileupdatePage: true, context: context);
 
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const LandingPage()),

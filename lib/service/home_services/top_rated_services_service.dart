@@ -9,67 +9,67 @@ import 'package:qixer/service/db/db_service.dart';
 import 'package:qixer/view/utils/others_helper.dart';
 
 class TopRatedServicesSerivce with ChangeNotifier {
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+
   var topServiceMap = [];
   bool alreadySaved = false;
 
-  fetchTopService() async {
-    if (topServiceMap.isEmpty) {
-      //=================>
-      String apiLink;
-      apiLink = '$baseApi/top-services';
+  List<Map<String, dynamic>> topServiceList = [];
 
-      //====================>
+  Future<void> fetchTopService() async {
+    _isLoading = true;
+    if (topServiceList.isEmpty) {
+      String apiLink = '$baseApi/top-services';
 
-      var connection = await checkConnection();
-      if (connection) {
-        //if connection is ok
-        var response = await http.get(Uri.parse(apiLink));
-
-        if (response.statusCode == 201) {
-          var data = TopServiceModel.fromJson(jsonDecode(response.body));
-
-          for (int i = 0; i < data.topServices.length; i++) {
-            String? serviceImage;
-
-            if (data.serviceImage.length > i) {
-              serviceImage = data.serviceImage[i]?.imgUrl;
-            } else {
-              serviceImage = null;
+      try {
+        var connection = await checkConnection();
+        if (connection) {
+          var response = await http.get(Uri.parse(apiLink));
+          if (response.statusCode == 200 || response.statusCode == 201) {
+            var data = json.decode(response.body);
+            if (data["top_services"] != null) {
+              topServiceList = (data["top_services"] as List).map((service) {
+                return {
+                  "id": service["id"],
+                  "name": service["name"],
+                  "category": service["category"]["name"],
+                  "categoryId": service["category"]["id"],
+                  "image": service["image"],
+                  "banner_img": service["banner_img"] is List &&
+                          service["banner_img"].isNotEmpty
+                      ? service["banner_img"][0][
+                          "img_url"] // Taking first banner image if it's a list
+                      : (service["banner_img"] is Map
+                          ? service["banner_img"]["img_url"]
+                          : null),
+                  "status": service["status"],
+                };
+              }).toList();
+              _isLoading = false;
+              print(
+                  "Top Services List: $topServiceList"); // Print the updated list
             }
-
-            int totalRating = 0;
-            for (int j = 0;
-                j < data.topServices[i].reviewsForMobile.length;
-                j++) {
-              totalRating = totalRating +
-                  data.topServices[i].reviewsForMobile[j].rating!.toInt();
-            }
-            double averageRate = 0;
-
-            if (data.topServices[i].reviewsForMobile.isNotEmpty) {
-              averageRate =
-                  (totalRating / data.topServices[i].reviewsForMobile.length);
-            }
-            setServiceList(
-                data.topServices[i].id,
-                data.topServices[i].title,
-                data.topServices[i].sellerForMobile.name,
-                data.topServices[i].price,
-                averageRate,
-                serviceImage,
-                i,
-                data.topServices[i].sellerId);
+          } else {
+            _isLoading = false;
+            print(
+                "Error: Failed to fetch top services, Status Code: ${response.statusCode}");
           }
-
-          notifyListeners();
         } else {
-          //Something went wrong
-          topServiceMap.add('error');
-          notifyListeners();
+          _isLoading = false;
+          print("No internet connection");
         }
+        _isLoading = false;
+      } catch (e) {
+        _isLoading = false;
+        print("Exception occurred while fetching top services: $e");
+      } finally {
+        _isLoading = false;
+        notifyListeners();
       }
     } else {
-      //already loaded from api
+      _isLoading = false;
+      print("Top services already loaded");
     }
   }
 
