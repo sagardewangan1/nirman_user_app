@@ -112,7 +112,8 @@ class HomeAppBar extends StatelessWidget {
                               radius: 21,
                               backgroundColor: cc.black8,
                               child: Badge(
-                                label: totalUnreadLeads != '0'
+                                label: totalUnreadLeads != '0' ||
+                                        totalUnreadLeads != 'null'
                                     ? Text(
                                         totalUnreadLeads ?? '',
                                         style: TextStyle(

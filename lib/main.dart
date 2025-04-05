@@ -8,7 +8,6 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_maps_flutter_android/google_maps_flutter_android.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
-import 'package:in_app_update/in_app_update.dart';
 import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 import 'package:pusher_beams/pusher_beams.dart';
@@ -22,6 +21,7 @@ import 'package:qixer/view/home/homepage_helper.dart';
 import 'package:qixer/view/intro/splash.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:upgrader/upgrader.dart';
 
 import 'app/providers/AppInitializer.dart';
 import 'helper/pusher_helper.dart';
@@ -30,6 +30,7 @@ import 'service/languageController/languageController.dart';
 @pragma('vm:entry-point')
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  Upgrader.clearSavedSettings();
   final GoogleMapsFlutterPlatform mapsImplementation =
       GoogleMapsFlutterPlatform.instance;
   if (mapsImplementation is GoogleMapsFlutterAndroid) {
@@ -90,86 +91,8 @@ void main() async {
 
 int? userId;
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  AppUpdateInfo? _updateInfo;
-  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
-  bool _flexibleUpdateAvailable = false;
-
-  // Check for app updates
-  Future<void> checkForUpdate() async {
-    try {
-      AppUpdateInfo updateInfo = await InAppUpdate.checkForUpdate();
-      setState(() {
-        _updateInfo = updateInfo;
-      });
-      if (updateInfo.updateAvailability == UpdateAvailability.updateAvailable) {
-        showUpdateSheet();
-      }
-    } catch (e) {
-      showSnack(e.toString());
-    }
-  }
-
-  // Show update sheet to the user
-  void showUpdateSheet() {
-    if (_scaffoldKey.currentContext != null) {
-      showModalBottomSheet(
-        context: _scaffoldKey.currentContext!,
-        builder: (context) => Container(
-          padding: EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                "Update Available!",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 10),
-              Text(
-                  "A new version of the app is available. Please update to continue."),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  performImmediateUpdate();
-                },
-                child: Text("Update Now"),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-  }
-
-  // Perform immediate update
-  void performImmediateUpdate() {
-    if (_updateInfo?.updateAvailability == UpdateAvailability.updateAvailable) {
-      InAppUpdate.performImmediateUpdate().catchError((e) {
-        showSnack("Update failed: \$e");
-      });
-    }
-  }
-
-  void showSnack(String text) {
-    if (_scaffoldKey.currentContext != null) {
-      ScaffoldMessenger.of(_scaffoldKey.currentContext!)
-          .showSnackBar(SnackBar(content: Text(text)));
-    }
-  }
-
-  @override
-  void initState() {
-    checkForUpdate();
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {

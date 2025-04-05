@@ -19,6 +19,7 @@ import 'package:qixer/view/utils/responsive.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:upgrader/upgrader.dart';
 
 class LandingPage extends StatefulWidget {
   const LandingPage({super.key});
@@ -28,6 +29,14 @@ class LandingPage extends StatefulWidget {
 }
 
 class _LandingPageState extends State<LandingPage> {
+  final Upgrader upgrader = Upgrader(
+    debugLogging: true,
+    languageCode: "IN",
+    storeController: UpgraderStoreController(
+      onAndroid: () => UpgraderPlayStore(),
+    ),
+  );
+
   String? userType;
   List<Widget> _children = [];
   List<int> _navIndexes = [];
@@ -99,36 +108,42 @@ class _LandingPageState extends State<LandingPage> {
   Widget build(BuildContext context) {
     return Consumer<LandingPageService>(
       builder: (context, landingPageProvider, child) {
-        return Scaffold(
-          backgroundColor: Colors.white,
-          body: WillPopScope(
-            onWillPop: () async {
-              DateTime now = DateTime.now();
-              if (currentBackPressTime == null ||
-                  now.difference(currentBackPressTime!) >
-                      const Duration(seconds: 2)) {
-                currentBackPressTime = now;
-                if (landingPageProvider.tabIndex != 0) {
-                  landingPageProvider.setTabIndex(0);
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Press again to exit")),
-                  );
+        return UpgradeAlert(
+          upgrader: upgrader,
+          showIgnore: false,
+          showReleaseNotes: true,
+          barrierDismissible: true,
+          child: Scaffold(
+            backgroundColor: Colors.white,
+            body: WillPopScope(
+              onWillPop: () async {
+                DateTime now = DateTime.now();
+                if (currentBackPressTime == null ||
+                    now.difference(currentBackPressTime!) >
+                        const Duration(seconds: 2)) {
+                  currentBackPressTime = now;
+                  if (landingPageProvider.tabIndex != 0) {
+                    landingPageProvider.setTabIndex(0);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Press again to exit")),
+                    );
+                  }
+                  return false;
                 }
-                return false;
-              }
-              if (Platform.isAndroid) {
-                SystemNavigator.pop();
-              }
-              return true;
-            },
-            child: _children[landingPageProvider.tabIndex],
-          ),
-          bottomNavigationBar: BottomNav(
-            currentIndex: landingPageProvider.tabIndex,
-            onTabTapped: onTabTapped,
-            userType: userType,
-            navIndexes: _navIndexes,
+                if (Platform.isAndroid) {
+                  SystemNavigator.pop();
+                }
+                return true;
+              },
+              child: _children[landingPageProvider.tabIndex],
+            ),
+            bottomNavigationBar: BottomNav(
+              currentIndex: landingPageProvider.tabIndex,
+              onTabTapped: onTabTapped,
+              userType: userType,
+              navIndexes: _navIndexes,
+            ),
           ),
         );
       },
