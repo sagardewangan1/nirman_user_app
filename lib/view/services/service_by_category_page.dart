@@ -179,7 +179,7 @@ class ServiceCategoryPage extends StatelessWidget {
                                                   context,
                                                   provider.serviceMap[i]
                                                       ['callNumber'],
-                                                  "Hello, I am interested in your service *${provider.serviceMap[i]['title']}*.");
+                                                  "${AppLocalizations.of(context)!.whatsappContactMsg} *${provider.serviceMap[i]['title']}*.");
                                               print(
                                                   "on Tap Whatsapp ====> ${provider.serviceMap[i]['callNumber']}");
                                             },

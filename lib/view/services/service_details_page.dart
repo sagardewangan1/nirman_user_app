@@ -4,11 +4,13 @@ import 'package:qixer/service/all_services_service.dart';
 import 'package:qixer/service/app_string_service.dart';
 import 'package:qixer/service/push_notification_service.dart';
 import 'package:qixer/service/service_details_service.dart';
+import 'package:qixer/view/auth/login/login.dart';
 import 'package:qixer/view/live_chat/chat_message_page.dart';
 import 'package:qixer/view/services/components/about_seller_tab.dart';
 import 'package:qixer/view/services/components/image_big.dart';
 import 'package:qixer/view/services/components/overview_tab.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
+import 'package:qixer/view/utils/login_or_register.dart';
 import 'package:qixer/view/utils/others_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/common_helper.dart';
@@ -38,6 +40,7 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage>
     super.dispose();
   }
 
+  bool isLoggedIn = false;
   @override
   void initState() {
     _tabController = TabController(length: 2, vsync: this);
@@ -48,7 +51,7 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage>
 
     Provider.of<AllServicesService>(context, listen: false)
         .fetchCategories(context);
-
+    firstLoad();
     super.initState();
   }
 
@@ -58,6 +61,20 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage>
         _tabIndex = _tabController.index;
       });
     }
+  }
+
+  firstLoad() async {
+    if (mounted) {
+      final prefs = await SharedPreferences.getInstance();
+      isLoggedIn = prefs.getBool("shashaktnirman_is_logged_in") ?? false;
+      setState(() {});
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    firstLoad();
+    super.didChangeDependencies();
   }
 
   int currentTab = 0;
@@ -368,11 +385,15 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage>
                         ),
                       ],
                     )
-                  : Container(
-                      alignment: Alignment.center,
-                      child: Text(
-                          AppLocalizations.of(context)!.somethingWentWrong),
-                    )
+                  :
+                  ////
+                  isLoggedIn == false
+                      ? const LoginOrRegister()
+                      : Container(
+                          alignment: Alignment.center,
+                          child: Text(
+                              AppLocalizations.of(context)!.somethingWentWrong),
+                        )
               : OthersHelper().showLoading(cc.primaryColor),
         ),
       ),

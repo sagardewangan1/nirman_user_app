@@ -342,7 +342,10 @@ class ServiceDetailsTop extends StatelessWidget {
                           provider.serviceDetailsModel.serviceDetails
                                   ?.sellerForMobile.businessPhoneNumber ??
                               '',
-                          "Hello sir, How can i help you ?");
+                          "${AppLocalizations.of(context)!.whatsappContactMsg} *${provider.serviceDetailsModel.serviceDetails?.title.toString()}*.");
+
+                      debugPrint(
+                          "${AppLocalizations.of(context)!.whatsappContactMsg} *${provider.serviceDetailsModel.serviceDetails?.title.toString()}*.");
                     },
                     child: Container(
                       alignment: Alignment.center,

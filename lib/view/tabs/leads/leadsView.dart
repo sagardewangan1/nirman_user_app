@@ -211,10 +211,8 @@ class _LeadsViewState extends State<LeadsView> {
                                   ContactFeatures().launchWhatsapp(
                                       context,
                                       lead.buyer?.phone.toString() ?? '',
-                                      "Hello! 👋\n\n"
-                                      "Thank you for your interest in our services. "
-                                      "How can I assist you today? If you have any questions or need further information, feel free to ask!\n\n"
-                                      "Looking forward to hearing from you soon!");
+                                      AppLocalizations.of(context)!
+                                          .whatsappWelcomeMsg);
                                   leadController.updateLeadStatus(
                                       leadId: lead.id.toString());
                                 },

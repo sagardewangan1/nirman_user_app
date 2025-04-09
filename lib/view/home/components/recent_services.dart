@@ -186,7 +186,7 @@ class RecentServices extends StatelessWidget {
                                             context,
                                             provider.recentServiceMap[i]
                                                 ['callNumber'],
-                                            "Hello, I am interested in your service *${provider.recentServiceMap[i]['title']}*.");
+                                            "${AppLocalizations.of(context)!.whatsappContactMsg} *${provider.recentServiceMap[i]['title']}*.");
                                         print(
                                             "on Tap Whatsapp ====> ${provider.recentServiceMap[i]['callNumber']}");
                                       },

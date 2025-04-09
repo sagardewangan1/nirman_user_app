@@ -2,11 +2,13 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:qixer/helper/SharedPreferencesHelper.dart';
 import 'package:qixer/model/profile_model.dart';
 import 'package:qixer/service/common_service.dart';
 import 'package:qixer/view/selectionRole/selectionRoleView.dart';
 import 'package:qixer/view/utils/others_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ProfileService with ChangeNotifier {
   bool _isloading = false;
@@ -74,6 +76,7 @@ class ProfileService with ChangeNotifier {
     //internet connection is on
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var token = prefs.getString('shashaktnirmantoken');
+    bool isLoggedIn = prefs.getBool('shashaktnirman_is_logged_in') ?? false;
     var header = {
       //if header type is application/json then the data should be in jsonEncode method
       "Accept": "application/json",
@@ -114,11 +117,17 @@ class ProfileService with ChangeNotifier {
       debugPrint(response.body.toString());
       debugPrint("message :==== ${decodedBody['message']}");
       if (decodedBody['message'] == "Unauthenticated.") {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => SelectionRoleView(hasBackButton: false),
-            ));
+        if (isLoggedIn) {
+          SharedPreferencesHelper.clearData();
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => SelectionRoleView(hasBackButton: false),
+              ));
+        } else {
+          OthersHelper()
+              .showToast(AppLocalizations.of(context)!.skipModeMsg, Colors.red);
+        }
       }
       profileDetails == 'error';
       // OthersHelper().showToast('Something went wrong', Colors.black);

@@ -590,7 +590,7 @@ class _AllServicePageState extends State<AllServicePage> {
                                             ContactFeatures().launchWhatsapp(
                                                 context,
                                                 service['callNumber'],
-                                                "Hello, I am interested in your service *${service['title']}*.");
+                                                "${AppLocalizations.of(context)!.whatsappContactMsg} *${service['title']}*.");
                                             print(
                                                 "on Tap Whatsapp ====> ${service['callNumber']}");
                                           },

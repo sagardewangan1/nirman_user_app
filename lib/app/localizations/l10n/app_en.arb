@@ -1210,7 +1210,11 @@
   "contactViaWhatsApp": "Contact Via WhatsApp",
   "contactViaCall": "Contact Via Call",
   "contactViaMail": "Contact Via Mail",
+  "whatsappContactMsg": "Hello, I am interested in your service",
   "tapToChangeImage" : "Tap here to change the image",
   "shareText": "🚀 *SASHAKT NIRMAAN – Your One-Stop Construction Partner!* 🏗️\n\nIntroducing *SASHAKT NIRMAAN*, a **Comprehensive Platform** designed to connect *contractors, material suppliers, and machinery rental services* with vendors and customers effortlessly. Whether you're looking for a *trusted contractor, quality construction materials, or heavy machinery on rent*, our platform makes it easy to **search, compare, and appoint** the best service providers in just a few clicks.\n\n🔍 *Key Features:*\n✅ Search & connect with *verified contractors*\n✅ Find *trusted material suppliers* for every project need\n✅ Rent *construction machinery* hassle-free\n✅ Seamless booking & direct communication\n\nWith *SASHAKT NIRMAAN*, construction solutions are now **smarter, faster, and more efficient!** Download now and **build with confidence!** 🚧📲\n\nAvailable on Google Play Store\nhttps://play.google.com/store/apps/details?id=com.shashaktnirmanuserapp\n\nContact Us\nsashaktnirmaan@gmail.com\nwww.sashaktnirmaan.com",
-  "noServiceProviderInYourArea" : "No Service Provider Aavailable In Your Area"
+  "noServiceProviderInYourArea" : "No Service Provider Aavailable In Your Area",
+  "whatsappWelcomeMsg" : "Hello! \uD83D\uDC4B\\n\\nThank you for your interest in our services. How can I assist you today? If you have any questions or need further information, feel free to ask!\\n\\nLooking forward to hearing from you soon!",
+  "skipModeMsg" : "You are in skip mode"
+
 }

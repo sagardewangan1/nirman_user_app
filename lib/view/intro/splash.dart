@@ -1,3 +1,4 @@
+import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qixer/helper/extension/context_extension.dart';
@@ -19,9 +20,14 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  final appLinks = AppLinks(); // AppLinks is singleton
+
   @override
   void initState() {
     super.initState();
+    appLinks.uriLinkStream.listen((uri) {
+      debugPrint("url=====> $uri");
+    });
     Future.delayed(Duration.zero, () {
       screenSizeAndPlatform(context);
     });

@@ -7,7 +7,7 @@ import 'package:qixer/view/services/service_details_page.dart';
 import 'package:qixer/view/utils/common_helper.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:qixer/view/utils/others_helper.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../helper/contactFeatures.dart';
 import '../../service/common_service.dart';
 import '../../service/service_details_service.dart';
@@ -148,7 +148,7 @@ class _ServiceByLocationState extends State<ServiceByLocation> {
                                         context,
                                         fsProvider.serviceMap[index]
                                             ['callNumber'],
-                                        "Hello, I am interested in your service *${fsProvider.serviceMap[index]['title']}*.");
+                                        "${AppLocalizations.of(context)!.whatsappContactMsg} *${fsProvider.serviceMap[index]['title']}*.");
                                     print(
                                         "on Tap Whatsapp ====> ${fsProvider.serviceMap[index]['callNumber']}");
                                   },
