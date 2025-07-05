@@ -7,7 +7,7 @@ import 'package:qixer/service/common_service.dart';
 import 'package:qixer/service/my_orders_service.dart';
 import 'package:qixer/service/order_details_service.dart';
 import 'package:qixer/service/profile_service.dart';
-import 'package:qixer/service/push_notification_service.dart';
+
 import 'package:qixer/view/utils/others_helper.dart';
 import 'package:qixer/view/utils/responsive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -65,11 +65,6 @@ class OrdersService with ChangeNotifier {
               .userDetails
               .name ??
           '';
-      PushNotificationService().sendNotificationToSeller(context,
-          sellerId: sellerId,
-          title: "$username " +
-              lnProvider.getString("accepted your order completion request"),
-          body: 'Order id: $orderId');
 
       //
     } else {
@@ -138,10 +133,6 @@ class OrdersService with ChangeNotifier {
               .userDetails
               .name ??
           '';
-      PushNotificationService().sendNotificationToSeller(context,
-          sellerId: sellerId,
-          title: "$username rejected your order completion request",
-          body: 'Order id: $orderId');
     } else {
       setMarkLoadingStatus(false);
 

@@ -35,6 +35,8 @@ class HomeAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(
+        "totalUnreadLeads===>   $totalUnreadLeads and runtype==> ${totalUnreadLeads.runtimeType}");
     return Consumer<ProfileService>(
       builder: (context, profileProvider, child) {
         return isLoggedIn
@@ -112,13 +114,16 @@ class HomeAppBar extends StatelessWidget {
                               radius: 21,
                               backgroundColor: cc.black8,
                               child: Badge(
-                                label: totalUnreadLeads != '0' ||
-                                        totalUnreadLeads != 'null'
+                                label: (totalUnreadLeads != null &&
+                                        totalUnreadLeads != '0' &&
+                                        totalUnreadLeads?.toLowerCase() !=
+                                            'null')
                                     ? Text(
-                                        totalUnreadLeads ?? '',
+                                        totalUnreadLeads!,
                                         style: TextStyle(
-                                            fontWeight: FontWeight.w400,
-                                            fontSize: 8),
+                                          fontWeight: FontWeight.w400,
+                                          fontSize: 8,
+                                        ),
                                       )
                                     : null,
                                 child: Icon(

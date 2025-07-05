@@ -5,14 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-import 'package:pusher_beams/pusher_beams.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../view/home/landing_page.dart';
 import '../../view/utils/others_helper.dart';
 import '../common_service.dart';
 import '../profile_service.dart';
-import '../push_notification_service.dart';
 
 class GoogleSignInService with ChangeNotifier {
   bool isloading = false;
@@ -96,15 +95,7 @@ class GoogleSignInService with ChangeNotifier {
             email, username, token, userId, isGoogleLogin);
         await Provider.of<ProfileService>(context, listen: false)
             .getProfileDetails(context: context);
-        await Provider.of<PushNotificationService>(context, listen: false)
-            .fetchPusherCredential(context: context);
-        var pusherInstance =
-            Provider.of<PushNotificationService>(context, listen: false)
-                .pusherInstance;
 
-        if (pusherInstance != null) {
-          await PusherBeams.instance.start(pusherInstance);
-        }
         Navigator.pushReplacement<void, void>(
           context,
           MaterialPageRoute<void>(

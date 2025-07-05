@@ -458,10 +458,10 @@ class AllServicesService with ChangeNotifier {
       {bool isRefresh = false}) async {
     try {
       if (isRefresh) {
-        serviceMap = [];
+        serviceMap = []; // Clear the existing service map
         notifyListeners(); // 🔹 Ensure UI updates
-        setLoadingTrue();
-        setCurrentPage(1);
+        setLoadingTrue(); // Set loading state to true
+        setCurrentPage(1); // Reset current page to 1
       }
 
       var connection = await checkConnection();
@@ -473,7 +473,7 @@ class AllServicesService with ChangeNotifier {
       }
 
       String url =
-          "$baseApi/service-list/category-subcategory-rating-sort-by-search?searchText=${searchText ?? ''}";
+          "$baseApi/service-list/category-subcategory-rating-sort-by-search?page=$currentPage&searchText=${searchText ?? ''}";
 
       print("🌍 Fetching from URL: $url\n");
 
@@ -511,14 +511,17 @@ class AllServicesService with ChangeNotifier {
         setServiceList(
             serviceByFilterModel, averageRateList, imageList, !isRefresh);
 
-        currentPage++;
-        setCurrentPage(currentPage);
-        setLoadingFalse();
+        // Increment currentPage only if not refreshing
+        if (!isRefresh) {
+          currentPage++;
+          setCurrentPage(currentPage);
+        }
 
+        setLoadingFalse();
         notifyListeners(); // 🔹 Ensure UI updates after fetching data
         return true;
       } else {
-        serviceMap.clear();
+        // serviceMap.clear();
         print("❌ API Error: ${response.statusCode} - ${response.body}");
         setLoadingFalse();
         notifyListeners(); // 🔹 Ensure UI updates on error

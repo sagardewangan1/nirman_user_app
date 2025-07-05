@@ -1,25 +1,21 @@
 import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:pusher_beams/pusher_beams.dart';
 import 'package:qixer/model/navigationModel.dart';
 import 'package:qixer/service/filter_services_service.dart';
 import 'package:qixer/service/home_services/landingPageService.dart';
-import 'package:qixer/service/push_notification_service.dart';
 import 'package:qixer/view/home/home.dart';
-import 'package:qixer/view/notification/push_notification_helper.dart';
 import 'package:qixer/view/search/service_filter_model.dart';
 import 'package:qixer/view/tabs/leads/leadsView.dart';
 import 'package:qixer/view/tabs/saved_item_page.dart';
 import 'package:qixer/view/tabs/search/search_tab.dart';
 import 'package:qixer/view/tabs/settings/menu_page.dart';
-import 'package:qixer/view/utils/responsive.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:upgrader/upgrader.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LandingPage extends StatefulWidget {
   const LandingPage({super.key});
@@ -172,27 +168,27 @@ class BottomNav extends StatelessWidget {
     List<BottomNavigationBarItem> navItems = [
       BottomNavigationBarItem(
         icon: _navIcon('assets/svg/home-icon.svg', currentIndex == 0, cc),
-        label: "Home",
+        label: AppLocalizations.of(context)!.home,
       ),
       if (userType == "0")
         BottomNavigationBarItem(
           icon: _navIcon('assets/svg/growth.svg', currentIndex == 1, cc),
-          label: "My Leads",
+          label: AppLocalizations.of(context)!.myLeads,
         ),
       BottomNavigationBarItem(
         icon: _navIcon('assets/svg/saved-icon.svg',
             currentIndex == (userType == "0" ? 2 : 1), cc),
-        label: "Saved",
+        label: AppLocalizations.of(context)!.saved,
       ),
       BottomNavigationBarItem(
         icon: _navIcon('assets/svg/search-icon.svg',
             currentIndex == (userType == "0" ? 3 : 2), cc),
-        label: "Search",
+        label: AppLocalizations.of(context)!.search,
       ),
       BottomNavigationBarItem(
         icon: _navIcon('assets/svg/settings-icon.svg',
             currentIndex == (userType == "0" ? 4 : 3), cc),
-        label: "Menu",
+        label: AppLocalizations.of(context)!.menuText,
       ),
     ];
 

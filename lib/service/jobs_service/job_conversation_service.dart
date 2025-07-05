@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:qixer/model/jobs/job_conversation_model.dart';
 import 'package:qixer/service/common_service.dart';
 import 'package:qixer/service/profile_service.dart';
-import 'package:qixer/service/push_notification_service.dart';
+
 import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:qixer/view/utils/others_helper.dart';
 import 'package:qixer/view/utils/responsive.dart';
@@ -190,9 +190,5 @@ class JobConversationService with ChangeNotifier {
             .userDetails
             .name ??
         '';
-    PushNotificationService().sendNotificationToSeller(context,
-        sellerId: sellerId,
-        title: lnProvider.getString("New job chat message") + ": $username",
-        body: '$msg');
   }
 }

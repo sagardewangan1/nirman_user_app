@@ -93,7 +93,7 @@ class SearchBar extends StatelessWidget {
                         },
                         icon: "category"),
                     FilterIconButton(
-                        subtitle: "Location",
+                        subtitle: AppLocalizations.of(context)!.location,
                         icon: "location",
                         onPressed: () {
                           // sfm.setLFilters(context);

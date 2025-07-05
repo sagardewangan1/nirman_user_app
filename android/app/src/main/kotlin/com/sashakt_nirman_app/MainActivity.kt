@@ -1,4 +1,4 @@
-package com.shashaktnirmanuserapp
+package com.sashakt_nirman_app
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 

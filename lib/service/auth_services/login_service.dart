@@ -7,7 +7,6 @@ import 'package:qixer/helper/extension/string_extension.dart';
 import 'package:qixer/model/OTPResponseModel.dart';
 import 'package:qixer/service/common_service.dart';
 import 'package:qixer/service/profile_service.dart';
-import 'package:qixer/service/push_notification_service.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:qixer/view/utils/others_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -109,8 +108,6 @@ class LoginService with ChangeNotifier {
 
         //start pusher
         //============>
-        await Provider.of<PushNotificationService>(context, listen: false)
-            .fetchPusherCredential(context: context);
 
         await Provider.of<ProfileService>(context, listen: false)
             .fetchData(context);
@@ -251,8 +248,6 @@ class LoginService with ChangeNotifier {
           setshashaktnirman_is_logged_inFalseSaveToken(token);
         }
         setLoading2();
-        await Provider.of<PushNotificationService>(context, listen: false)
-            .fetchPusherCredential(context: context);
 
         return _otpResponseModel;
       }

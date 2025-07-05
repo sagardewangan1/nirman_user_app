@@ -6,7 +6,6 @@ import 'package:qixer/view/utils/responsive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../service/common_service.dart';
-import '../live_chat/chat_message_page.dart';
 import '../services/service_helper.dart';
 import '../utils/common_helper.dart';
 import '../utils/others_helper.dart';
@@ -193,18 +192,6 @@ class SellerInfo extends StatelessWidget {
               CommonHelper().buttonOrange("Chat", () async {
                 SharedPreferences prefs = await SharedPreferences.getInstance();
                 var currentUserId = prefs.getInt('userId')!;
-
-                //======>
-                Navigator.push(
-                  context,
-                  MaterialPageRoute<void>(
-                    builder: (BuildContext context) => ChatMessagePage(
-                      receiverId: sellerId,
-                      currentUserId: currentUserId,
-                      userName: sellerName,
-                    ),
-                  ),
-                );
               })
             ]));
   }

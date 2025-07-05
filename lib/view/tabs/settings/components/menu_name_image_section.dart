@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:qixer/helper/extension/context_extension.dart';
 import 'package:qixer/helper/extension/string_extension.dart';
 import 'package:qixer/service/auth_services/change_pass_service.dart';
+import 'package:qixer/service/languageController/languageController.dart';
 import 'package:qixer/service/profile_service.dart';
 import 'package:qixer/view/VenderDashBoard/VenderDashBoardView.dart';
 import 'package:qixer/view/tabs/settings/components/settings_page_grid.dart';
@@ -173,11 +174,76 @@ class MenuNameImageSection extends StatelessWidget {
                           ],
                         )
                       : Offstage(),
-                  // SizedBox(
-                  //   height: 10,
-                  // ),
-                  // //Grid cards
-                  // const SettingsPageGrid(),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Consumer<LanguageController>(
+                    builder: (context, langController, child) {
+                      return Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Expanded(
+                            child: InkWell(
+                              onTap: () async => await langController
+                                  .changeLanguage(Locale("en")),
+                              child: Container(
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  border: Border.all(
+                                      color: langController.languageTitle ==
+                                              "English"
+                                          ? cc.primaryColor
+                                          : cc.black5),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    textAlign: TextAlign.center,
+                                    "English",
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: InkWell(
+                              onTap: () async => await langController
+                                  .changeLanguage(Locale("hi")),
+                              child: Container(
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  border: Border.all(
+                                      color: langController.languageTitle ==
+                                              "हिंदी"
+                                          ? cc.primaryColor
+                                          : cc.black5),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    textAlign: TextAlign.center,
+                                    "हिंदी",
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  )
                 ],
               ),
 

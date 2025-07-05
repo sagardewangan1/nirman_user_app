@@ -14,9 +14,9 @@ String siteLink = "https://sashaktnirmaan.com"; // Production
 String get baseApi => '$siteLink/api/v1';
 String rupeeSymbol = '\u20B9';
 
-// String placeHolderUrl = 'https://i.postimg.cc/rpsKNndW/New-Project.png';
-String placeHolderUrl =
-    'https://img.freepik.com/premium-vector/default-image-icon-vector-missing-picture-page-website-design-mobile-app-no-photo-available_87543-11093.jpg';
+String placeHolderUrl = 'https://i.postimg.cc/mZNNdXd2/icon.png';
+// String placeHolderUrl =
+//     'https://img.freepik.com/premium-vector/default-image-icon-vector-missing-picture-page-website-design-mobile-app-no-photo-available_87543-11093.jpg';
 String appLogoIcon = 'https://i.postimg.cc/mZNNdXd2/icon.png';
 String appIconUrl = 'https://i.postimg.cc/mZNNdXd2/icon.png';
 String placeHolderUrl2 =

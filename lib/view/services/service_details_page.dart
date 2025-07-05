@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qixer/service/all_services_service.dart';
 import 'package:qixer/service/app_string_service.dart';
-import 'package:qixer/service/push_notification_service.dart';
 import 'package:qixer/service/service_details_service.dart';
-import 'package:qixer/view/auth/login/login.dart';
-import 'package:qixer/view/live_chat/chat_message_page.dart';
 import 'package:qixer/view/services/components/about_seller_tab.dart';
 import 'package:qixer/view/services/components/image_big.dart';
 import 'package:qixer/view/services/components/overview_tab.dart';
@@ -157,7 +154,7 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage>
                                           Tab(
                                               text:
                                                   AppLocalizations.of(context)!
-                                                      .aboutSeller),
+                                                      .aboutContractor),
                                           // Tab(
                                           //     text: asProvider
                                           //         .getString('Review')),
@@ -409,38 +406,22 @@ class ServiceDetailsChatIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cc = ConstantColors();
-    final pusherInstance =
-        Provider.of<PushNotificationService>(context, listen: false)
-            .pusherInstance;
-    return pusherInstance == null
-        ? const SizedBox()
-        : Consumer<ServiceDetailsService>(
-            builder: (context, provider, child) => InkWell(
-              onTap: () async {
-                SharedPreferences prefs = await SharedPreferences.getInstance();
-                var currentUserId = prefs.getInt('userId')!;
 
-                //======>
-                Navigator.push(
-                  context,
-                  MaterialPageRoute<void>(
-                    builder: (BuildContext context) => ChatMessagePage(
-                      receiverId: provider.sellerId,
-                      currentUserId: currentUserId,
-                      userName: provider.serviceDetailsModel.serviceSellerName,
-                    ),
-                  ),
-                );
-              },
-              child: Container(
-                padding: const EdgeInsets.only(left: 13, bottom: 6, top: 6),
-                child: Icon(
-                  Icons.message_outlined,
-                  size: 40,
-                  color: cc.greyFour,
-                ),
-              ),
-            ),
-          );
+    return Consumer<ServiceDetailsService>(
+      builder: (context, provider, child) => InkWell(
+        onTap: () async {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          var currentUserId = prefs.getInt('userId')!;
+        },
+        child: Container(
+          padding: const EdgeInsets.only(left: 13, bottom: 6, top: 6),
+          child: Icon(
+            Icons.message_outlined,
+            size: 40,
+            color: cc.greyFour,
+          ),
+        ),
+      ),
+    );
   }
 }

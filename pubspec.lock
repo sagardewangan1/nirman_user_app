@@ -277,10 +277,10 @@ packages:
     dependency: transitive
     description:
       name: device_info_plus
-      sha256: "72d146c6d7098689ff5c5f66bcf593ac11efc530095385356e131070333e64da"
+      sha256: a7fd703482b391a87d60b6061d04dfdeab07826b96f9abd8f5ed98068acc0074
       url: "https://pub.dev"
     source: hosted
-    version: "11.3.0"
+    version: "10.1.2"
   device_info_plus_platform_interface:
     dependency: transitive
     description:
@@ -590,6 +590,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.0"
+  flutter_keyboard_visibility:
+    dependency: transitive
+    description:
+      name: flutter_keyboard_visibility
+      sha256: "98664be7be0e3ffca00de50f7f6a287ab62c763fc8c762e0a21584584a3ff4f8"
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.0.0"
   flutter_keyboard_visibility_linux:
     dependency: transitive
     description:
@@ -614,14 +622,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.0"
-  flutter_keyboard_visibility_temp_fork:
+  flutter_keyboard_visibility_web:
     dependency: transitive
     description:
-      name: flutter_keyboard_visibility_temp_fork
-      sha256: cecc44a350a8a369efbc960bb2126386af53cb0597ca6789607cbfb88081b9f4
+      name: flutter_keyboard_visibility_web
+      sha256: d3771a2e752880c79203f8d80658401d0c998e4183edca05a149f5098ce6e3d1
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.4"
+    version: "2.0.0"
   flutter_keyboard_visibility_windows:
     dependency: transitive
     description:
@@ -687,10 +695,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_quill
-      sha256: "6274834823e61291c0cedee9dd7f73fc7836ea07a12596de8f5fa08598b5eb74"
+      sha256: c9267e38777f355a3b41dd28fdfa403ed39734205807cb22953e4504a4223aa4
       url: "https://pub.dev"
     source: hosted
-    version: "10.8.5"
+    version: "10.0.8"
   flutter_quill_delta_from_html:
     dependency: transitive
     description:
@@ -1493,121 +1501,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.0"
-  pusher_beams:
-    dependency: "direct main"
-    description:
-      path: "packages/pusher_beams"
-      ref: master
-      resolved-ref: cf63e290533a0dff296fcf8641403917380e74bb
-      url: "https://github.com/KamrulIbnZaman/pusher-beams-notifications-flutter"
-    source: git
-    version: "1.1.1"
-  pusher_beams_android:
-    dependency: transitive
-    description:
-      path: "packages/pusher_beams_android"
-      ref: master
-      resolved-ref: cf63e290533a0dff296fcf8641403917380e74bb
-      url: "https://github.com/KamrulIbnZaman/pusher-beams-notifications-flutter"
-    source: git
-    version: "1.1.1"
-  pusher_beams_ios:
-    dependency: transitive
-    description:
-      name: pusher_beams_ios
-      sha256: "09871ce8ce5a64d43ed5bed3b3816a9dfa507e492bfe4bd0d3168a094c7d500c"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.1"
-  pusher_beams_platform_interface:
-    dependency: transitive
-    description:
-      name: pusher_beams_platform_interface
-      sha256: "90645da247512f080a29d95b23a46998d2f81c37c849376288debf9625457731"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.1"
-  pusher_beams_web:
-    dependency: transitive
-    description:
-      name: pusher_beams_web
-      sha256: f95a14e497263a75f7025fc3c5471fe315f36fb85b113022ca1ac579e10bbe38
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.1"
-  pusher_channels_flutter:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: master
-      resolved-ref: de21d175c265a8b75ffe8df91783a141548dbb77
-      url: "https://github.com/KamrulIbnZaman/pusher-channels-flutter"
-    source: git
-    version: "2.2.1"
-  quill_native_bridge:
-    dependency: transitive
-    description:
-      name: quill_native_bridge
-      sha256: "0b3200c57bb4f1f12d6c764648d42482891f20f12024c75fe3479cafc1e132c9"
-      url: "https://pub.dev"
-    source: hosted
-    version: "10.7.11"
-  quill_native_bridge_android:
-    dependency: transitive
-    description:
-      name: quill_native_bridge_android
-      sha256: b75c7e6ede362a7007f545118e756b1f19053994144ec9eda932ce5e54a57569
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.1+2"
-  quill_native_bridge_ios:
-    dependency: transitive
-    description:
-      name: quill_native_bridge_ios
-      sha256: d23de3cd7724d482fe2b514617f8eedc8f296e120fb297368917ac3b59d8099f
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.1"
-  quill_native_bridge_linux:
-    dependency: transitive
-    description:
-      name: quill_native_bridge_linux
-      sha256: "5fcc60cab2ab9079e0746941f05c5ca5fec85cc050b738c8c8b9da7c09da17eb"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.1"
-  quill_native_bridge_macos:
-    dependency: transitive
-    description:
-      name: quill_native_bridge_macos
-      sha256: "1c0631bd1e2eee765a8b06017c5286a4e829778f4585736e048eb67c97af8a77"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.1"
-  quill_native_bridge_platform_interface:
-    dependency: transitive
-    description:
-      name: quill_native_bridge_platform_interface
-      sha256: ea48bd12bf426741747ec8a575b122350971f338a75049099b349c63447582a2
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.1+1"
-  quill_native_bridge_web:
-    dependency: transitive
-    description:
-      name: quill_native_bridge_web
-      sha256: e7e55047d68f1a88574c26dbe3f12988f49d07740590d8fc6280028bbde5b908
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.1"
-  quill_native_bridge_windows:
-    dependency: transitive
-    description:
-      name: quill_native_bridge_windows
-      sha256: "60e50d74238f22ceb43113d9a42b6627451dab9fc27f527b979a32051cf1da45"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.1"
   quiver:
     dependency: transitive
     description:
@@ -2065,10 +1958,10 @@ packages:
     dependency: transitive
     description:
       name: vm_service
-      sha256: "5c5f338a667b4c644744b661f309fb8080bb94b18a7e91ef1dbd343bed00ed6d"
+      sha256: f652077d0bdf60abe4c1f6377448e8655008eef28f128bc023f7b5e8dfeb48fc
       url: "https://pub.dev"
     source: hosted
-    version: "14.2.5"
+    version: "14.2.4"
   wakelock_plus:
     dependency: transitive
     description:
@@ -2174,5 +2067,5 @@ packages:
     source: hosted
     version: "9.1.1"
 sdks:
-  dart: ">=3.5.3 <4.0.0"
+  dart: ">=3.5.0 <4.0.0"
   flutter: ">=3.24.0"

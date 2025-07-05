@@ -10,7 +10,7 @@ import 'package:qixer/model/MyServiceListDataModel.dart';
 import 'package:qixer/service/common_service.dart';
 import 'package:qixer/service/getImageController.dart';
 import 'package:qixer/service/profile_service.dart';
-import 'package:qixer/service/push_notification_service.dart';
+
 import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:qixer/view/utils/others_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -388,7 +388,5 @@ class VendorDashboardService extends ChangeNotifier {
             .userDetails
             .name ??
         '';
-    PushNotificationService().sendNotificationToSeller(context,
-        sellerId: sellerId, title: "$username : Is Looking For", body: '$msg');
   }
 }

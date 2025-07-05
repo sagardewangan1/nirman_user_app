@@ -13,7 +13,6 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import '../../view/utils/others_helper.dart';
 import '../common_service.dart';
 import '../profile_service.dart';
-import '../push_notification_service.dart';
 
 class AppleSignInService with ChangeNotifier {
   bool isloading = false;
@@ -96,8 +95,7 @@ class AppleSignInService with ChangeNotifier {
             email, username, token, userId, userToken, isAppleLogin, appleId);
         await Provider.of<ProfileService>(context, listen: false)
             .getProfileDetails(context: context);
-        await Provider.of<PushNotificationService>(context, listen: false)
-            .fetchPusherCredential(context: context);
+
         setLoadingFalse();
 
         debugPrint(response.body.toString());

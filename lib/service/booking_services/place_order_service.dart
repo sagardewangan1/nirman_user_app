@@ -16,7 +16,7 @@ import 'package:qixer/service/dropdowns_services/area_dropdown_service.dart';
 import 'package:qixer/service/dropdowns_services/country_dropdown_service.dart';
 import 'package:qixer/service/dropdowns_services/state_dropdown_services.dart';
 import 'package:qixer/service/profile_service.dart';
-import 'package:qixer/service/push_notification_service.dart';
+
 import 'package:qixer/view/booking/payment_success_page.dart';
 import 'package:qixer/view/home/landing_page.dart';
 import 'package:qixer/view/utils/others_helper.dart';
@@ -396,10 +396,5 @@ class PlaceOrderService with ChangeNotifier {
             .userDetails
             ?.name ??
         '';
-    PushNotificationService().sendNotificationToSeller(context,
-        sellerId: sellerId,
-        title: lnProvider.getString("You have received an order from") +
-            " $username",
-        body: lnProvider.getString('Order id') + ': $orderId');
   }
 }

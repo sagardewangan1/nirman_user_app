@@ -11,8 +11,6 @@ import 'package:qixer/service/auth_services/reset_password_service.dart';
 import 'package:qixer/service/profile_service.dart';
 import 'package:qixer/view/utils/others_helper.dart';
 
-import '../push_notification_service.dart';
-
 class EmailVerifyService with ChangeNotifier {
   bool isloading = false;
 
@@ -103,8 +101,6 @@ class EmailVerifyService with ChangeNotifier {
           // );
           await Provider.of<ProfileService>(context, listen: false)
               .fetchData(context);
-          await Provider.of<PushNotificationService>(context, listen: false)
-              .fetchPusherCredential(context: context);
 
           context.popTrue;
           context.popTrue;

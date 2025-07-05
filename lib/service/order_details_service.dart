@@ -12,7 +12,7 @@ import 'package:qixer/service/booking_services/place_order_service.dart';
 import 'package:qixer/service/orders_service.dart';
 import 'package:qixer/service/payment_gateway_list_service.dart';
 import 'package:qixer/service/profile_service.dart';
-import 'package:qixer/service/push_notification_service.dart';
+
 import 'package:qixer/view/booking/components/order_extra_accept_success_page.dart';
 import 'package:qixer/view/utils/others_helper.dart';
 import 'package:qixer/view/utils/responsive.dart';
@@ -216,11 +216,6 @@ class OrderDetailsService with ChangeNotifier {
       var orderId = Provider.of<OrderDetailsService>(context, listen: false)
           .orderDetails
           .id;
-      PushNotificationService().sendNotificationToSeller(context,
-          sellerId: sellerId,
-          title: "$username " +
-              lnProvider.getString("accepted your order extra request"),
-          body: lnProvider.getString("Order Id") + ': $orderId');
 
       return true;
     } else {
@@ -272,11 +267,7 @@ class OrderDetailsService with ChangeNotifier {
                 .userDetails
                 .name ??
             '';
-        PushNotificationService().sendNotificationToSeller(context,
-            sellerId: sellerId,
-            title: "$username " +
-                lnProvider.getString("declined your order extra request"),
-            body: lnProvider.getString("Order Id") + ': $orderId');
+
         Navigator.pop(context);
 
         notifyListeners();

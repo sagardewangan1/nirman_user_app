@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:qixer/model/chat_messages_model.dart';
 import 'package:qixer/service/common_service.dart';
 import 'package:qixer/service/profile_service.dart';
-import 'package:qixer/service/push_notification_service.dart';
+
 import 'package:qixer/view/utils/others_helper.dart';
 import 'package:qixer/view/utils/responsive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -237,10 +237,5 @@ class ChatMessagesService with ChangeNotifier {
             .userDetails
             .name ??
         '';
-    PushNotificationService().sendNotificationToSeller(context,
-        sellerId: sellerId,
-        title: lnProvider.getString("New chat message") + ": $username",
-        body: '$msg',
-        type: "message");
   }
 }

@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:qixer/helper/extension/context_extension.dart';
 import 'package:qixer/service/common_service.dart';
 import 'package:qixer/service/profile_service.dart';
-import 'package:qixer/service/push_notification_service.dart';
+
 import 'package:qixer/view/home/landing_page.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:qixer/view/utils/others_helper.dart';
@@ -57,13 +57,7 @@ class _SplashScreenState extends State<SplashScreen> {
         return;
       } else {
         var senderId = prefs.getString('shashaktnirmanUserId');
-        await Provider.of<PushNotificationService>(contextBuild, listen: false)
-            .fetchPusherCredential(context: contextBuild);
-        Provider.of<PushNotificationService>(context, listen: false)
-            .sendNotificationToSeller(context,
-                sellerId: senderId,
-                title: 'New Lead',
-                body: 'You have a new lead request.');
+
         Navigator.pushAndRemoveUntil(
           contextBuild,
           MaterialPageRoute<void>(

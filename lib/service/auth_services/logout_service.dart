@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-import 'package:pusher_beams/pusher_beams.dart';
 import 'package:qixer/helper/SharedPreferencesHelper.dart';
 import 'package:qixer/helper/extension/context_extension.dart';
 import 'package:qixer/service/common_service.dart';
@@ -10,7 +9,6 @@ import 'package:qixer/view/selectionRole/selectionRoleView.dart';
 import 'package:qixer/view/utils/others_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../push_notification_service.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LogoutService with ChangeNotifier {
@@ -48,15 +46,7 @@ class LogoutService with ChangeNotifier {
         notifyListeners();
         SharedPreferencesHelper.clearData();
 
-        try {
-          var pusherInstance =
-              Provider.of<PushNotificationService>(context, listen: false)
-                  .pusherInstance;
-
-          if (pusherInstance != null) {
-            await PusherBeams.instance.clearAllState();
-          }
-        } catch (e) {}
+        try {} catch (e) {}
 
         // clear profile data =====>
         Provider.of<ProfileService>(context, listen: false)

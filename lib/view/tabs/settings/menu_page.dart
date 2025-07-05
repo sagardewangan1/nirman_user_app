@@ -245,24 +245,24 @@ class _MenuPageState extends State<MenuPage> {
                                                       CommonHelper()
                                                           .dividerCommon(),
                                                       // Setting App
-                                                      SettingsHelper().settingOption(
-                                                          'assets/svg/setting_icon.svg',
-                                                          AppLocalizations.of(
-                                                                  context)!
-                                                              .appSetting, () {
-                                                        Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute<
-                                                              void>(
-                                                            builder: (BuildContext
-                                                                    context) =>
-                                                                const AppSettings(),
-                                                          ),
-                                                        );
-                                                      }, context),
-
-                                                      CommonHelper()
-                                                          .dividerCommon(),
+                                                      // SettingsHelper().settingOption(
+                                                      //     'assets/svg/setting_icon.svg',
+                                                      //     AppLocalizations.of(
+                                                      //             context)!
+                                                      //         .appSetting, () {
+                                                      //   Navigator.push(
+                                                      //     context,
+                                                      //     MaterialPageRoute<
+                                                      //         void>(
+                                                      //       builder: (BuildContext
+                                                      //               context) =>
+                                                      //           const AppSettings(),
+                                                      //     ),
+                                                      //   );
+                                                      // }, context),
+                                                      //
+                                                      // CommonHelper()
+                                                      //     .dividerCommon(),
                                                       SettingsHelper().settingOption(
                                                           'assets/icons/phone.png',
                                                           AppLocalizations.of(
@@ -313,11 +313,10 @@ class _MenuPageState extends State<MenuPage> {
                                                       CommonHelper()
                                                           .dividerCommon(),
                                                       SettingsHelper().settingOption(
-                                                          'assets/svg/tasks.svg',
+                                                          'assets/svg/share_icon.svg',
                                                           AppLocalizations.of(
                                                                   context)!
-                                                              .termsAndCondition,
-                                                          () {
+                                                              .shareNow, () {
                                                         Share.share(
                                                             AppLocalizations.of(
                                                                     context)!

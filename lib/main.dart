@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:app_links/app_links.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -9,13 +8,10 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_maps_flutter_android/google_maps_flutter_android.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
-import 'package:path/path.dart';
 import 'package:provider/provider.dart';
-import 'package:pusher_beams/pusher_beams.dart';
 import 'package:qixer/app/constant/appLanguages.dart';
 import 'package:qixer/firebase_options.dart';
 import 'package:qixer/service/pushNotificationFirebase.dart';
-import 'package:qixer/service/push_notification_service.dart';
 import 'package:qixer/service/rtl_service.dart';
 import 'package:qixer/themes/default_themes.dart';
 import 'package:qixer/view/home/homepage_helper.dart';
@@ -25,7 +21,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:upgrader/upgrader.dart';
 
 import 'app/providers/AppInitializer.dart';
-import 'helper/pusher_helper.dart';
 import 'service/languageController/languageController.dart';
 
 @pragma('vm:entry-point')

@@ -1,6 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:qixer/model/PaymentModal.dart';
 import 'package:qixer/service/payementService/PhonePeService.dart';
@@ -14,6 +16,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../service/addServiceProvider/addServicerProvider.dart';
 import '../../service/home_services/category_service.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SubscriptionModule extends StatefulWidget {
   final List<Map<String, dynamic>>? catIds;
@@ -30,6 +33,8 @@ class _SubscriptionModuleState extends State<SubscriptionModule> {
   final PhonePeService phonePeService = PhonePeService();
 
   String userId = '';
+  String? userType;
+  bool _isSubscribed = false;
   firstLoad() async {
     if (mounted) {
       final vendorController =
@@ -38,6 +43,14 @@ class _SubscriptionModuleState extends State<SubscriptionModule> {
       final pref = await SharedPreferences.getInstance();
       userId = pref.getString("shashaktnirmanUserId") ?? '';
       print("catlist======>${widget.catIds}");
+      final vendorDashboardController =
+          Provider.of<VendorDashboardService>(context, listen: false);
+      await vendorDashboardController.getSubscriptions();
+      bool result = await vendorDashboardController.checkSubscribe(index: 0);
+      setState(() {
+        userType = pref.getString("shashaktnirmanusertype");
+        _isSubscribed = result;
+      });
     }
   }
 
@@ -162,61 +175,88 @@ class _SubscriptionModuleState extends State<SubscriptionModule> {
               ),
               body: vendorProvider.isLoading
                   ? Center(child: OthersHelper().showLoading(cc.primaryColor))
-                  : vendorProvider.subscriptionList.isNotEmpty
-                      ? vendorProvider.subscriptionList[0]["type"] !=
-                                  "banner top" ||
-                              vendorProvider.subscriptionList[0]["type"] !=
-                                  "banner bottom"
-                          ? Consumer<VendorDashboardService>(
-                              builder: (contextProvider, value, child) {
-                                var plan = vendorProvider.subscriptionList[0];
-                                List<dynamic>? sellerList =
-                                    plan["seller"] as List<dynamic>?;
-                                bool isSubscribed = sellerList?.any((seller) =>
-                                        seller["seller_id"].toString() ==
-                                        userId) ??
-                                    false;
+                  : _isSubscribed
+                      ? Center(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Lottie.asset(
+                                  "assets/gif/premium.json",
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      const Icon(Icons.error),
+                                  fit: BoxFit.cover,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    textAlign: TextAlign.center,
+                                    AppLocalizations.of(context)!
+                                        .youAreaProMsgText,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 22),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        )
+                      : vendorProvider.subscriptionList.isNotEmpty
+                          ? ListView.builder(
+                              padding: const EdgeInsets.symmetric(vertical: 20),
+                              itemCount: vendorProvider.subscriptionList.length,
+                              itemBuilder: (context, index) {
+                                var plan =
+                                    vendorProvider.subscriptionList[index];
+                                // Skip if type is 'banner top' or 'banner bottom'
+                                if (plan["type"] == "banner top" ||
+                                    plan["type"] == "banner bottom") {
+                                  return const SizedBox.shrink();
+                                }
 
-                                debugPrint(
-                                    "is subscribed =====> $isSubscribed");
+                                return Consumer<VendorDashboardService>(
+                                  builder: (contextProvider, value, child) {
+                                    List<dynamic>? sellerList =
+                                        plan["seller"] as List<dynamic>?;
+                                    bool isSubscribed = sellerList?.any(
+                                            (seller) =>
+                                                seller["seller_id"]
+                                                    .toString() ==
+                                                userId) ??
+                                        false;
 
-                                return Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Padding(
+                                    debugPrint(
+                                        "is subscribed =====> $isSubscribed");
+
+                                    return Padding(
                                       padding: const EdgeInsets.symmetric(
-                                          horizontal: 10.0),
+                                          horizontal: 10.0, vertical: 10.0),
                                       child: SubscriptionCard(
                                         isLoading: vendorProvider.isLoading,
                                         cc: cc,
-                                        freePlan: vendorProvider
-                                                .subscriptionList[0]["desc"] ??
-                                            "No description", // Handle null values
-                                        type: vendorProvider.subscriptionList[0]
-                                                ["title"] ??
-                                            "N/A",
+                                        freePlan:
+                                            plan["desc"] ?? "No description",
+                                        type: plan["title"] ?? "N/A",
                                         typebgColor: Colors.yellow.shade800,
-                                        typeText:
-                                            vendorProvider.subscriptionList[0]
-                                                    ["typeText"] ??
-                                                "",
-                                        price: "${vendorProvider.subscriptionList[0]["price"]?.toString()}/${vendorProvider.subscriptionList[0]["type"]}" ??
-                                            "0", // Convert price to string safely
+                                        typeText: plan["typeText"] ?? "",
+                                        price:
+                                            "${plan["price"]?.toString()}/${plan["type"] ?? ""}",
                                         typeTextColor: Colors.white,
                                         onTapPremium: () async {
                                           if (!isSubscribed) {
                                             handlePayment(
-                                                selectedPaymentMethod:
-                                                    "PhonePe",
-                                                payAmount: vendorProvider
-                                                        .subscriptionList[0]
-                                                    ["price"]);
+                                              selectedPaymentMethod: "PhonePe",
+                                              payAmount: plan["price"],
+                                            );
                                           } else {
                                             OthersHelper().showToast(
-                                                AppLocalizations.of(context)!
-                                                    .alreadyPaid,
-                                                cc.warningColor);
+                                              AppLocalizations.of(context)!
+                                                  .alreadyPaid,
+                                              cc.warningColor,
+                                            );
                                           }
                                         },
                                         isActive: false,
@@ -226,44 +266,20 @@ class _SubscriptionModuleState extends State<SubscriptionModule> {
                                             : AppLocalizations.of(context)!
                                                 .payNow,
                                       ),
-                                    ),
-                                    // Gap(30),
-                                    // InkWell(
-                                    //   onTap: () {
-                                    //     if (widget.navFrom == "Register") {
-                                    //       categoryController.clearLists();
-                                    //       addServiceController.resetCategories();
-                                    //       Navigator.push(
-                                    //           context,
-                                    //           MaterialPageRoute(
-                                    //               builder: (context) =>
-                                    //                   LandingPage()));
-                                    //     } else {
-                                    //       Navigator.pop(context);
-                                    //     }
-                                    //   },
-                                    //   child: Text(
-                                    //     "Pay Letter",
-                                    //     style: TextStyle(
-                                    //         color: cc.primaryColor,
-                                    //         fontSize: 16,
-                                    //         fontWeight: FontWeight.w500),
-                                    //   ),
-                                    // ),
-                                  ],
+                                    );
+                                  },
                                 );
                               },
                             )
                           : Center(
                               child: Text(
-                                textAlign: TextAlign.center,
                                 AppLocalizations.of(context)!
                                     .noSubscriptionAddedHere,
-                                style: TextStyle(
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
                                     fontSize: 14, fontWeight: FontWeight.w500),
                               ),
-                            )
-                      : Offstage());
+                            ));
         },
       ),
     );

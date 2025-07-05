@@ -11,7 +11,7 @@ import 'package:qixer/service/home_services/top_rated_services_service.dart';
 import 'package:qixer/service/jobs_service/recent_jobs_service.dart';
 import 'package:qixer/service/permissions_service.dart';
 import 'package:qixer/service/profile_service.dart';
-import 'package:qixer/service/push_notification_service.dart';
+
 import 'package:qixer/service/rtl_service.dart';
 import 'package:qixer/view/utils/others_helper.dart';
 
