@@ -40,180 +40,187 @@ class ServiceCategoryPage extends StatelessWidget {
         sbcProvider.setEverythingToDefault();
         Navigator.pop(context);
       }),
-      body: SmartRefresher(
-        controller: refreshController,
-        enablePullUp: true,
-        enablePullDown:
-            context.watch<ServiceByCategoryService>().currentPage > 1
-                ? false
-                : true,
-        onRefresh: () async {
-          final result = await sbcProvider.fetchServiceBySubCateId(
-              context, categoryId, subCatId);
-          if (result) {
-            refreshController.refreshCompleted();
-          } else {
-            refreshController.refreshFailed();
-          }
-        },
-        onLoading: () async {
-          final result = await sbcProvider.fetchServiceBySubCateId(
-              context, categoryId, subCatId);
-          if (result) {
-            debugPrint('loadcomplete ran');
-            refreshController.loadComplete();
-          } else {
-            debugPrint('no more data');
-            refreshController.loadNoData();
-            Future.delayed(const Duration(seconds: 1), () {
-              refreshController.resetNoData();
-            });
-          }
-        },
-        footer: OthersHelper().commonRefreshFooter(context),
-        child: WillPopScope(
-          onWillPop: () {
-            sbcProvider.setEverythingToDefault();
-            return Future.value(true);
+      body: SafeArea(
+        child: SmartRefresher(
+          controller: refreshController,
+          enablePullUp: true,
+          enablePullDown:
+              context.watch<ServiceByCategoryService>().currentPage > 1
+                  ? false
+                  : true,
+          onRefresh: () async {
+            final result = await sbcProvider.fetchServiceBySubCateId(
+                context, categoryId, subCatId);
+            if (result) {
+              refreshController.refreshCompleted();
+            } else {
+              refreshController.refreshFailed();
+            }
           },
-          child: SingleChildScrollView(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Consumer<ServiceByCategoryService>(
-                builder: (context, provider, child) => Column(
-                  children: [
-                    /// **Service List**
-                    !provider.hasError
-                        ? provider.serviceMap.isNotEmpty
-                            ? ListView.builder(
-                                physics: const NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-                                itemCount: provider.serviceMap.length,
-                                itemBuilder: (context, i) {
-                                  final service = provider.serviceMap[i];
+          onLoading: () async {
+            final result = await sbcProvider.fetchServiceBySubCateId(
+                context, categoryId, subCatId);
+            if (result) {
+              debugPrint('loadcomplete ran');
+              refreshController.loadComplete();
+            } else {
+              debugPrint('no more data');
+              refreshController.loadNoData();
+              Future.delayed(const Duration(seconds: 1), () {
+                refreshController.resetNoData();
+              });
+            }
+          },
+          footer: OthersHelper().commonRefreshFooter(context),
+          child: WillPopScope(
+            onWillPop: () {
+              sbcProvider.setEverythingToDefault();
+              return Future.value(true);
+            },
+            child: SingleChildScrollView(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Consumer<ServiceByCategoryService>(
+                  builder: (context, provider, child) => Column(
+                    children: [
+                      /// **Service List**
+                      !provider.hasError
+                          ? provider.serviceMap.isNotEmpty
+                              ? ListView.builder(
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  shrinkWrap: true,
+                                  itemCount: provider.serviceMap.length,
+                                  itemBuilder: (context, i) {
+                                    final service = provider.serviceMap[i];
 
-                                  /// Extract service area names
-                                  List<String> serviceAreas =
-                                      (service["serviceArea"] != null &&
-                                              service["serviceArea"].isNotEmpty)
-                                          ? (service["serviceArea"]
-                                                  as List<dynamic>)
-                                              .map((area) => area.toString())
-                                              .toList()
-                                          : [];
+                                    /// Extract service area names
+                                    List<String> serviceAreas =
+                                        (service["serviceArea"] != null &&
+                                                service["serviceArea"]
+                                                    .isNotEmpty)
+                                            ? (service["serviceArea"]
+                                                    as List<dynamic>)
+                                                .map((area) => area.toString())
+                                                .toList()
+                                            : [];
 
-                                  return Column(
-                                    children: [
-                                      InkWell(
-                                        splashColor: Colors.transparent,
-                                        highlightColor: Colors.transparent,
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute<void>(
-                                              builder: (BuildContext context) =>
-                                                  const ServiceDetailsPage(),
+                                    return Column(
+                                      children: [
+                                        InkWell(
+                                          splashColor: Colors.transparent,
+                                          highlightColor: Colors.transparent,
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute<void>(
+                                                builder: (BuildContext
+                                                        context) =>
+                                                    const ServiceDetailsPage(),
+                                              ),
+                                            );
+                                            Provider.of<ServiceDetailsService>(
+                                                    context,
+                                                    listen: false)
+                                                .fetchServiceDetails(
+                                                    service['serviceId']);
+                                          },
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(5.0),
+                                            child: ServiceCard(
+                                              cc: cc,
+                                              imageLink:
+                                                  service['businessImage'] ??
+                                                      placeHolderUrl,
+                                              rating:
+                                                  twoDouble(service['rating']),
+                                              title: service['title'],
+                                              sellerName:
+                                                  service['businessName'],
+                                              price: service['price'],
+                                              buttonText: 'Book Now',
+                                              width: double.infinity,
+                                              marginRight: 0.0,
+                                              pressed: () {
+                                                provider.saveOrUnsave(
+                                                  service['serviceId'],
+                                                  service['title'].toString(),
+                                                  service['image'],
+                                                  service['price'].round(),
+                                                  service['businessName']
+                                                      .toString(),
+                                                  twoDouble(service['rating']),
+                                                  i,
+                                                  context,
+                                                  service['sellerId'],
+                                                  service['experience'] ?? '',
+                                                );
+                                              },
+                                              isSaved:
+                                                  service['isSaved'] == true,
+                                              serviceId: service['serviceId'],
+                                              sellerId: service['sellerId'],
+                                              address: serviceAreas.join(', '),
+                                              experience: service[
+                                                          'experience'] ==
+                                                      null
+                                                  ? ''
+                                                  : (RegExp(r'^\d+$').hasMatch(
+                                                          service['experience']
+                                                              .toString())
+                                                      ? "${service['experience']} year"
+                                                      : "${service['experience']}"),
+                                              status:
+                                                  service['status'].toString(),
+                                              cardFrom: "Home",
+                                              onTapCall: () {
+                                                ContactFeatures().launchCalling(
+                                                    context,
+                                                    provider.serviceMap[i]
+                                                        ['callNumber']);
+                                                print(
+                                                    "on Tap Call ====> ${provider.serviceMap[i]['callNumber']}");
+                                              },
+                                              onTapWhatsapp: () {
+                                                ContactFeatures().launchWhatsapp(
+                                                    context,
+                                                    provider.serviceMap[i]
+                                                        ['callNumber'],
+                                                    "${AppLocalizations.of(context)!.whatsappContactMsg} *${provider.serviceMap[i]['title']}*.");
+                                                print(
+                                                    "on Tap Whatsapp ====> ${provider.serviceMap[i]['callNumber']}");
+                                              },
                                             ),
-                                          );
-                                          Provider.of<ServiceDetailsService>(
-                                                  context,
-                                                  listen: false)
-                                              .fetchServiceDetails(
-                                                  service['serviceId']);
-                                        },
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(5.0),
-                                          child: ServiceCard(
-                                            cc: cc,
-                                            imageLink:
-                                                service['businessImage'] ??
-                                                    placeHolderUrl,
-                                            rating:
-                                                twoDouble(service['rating']),
-                                            title: service['title'],
-                                            sellerName: service['businessName'],
-                                            price: service['price'],
-                                            buttonText: 'Book Now',
-                                            width: double.infinity,
-                                            marginRight: 0.0,
-                                            pressed: () {
-                                              provider.saveOrUnsave(
-                                                service['serviceId'],
-                                                service['title'].toString(),
-                                                service['image'],
-                                                service['price'].round(),
-                                                service['businessName']
-                                                    .toString(),
-                                                twoDouble(service['rating']),
-                                                i,
-                                                context,
-                                                service['sellerId'],
-                                                service['experience'] ?? '',
-                                              );
-                                            },
-                                            isSaved: service['isSaved'] == true,
-                                            serviceId: service['serviceId'],
-                                            sellerId: service['sellerId'],
-                                            address: serviceAreas.join(', '),
-                                            experience: service['experience'] ==
-                                                    null
-                                                ? ''
-                                                : (RegExp(r'^\d+$').hasMatch(
-                                                        service['experience']
-                                                            .toString())
-                                                    ? "${service['experience']} year"
-                                                    : "${service['experience']}"),
-                                            status:
-                                                service['status'].toString(),
-                                            cardFrom: "Home",
-                                            onTapCall: () {
-                                              ContactFeatures().launchCalling(
-                                                  context,
-                                                  provider.serviceMap[i]
-                                                      ['callNumber']);
-                                              print(
-                                                  "on Tap Call ====> ${provider.serviceMap[i]['callNumber']}");
-                                            },
-                                            onTapWhatsapp: () {
-                                              ContactFeatures().launchWhatsapp(
-                                                  context,
-                                                  provider.serviceMap[i]
-                                                      ['callNumber'],
-                                                  "${AppLocalizations.of(context)!.whatsappContactMsg} *${provider.serviceMap[i]['title']}*.");
-                                              print(
-                                                  "on Tap Whatsapp ====> ${provider.serviceMap[i]['callNumber']}");
-                                            },
                                           ),
                                         ),
-                                      ),
-                                    ],
-                                  );
-                                },
-                              )
-                            : Container(
-                                alignment: Alignment.center,
-                                height: screenHeight - 140,
-                                child:
-                                    OthersHelper().showLoading(cc.primaryColor),
-                              )
-                        : Container(
-                            alignment: Alignment.center,
-                            height: screenHeight - 140,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Image.asset(
-                                  "assets/images/nodata.png",
-                                  fit: BoxFit.contain,
-                                ),
-                                Gap(10),
-                                Text(AppLocalizations.of(context)!
-                                    .noServiceProviderInYourArea),
-                              ],
-                            ),
-                          )
-                  ],
+                                      ],
+                                    );
+                                  },
+                                )
+                              : Container(
+                                  alignment: Alignment.center,
+                                  height: screenHeight - 140,
+                                  child: OthersHelper()
+                                      .showLoading(cc.primaryColor),
+                                )
+                          : Container(
+                              alignment: Alignment.center,
+                              height: screenHeight - 140,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Image.asset(
+                                    "assets/images/nodata.png",
+                                    fit: BoxFit.contain,
+                                  ),
+                                  Gap(10),
+                                  Text(AppLocalizations.of(context)!
+                                      .noServiceProviderInYourArea),
+                                ],
+                              ),
+                            )
+                    ],
+                  ),
                 ),
               ),
             ),

@@ -41,60 +41,63 @@ class _SearchTabState extends State<SearchTab> {
       }
     }, child: Consumer<AppStringService>(
       builder: (context, asProvider, child) {
-        return Scaffold(
-            appBar: AppBar(
-              automaticallyImplyLeading: false,
-              title: CommonHelper()
-                  .titleCommon(AppLocalizations.of(context)!.searchServices),
-              // actions: [
-              //   ValueListenableBuilder<bool>(
-              //       valueListenable: viewMap,
-              //       builder: (context, view, child) => IconButton(
-              //           onPressed: () {
-              //             context.toPage(HomeMapView());
-              //             // debugPrint(view.toString());
-              //             // viewMap.value = !view;
-              //           },
-              //           icon: "map".toSVGSized(24, color: cc.black4))),
-              // ],
-            ),
-            body: SafeArea(
-              child: Container(
-                clipBehavior: Clip.none,
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      sizedBox20(),
-                      Expanded(
-                          child: categoryController
-                                      .categoryDataModel.categories?.length ==
-                                  0
-                              ? Container(
-                                  alignment: Alignment.center,
-                                  height: screenHeight - 140,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Image.asset(
-                                        "assets/images/nodata.png",
-                                        fit: BoxFit.contain,
-                                      ),
-                                      Gap(10),
-                                      Text(AppLocalizations.of(context)!
-                                          .noServiceProviderInYourArea),
-                                    ],
-                                  ),
-                                )
-                              : ValueListenableBuilder<bool>(
-                                  valueListenable: viewMap,
-                                  builder: (context, map, _) => map
-                                      ? HomeMapView()
-                                      : const sb.SearchBar())),
-                    ]),
+        return SafeArea(
+          child: Scaffold(
+              appBar: AppBar(
+                automaticallyImplyLeading: false,
+                title: CommonHelper()
+                    .titleCommon(AppLocalizations.of(context)!.searchServices),
+                // actions: [
+                //   ValueListenableBuilder<bool>(
+                //       valueListenable: viewMap,
+                //       builder: (context, view, child) => IconButton(
+                //           onPressed: () {
+                //             context.toPage(HomeMapView());
+                //             // debugPrint(view.toString());
+                //             // viewMap.value = !view;
+                //           },
+                //           icon: "map".toSVGSized(24, color: cc.black4))),
+                // ],
               ),
-            ));
+              body: SafeArea(
+                child: Container(
+                  clipBehavior: Clip.none,
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        sizedBox20(),
+                        Expanded(
+                            child: categoryController
+                                        .categoryDataModel.categories?.length ==
+                                    0
+                                ? Container(
+                                    alignment: Alignment.center,
+                                    height: screenHeight - 140,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Image.asset(
+                                          "assets/images/nodata.png",
+                                          fit: BoxFit.contain,
+                                        ),
+                                        Gap(10),
+                                        Text(AppLocalizations.of(context)!
+                                            .noServiceProviderInYourArea),
+                                      ],
+                                    ),
+                                  )
+                                : ValueListenableBuilder<bool>(
+                                    valueListenable: viewMap,
+                                    builder: (context, map, _) => map
+                                        ? HomeMapView()
+                                        : const sb.SearchBar())),
+                      ]),
+                ),
+              )),
+        );
       },
     ));
   }

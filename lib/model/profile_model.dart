@@ -139,7 +139,7 @@ class UserDetails {
   String? taxNumber;
   String? businessRegistration;
   String? postCode;
-  int? countryId;
+  dynamic? countryId;
   int? emailVerified;
   String? emailVerifyToken;
   String? facebookId;
@@ -201,7 +201,7 @@ class UserDetails {
         taxNumber: json["tax_number"],
         businessRegistration: json["business_registration"],
         postCode: json["post_code"],
-        countryId: json["country_id"],
+        countryId: json["country_id"] ?? '6',
         emailVerified: json["email_verified"],
         emailVerifyToken: json["email_verify_token"],
         facebookId: json["facebook_id"],

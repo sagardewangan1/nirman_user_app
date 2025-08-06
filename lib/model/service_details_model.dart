@@ -401,7 +401,7 @@ class SellerForMobile {
   int? id;
   String? name;
   String? image;
-  int? countryId;
+  dynamic countryId;
   String? phone;
   String? serviceCity;
   dynamic serviceArea;
@@ -655,7 +655,7 @@ class Seller {
   String? taxNumber;
   String? businessRegistration;
   String? postCode;
-  int? countryId;
+  dynamic countryId;
   int? emailVerified;
   String? emailVerifyToken;
   String? facebookId;

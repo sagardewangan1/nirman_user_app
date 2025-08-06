@@ -47,170 +47,173 @@ class _SelectionRoleViewState extends State<SelectionRoleView> {
                     ))
                 : SizedBox(),
           ),
-          body: Consumer<SelectionRoleService>(
-            builder: (context, selectRoleProvider, child) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    height: 170,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                        image: DecorationImage(
-                            image: AssetImage(appLogoIcon),
-                            fit: BoxFit.fitHeight)),
-                  ),
-                  sizedBox20(),
-                  Text(
-                    AppLocalizations.of(context)!.selectYourRole,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
+          body: SafeArea(
+            child: Consumer<SelectionRoleService>(
+              builder: (context, selectRoleProvider, child) {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      height: 170,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                          image: DecorationImage(
+                              image: AssetImage(appLogoIcon),
+                              fit: BoxFit.fitHeight)),
                     ),
-                  ),
-                  sizedBoxCustom(10),
-                  Text(
-                    AppLocalizations.of(context)!.tellUsWhoYouAreToGetStarted,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 14,
+                    sizedBox20(),
+                    Text(
+                      AppLocalizations.of(context)!.selectYourRole,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
                     ),
-                  ),
-                  sizedBoxCustom(25),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      // Customer Card
-                      GestureDetector(
-                        onTap: () {
-                          selectRoleProvider.setRoleId(1);
-                        },
-                        child: Container(
-                          width: 150, // Set fixed width
-                          padding: EdgeInsets.symmetric(
-                              vertical: 16, horizontal: 12),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12.0),
-                            border: Border.all(
-                                width: 1,
-                                color: selectRoleProvider.roleId == 1
-                                    ? cc.primaryColor
-                                    : Colors.black),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.2),
-                                blurRadius: 6,
-                                offset: Offset(0, 4), // Shadow position
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              CommonHelper().profileImage(
-                                  "https://i.postimg.cc/3xByBJB3/customer.png",
-                                  40,
-                                  40),
-                              SizedBox(height: 8),
-                              Text(
-                                textAlign: TextAlign.center,
-                                AppLocalizations.of(context)!.customerText,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                  color: Colors.black,
+                    sizedBoxCustom(10),
+                    Text(
+                      AppLocalizations.of(context)!.tellUsWhoYouAreToGetStarted,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 14,
+                      ),
+                    ),
+                    sizedBoxCustom(25),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        // Customer Card
+                        GestureDetector(
+                          onTap: () {
+                            selectRoleProvider.setRoleId(1);
+                          },
+                          child: Container(
+                            width: 150, // Set fixed width
+                            padding: EdgeInsets.symmetric(
+                                vertical: 16, horizontal: 12),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12.0),
+                              border: Border.all(
+                                  width: 1,
+                                  color: selectRoleProvider.roleId == 1
+                                      ? cc.primaryColor
+                                      : Colors.black),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.2),
+                                  blurRadius: 6,
+                                  offset: Offset(0, 4), // Shadow position
                                 ),
-                              ),
-                              Text(
-                                AppLocalizations.of(context)!
-                                    .lookingForServices,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey,
+                              ],
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                CommonHelper().profileImage(
+                                    "https://i.postimg.cc/3xByBJB3/customer.png",
+                                    40,
+                                    40),
+                                SizedBox(height: 8),
+                                Text(
+                                  textAlign: TextAlign.center,
+                                  AppLocalizations.of(context)!.customerText,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    color: Colors.black,
+                                  ),
                                 ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
+                                Text(
+                                  AppLocalizations.of(context)!
+                                      .lookingForServices,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                      // Seller Card
-                      GestureDetector(
-                        onTap: () {
-                          selectRoleProvider.setRoleId(0);
-                        },
-                        child: Container(
-                          width: 150, // Set fixed width
-                          padding: EdgeInsets.symmetric(
-                              vertical: 16, horizontal: 12),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12.0),
-                            border: Border.all(
-                                width: 1,
-                                color: selectRoleProvider.roleId == 0
-                                    ? cc.primaryColor
-                                    : Colors.black),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.2),
-                                blurRadius: 6,
-                                offset: Offset(0, 4), // Shadow position
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              CommonHelper().profileImage(
-                                  "https://i.postimg.cc/L8t4SHQG/engineer.png",
-                                  40,
-                                  40),
-                              SizedBox(height: 8),
-                              Text(
-                                textAlign: TextAlign.center,
-                                AppLocalizations.of(context)!.vendorText,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                  color: Colors.black,
+                        // Seller Card
+                        GestureDetector(
+                          onTap: () {
+                            selectRoleProvider.setRoleId(0);
+                          },
+                          child: Container(
+                            width: 150, // Set fixed width
+                            padding: EdgeInsets.symmetric(
+                                vertical: 16, horizontal: 12),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12.0),
+                              border: Border.all(
+                                  width: 1,
+                                  color: selectRoleProvider.roleId == 0
+                                      ? cc.primaryColor
+                                      : Colors.black),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.2),
+                                  blurRadius: 6,
+                                  offset: Offset(0, 4), // Shadow position
                                 ),
-                              ),
-                              Text(
-                                AppLocalizations.of(context)!.offeringServices,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey,
+                              ],
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CommonHelper().profileImage(
+                                    "https://i.postimg.cc/L8t4SHQG/engineer.png",
+                                    40,
+                                    40),
+                                SizedBox(height: 8),
+                                Text(
+                                  textAlign: TextAlign.center,
+                                  AppLocalizations.of(context)!.vendorText,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    color: Colors.black,
+                                  ),
                                 ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
+                                Text(
+                                  AppLocalizations.of(context)!
+                                      .offeringServices,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(25),
-                    child: CommonHelper().buttonOrange(
-                        AppLocalizations.of(context)!.continueText,
-                        () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => LoginPage(
-                                      navigationModel: NavigationModel(
-                                          navFrom: "Role Selection",
-                                          isLoggedIn: false,
-                                          pageName: "Login",
-                                          roleType: selectRoleProvider.roleId
-                                              .toString()),
-                                    )))),
-                  )
-                ],
-              );
-            },
+                      ],
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(25),
+                      child: CommonHelper().buttonOrange(
+                          AppLocalizations.of(context)!.continueText,
+                          () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => LoginPage(
+                                        navigationModel: NavigationModel(
+                                            navFrom: "Role Selection",
+                                            isLoggedIn: false,
+                                            pageName: "Login",
+                                            roleType: selectRoleProvider.roleId
+                                                .toString()),
+                                      )))),
+                    )
+                  ],
+                );
+              },
+            ),
           )),
     );
   }

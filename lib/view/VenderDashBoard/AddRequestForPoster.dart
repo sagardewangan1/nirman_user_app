@@ -103,237 +103,249 @@ class _AddRequestForPosterAddState extends State<AddRequestForPosterAdd> {
             return true;
           },
           child: Scaffold(
-            appBar: CommonHelper().appbarCommon(
-              AppLocalizations.of(context)!.advertisement, context,
-              () => Navigator.pop(context),
-              // actions: [
-              //   Padding(
-              //     padding: const EdgeInsets.all(8.0),
-              //     child: InkWell(
-              //       onTap: () {
-              //         showDaySelectionDialog(context);
-              //       },
-              //       child: Container(
-              //           alignment: Alignment.center,
-              //           decoration: BoxDecoration(
-              //             borderRadius: BorderRadius.circular(6.0),
-              //             color: cc.primaryColor,
-              //           ),
-              //           child: Padding(
-              //             padding: const EdgeInsets.symmetric(
-              //                 horizontal: 8.0, vertical: 4),
-              //             child: Icon(
-              //               Icons.add,
-              //               color: cc.white,
-              //             ),
-              //           )),
-              //     ),
-              //   ),
-              // ]
-            ),
-            body: vendorProvider.isLoading
-                ? Center(child: OthersHelper().showLoading(cc.primaryColor))
-                : vendorProvider.subscriptionList.isNotEmpty
-                    ? ListView.builder(
-                        itemCount: vendorProvider.subscriptionList.length,
-                        itemBuilder: (context, index) {
-                          var plan = vendorProvider.subscriptionList[index];
-                          String subscriptionId = plan["id"].toString();
+              appBar: CommonHelper().appbarCommon(
+                AppLocalizations.of(context)!.advertisement, context,
+                () => Navigator.pop(context),
+                // actions: [
+                //   Padding(
+                //     padding: const EdgeInsets.all(8.0),
+                //     child: InkWell(
+                //       onTap: () {
+                //         showDaySelectionDialog(context);
+                //       },
+                //       child: Container(
+                //           alignment: Alignment.center,
+                //           decoration: BoxDecoration(
+                //             borderRadius: BorderRadius.circular(6.0),
+                //             color: cc.primaryColor,
+                //           ),
+                //           child: Padding(
+                //             padding: const EdgeInsets.symmetric(
+                //                 horizontal: 8.0, vertical: 4),
+                //             child: Icon(
+                //               Icons.add,
+                //               color: cc.white,
+                //             ),
+                //           )),
+                //     ),
+                //   ),
+                // ]
+              ),
+              body: SafeArea(
+                child: vendorProvider.isLoading
+                    ? Center(child: OthersHelper().showLoading(cc.primaryColor))
+                    : vendorProvider.subscriptionList.isNotEmpty
+                        ? ListView.builder(
+                            itemCount: vendorProvider.subscriptionList.length,
+                            itemBuilder: (context, index) {
+                              var plan = vendorProvider.subscriptionList[index];
+                              String subscriptionId = plan["id"].toString();
 
-                          // Check if seller exists and get its banner_info
-                          List<dynamic>? sellerList =
-                              plan["seller"] as List<dynamic>?;
-                          String? bannerImageUrl;
-                          // Get banner info from the first seller (assuming one seller per subscription)
-                          var bannerInfo = (sellerList?.isNotEmpty == true)
-                              ? sellerList![0]["banner_info"]
-                              : null;
+                              // Check if seller exists and get its banner_info
+                              List<dynamic>? sellerList =
+                                  plan["seller"] as List<dynamic>?;
+                              String? bannerImageUrl;
+                              // Get banner info from the first seller (assuming one seller per subscription)
+                              var bannerInfo = (sellerList?.isNotEmpty == true)
+                                  ? sellerList![0]["banner_info"]
+                                  : null;
 
-                          // Ensure bannerInfo is a Map and not an empty list or null
-                          if (bannerInfo is Map<String, dynamic> &&
-                              bannerInfo.isNotEmpty) {
-                            // Extract image URL from banner_info
-                            bannerImageUrl = bannerInfo["image_url"];
-                          } else {
-                            bannerImageUrl = null; // No valid banner available
-                          }
+                              // Ensure bannerInfo is a Map and not an empty list or null
+                              if (bannerInfo is Map<String, dynamic> &&
+                                  bannerInfo.isNotEmpty) {
+                                // Extract image URL from banner_info
+                                bannerImageUrl = bannerInfo["image_url"];
+                              } else {
+                                bannerImageUrl =
+                                    null; // No valid banner available
+                              }
 
-                          debugPrint(
-                              "🖼 Banner Image URL: ${bannerImageUrl ?? 'No banner available'}");
+                              debugPrint(
+                                  "🖼 Banner Image URL: ${bannerImageUrl ?? 'No banner available'}");
 
-                          // Extract image URL from banner_info
+                              // Extract image URL from banner_info
 
-                          bool isSubscribed = sellerList?.any((seller) =>
-                                  seller["seller_id"].toString() == userId) ??
-                              false;
+                              bool isSubscribed = sellerList?.any((seller) =>
+                                      seller["seller_id"].toString() ==
+                                      userId) ??
+                                  false;
 
-                          // Fetch selected image specific to this subscription
-                          File? selectedImage = getImageController
-                              .fileForTopBannerMap[subscriptionId];
+                              // Fetch selected image specific to this subscription
+                              File? selectedImage = getImageController
+                                  .fileForTopBannerMap[subscriptionId];
 
-                          debugPrint("🆔 Subscription ID: $subscriptionId");
-                          debugPrint("🛠 Is Subscribed: $isSubscribed");
-                          debugPrint(
-                              "🖼 Banner Image URL: ${bannerImageUrl ?? 'No banner available'}");
-                          debugPrint(
-                              "📸 Selected Image: ${selectedImage?.path}");
+                              debugPrint("🆔 Subscription ID: $subscriptionId");
+                              debugPrint("🛠 Is Subscribed: $isSubscribed");
+                              debugPrint(
+                                  "🖼 Banner Image URL: ${bannerImageUrl ?? 'No banner available'}");
+                              debugPrint(
+                                  "📸 Selected Image: ${selectedImage?.path}");
 
-                          return isSubscribed
-                              ? Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: InkWell(
-                                    onTap: () async {
-                                      getImageController
-                                          .chooseImageForTopBanner(
-                                              subscriptionId);
-                                    },
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          height: 150,
-                                          width: double.infinity,
-                                          decoration: BoxDecoration(
-                                            color: cc.successColor
-                                                .withOpacity(0.1),
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                            border: Border.all(
-                                                color: cc.successColor),
-                                          ),
-                                          alignment: Alignment.center,
-                                          child: selectedImage != null
-                                              ? ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(8),
-                                                  child: Image.file(
-                                                    height: 150,
-                                                    width: double.infinity,
-                                                    selectedImage,
-                                                    fit: BoxFit.cover,
-                                                  ),
-                                                )
-                                              : bannerImageUrl != null
+                              return isSubscribed
+                                  ? Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: InkWell(
+                                        onTap: () async {
+                                          getImageController
+                                              .chooseImageForTopBanner(
+                                                  subscriptionId);
+                                        },
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Container(
+                                              height: 150,
+                                              width: double.infinity,
+                                              decoration: BoxDecoration(
+                                                color: cc.successColor
+                                                    .withOpacity(0.1),
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                border: Border.all(
+                                                    color: cc.successColor),
+                                              ),
+                                              alignment: Alignment.center,
+                                              child: selectedImage != null
                                                   ? ClipRRect(
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               8),
-                                                      child: CommonHelper()
-                                                          .profileImage(
-                                                              bannerImageUrl,
-                                                              150,
-                                                              double.infinity,
-                                                              fit:
-                                                                  BoxFit.cover))
-                                                  : Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .center,
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Icon(
-                                                          size: 40,
-                                                          Icons.image_search,
-                                                          color: cc.black6,
+                                                      child: Image.file(
+                                                        height: 150,
+                                                        width: double.infinity,
+                                                        selectedImage,
+                                                        fit: BoxFit.cover,
+                                                      ),
+                                                    )
+                                                  : bannerImageUrl != null
+                                                      ? ClipRRect(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(8),
+                                                          child: CommonHelper()
+                                                              .profileImage(
+                                                                  bannerImageUrl,
+                                                                  150,
+                                                                  double
+                                                                      .infinity,
+                                                                  fit: BoxFit
+                                                                      .cover))
+                                                      : Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .center,
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            Icon(
+                                                              size: 40,
+                                                              Icons
+                                                                  .image_search,
+                                                              color: cc.black6,
+                                                            ),
+                                                            Text(
+                                                              AppLocalizations.of(
+                                                                      context)!
+                                                                  .addPosterForTopSlider,
+                                                              style: TextStyle(
+                                                                color:
+                                                                    cc.black5,
+                                                                fontSize: 14,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                              ),
+                                                            ),
+                                                          ],
                                                         ),
-                                                        Text(
-                                                          AppLocalizations.of(
-                                                                  context)!
-                                                              .addPosterForTopSlider,
-                                                          style: TextStyle(
-                                                            color: cc.black5,
-                                                            fontSize: 14,
-                                                            fontWeight:
-                                                                FontWeight.w500,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: CommonHelper().buttonOrange(
-                                            paddingVerticle: 10,
-                                            AppLocalizations.of(context)!.save,
-                                            () async {
-                                              if (selectedImage != null) {
-                                                String imagePath =
-                                                    selectedImage.path;
-                                                String subscriptionId =
-                                                    plan["id"].toString();
-                                                debugPrint(
-                                                    "📌 Clicked Subscription ID: $subscriptionId"); // ✅ Print Subscription ID
-                                                bool success =
-                                                    await vendorProvider
-                                                        .uploadBanner(
-                                                  subscriptionId,
-                                                  context,
-                                                  imagePath: imagePath,
-                                                );
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.all(8.0),
+                                              child:
+                                                  CommonHelper().buttonOrange(
+                                                paddingVerticle: 10,
+                                                AppLocalizations.of(context)!
+                                                    .save,
+                                                () async {
+                                                  if (selectedImage != null) {
+                                                    String imagePath =
+                                                        selectedImage.path;
+                                                    String subscriptionId =
+                                                        plan["id"].toString();
+                                                    debugPrint(
+                                                        "📌 Clicked Subscription ID: $subscriptionId"); // ✅ Print Subscription ID
+                                                    bool success =
+                                                        await vendorProvider
+                                                            .uploadBanner(
+                                                      subscriptionId,
+                                                      context,
+                                                      imagePath: imagePath,
+                                                    );
 
-                                                if (success) {
-                                                  // ✅ Image successfully uploaded
-                                                  getImageController
-                                                              .fileForTopBannerMap[
-                                                          subscriptionId] =
-                                                      File(imagePath);
-                                                  OthersHelper().showToast(
-                                                      "Banner uploaded successfully!",
-                                                      cc.successColor);
-                                                } else {
-                                                  OthersHelper().showToast(
-                                                      "Failed to upload banner!",
-                                                      cc.errorColor);
-                                                }
-                                              } else {
-                                                OthersHelper().showToast(
-                                                    "Please select an image before saving!",
-                                                    cc.warningColor);
-                                              }
+                                                    if (success) {
+                                                      // ✅ Image successfully uploaded
+                                                      getImageController
+                                                                  .fileForTopBannerMap[
+                                                              subscriptionId] =
+                                                          File(imagePath);
+                                                      OthersHelper().showToast(
+                                                          "Banner uploaded successfully!",
+                                                          cc.successColor);
+                                                    } else {
+                                                      OthersHelper().showToast(
+                                                          "Failed to upload banner!",
+                                                          cc.errorColor);
+                                                    }
+                                                  } else {
+                                                    OthersHelper().showToast(
+                                                        "Please select an image before saving!",
+                                                        cc.warningColor);
+                                                  }
 
-                                              // if (plan['id'] == plan['id']) {
-                                              //   print(
-                                              //       "tapped top plan id ${plan['id']} ${selectedImage?.path}");
-                                              // } else {
-                                              //   print(
-                                              //       "tapped bottom plan id ${plan['id']} ${selectedImage?.path}");
-                                              // }
-                                            },
-                                          ),
+                                                  // if (plan['id'] == plan['id']) {
+                                                  //   print(
+                                                  //       "tapped top plan id ${plan['id']} ${selectedImage?.path}");
+                                                  // } else {
+                                                  //   print(
+                                                  //       "tapped bottom plan id ${plan['id']} ${selectedImage?.path}");
+                                                  // }
+                                                },
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                      ],
-                                    ),
-                                  ),
-                                )
-                              : Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: PayBannerContainer(
-                                    description: plan['desc'] ?? "NA",
-                                    price: "${plan["price"]}/-",
-                                    onTap: () async {
-                                      handlePayment(
-                                          payAmount: plan['price'],
-                                          subscriptionId: plan['id'].toString(),
-                                          selectedPaymentMethod: "PhonePe");
-                                    },
-                                  ),
-                                );
-                        },
-                      )
-                    : Center(
-                        child: Text(
-                          textAlign: TextAlign.center,
-                          AppLocalizations.of(context)!.noSubscriptionAddedHere,
-                          style: TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.w500),
-                        ),
-                      ),
-          ),
+                                      ),
+                                    )
+                                  : Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: PayBannerContainer(
+                                        description: plan['desc'] ?? "NA",
+                                        price: "${plan["price"]}/-",
+                                        onTap: () async {
+                                          handlePayment(
+                                              payAmount: plan['price'],
+                                              subscriptionId:
+                                                  plan['id'].toString(),
+                                              selectedPaymentMethod: "PhonePe");
+                                        },
+                                      ),
+                                    );
+                            },
+                          )
+                        : Center(
+                            child: Text(
+                              textAlign: TextAlign.center,
+                              AppLocalizations.of(context)!
+                                  .noSubscriptionAddedHere,
+                              style: TextStyle(
+                                  fontSize: 14, fontWeight: FontWeight.w500),
+                            ),
+                          ),
+              )),
         );
       },
     );

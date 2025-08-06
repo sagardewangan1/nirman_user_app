@@ -109,238 +109,245 @@ class _ChooseCategoryViewState extends State<ChooseCategoryView> {
               addServiceController.resetCategories();
               Navigator.pop(context);
             }),
-            body: ListView(
-              padding: EdgeInsets.symmetric(horizontal: 10),
-              children: [
-                SizedBox(height: 10),
-                CommonHelper().labelCommon2(
-                    AppLocalizations.of(context)!.categories,
-                    isRequired: true),
-                SizedBox(height: 10),
-                categoryController.isLoading
-                    ? OthersHelper().showLoading(cc.primaryColor)
-                    : SizedBox(
-                        height: 180,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          shrinkWrap: true,
-                          itemCount: categoryController
-                              .categoryDataModel.categories?.length,
-                          itemBuilder: (context, index) {
-                            var category = categoryController
-                                .categoryDataModel.categories?[index];
-                            return Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: InkWell(
-                                onTap: () {
-                                  categoryController.addCategoryInList(
-                                      category: Categories(
-                                    id: category?.id,
-                                    name: category?.name,
-                                    mobileIcon: category?.mobileIcon,
-                                  ));
-                                  // for set border color set cat id
-                                  addServiceController.setCatId(category?.id);
-                                  // for set multiid id in list
-                                  addServiceController.setCatIDForSend(
-                                      category?.id.toString() ?? '');
-                                  // for get sub category,
-                                  addServiceController.getSelectedCategory(
-                                      category_id: addServiceController.catIds);
-                                },
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Container(
-                                        alignment: Alignment.center,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(8.0),
-                                            border: Border.all(
-                                              width: categoryController.catIds
-                                                      .any((cat) =>
-                                                          cat["catId"] ==
-                                                          category?.id)
-                                                  ? 1
-                                                  : 1, // ✅ Highlight if category is in list
-                                              color: categoryController.catIds
-                                                      .any((cat) =>
-                                                          cat["catId"] ==
-                                                          category?.id)
-                                                  ? cc.primaryColor
-                                                  : cc.black3,
-                                            )),
-                                        child: Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: CommonHelper().profileImage(
-                                              fit: BoxFit.contain,
-                                              category?.mobileIcon ?? '',
-                                              75,
-                                              75),
-                                        )),
-                                    SizedBox(
-                                      width: 100,
-                                      child: Text(
-                                        textAlign: TextAlign.center,
-                                        maxLines: 4,
-                                        overflow: TextOverflow.visible,
-                                        category?.name ?? '',
-                                        style: TextStyle(
-                                            fontSize: 12, color: cc.black3),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                SizedBox(height: 10),
-                categoryController.catIds.isNotEmpty
-                    ? Text(
-                        textAlign: TextAlign.left,
-                        maxLines: 2,
-                        overflow: TextOverflow.visible,
-                        AppLocalizations.of(context)!.selectSubCategory,
-                        style: TextStyle(
-                          color: cc.black3,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      )
-                    : Offstage(),
-                addServiceController.isLoading
-                    ? OthersHelper().showLoading(cc.primaryColor)
-                    : categoryController.catIds.isNotEmpty
-                        ? ListView.builder(
-                            physics: NeverScrollableScrollPhysics(),
-                            scrollDirection: Axis.vertical,
+            body: SafeArea(
+              child: ListView(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                children: [
+                  SizedBox(height: 10),
+                  CommonHelper().labelCommon2(
+                      AppLocalizations.of(context)!.categories,
+                      isRequired: true),
+                  SizedBox(height: 10),
+                  categoryController.isLoading
+                      ? OthersHelper().showLoading(cc.primaryColor)
+                      : SizedBox(
+                          height: 180,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
                             shrinkWrap: true,
-                            itemCount: categoryController.catIds.length,
-                            itemBuilder: (context, indexRoot) {
-                              var category =
-                                  categoryController.catIds[indexRoot];
-                              var subCategoryList = addServiceController
-                                  .selectedSubCategoryList
-                                  .where((element) =>
-                                      element['category_id'] ==
-                                      category['catId'])
-                                  .toList(); // ✅ Filtered List
-                              return addServiceController.isLoading
-                                  ? OthersHelper().showLoading(cc.primaryColor)
-                                  : Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        SizedBox(height: 10),
-                                        categoryController.catIds.isEmpty
-                                            ? Offstage()
-                                            : Container(
-                                                width: MediaQuery.of(context)
-                                                    .size
-                                                    .width,
-                                                decoration: BoxDecoration(
-                                                    color: cc.primaryColor,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            5.0)),
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(4.0),
-                                                  child: Text(
-                                                    textAlign: TextAlign.left,
-                                                    maxLines: 2,
-                                                    overflow:
-                                                        TextOverflow.visible,
-                                                    category['name'],
-                                                    style: TextStyle(
-                                                      color: cc.white,
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w400,
+                            itemCount: categoryController
+                                .categoryDataModel.categories?.length,
+                            itemBuilder: (context, index) {
+                              var category = categoryController
+                                  .categoryDataModel.categories?[index];
+                              return Padding(
+                                padding: const EdgeInsets.all(5.0),
+                                child: InkWell(
+                                  onTap: () {
+                                    categoryController.addCategoryInList(
+                                        category: Categories(
+                                      id: category?.id,
+                                      name: category?.name,
+                                      mobileIcon: category?.mobileIcon,
+                                    ));
+                                    // for set border color set cat id
+                                    addServiceController.setCatId(category?.id);
+                                    // for set multiid id in list
+                                    addServiceController.setCatIDForSend(
+                                        category?.id.toString() ?? '');
+                                    // for get sub category,
+                                    addServiceController.getSelectedCategory(
+                                        category_id:
+                                            addServiceController.catIds);
+                                  },
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                          alignment: Alignment.center,
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(8.0),
+                                              border: Border.all(
+                                                width: categoryController.catIds
+                                                        .any((cat) =>
+                                                            cat["catId"] ==
+                                                            category?.id)
+                                                    ? 1
+                                                    : 1, // ✅ Highlight if category is in list
+                                                color: categoryController.catIds
+                                                        .any((cat) =>
+                                                            cat["catId"] ==
+                                                            category?.id)
+                                                    ? cc.primaryColor
+                                                    : cc.black3,
+                                              )),
+                                          child: Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: CommonHelper().profileImage(
+                                                fit: BoxFit.contain,
+                                                category?.mobileIcon ?? '',
+                                                75,
+                                                75),
+                                          )),
+                                      SizedBox(
+                                        width: 100,
+                                        child: Text(
+                                          textAlign: TextAlign.center,
+                                          maxLines: 4,
+                                          overflow: TextOverflow.visible,
+                                          category?.name ?? '',
+                                          style: TextStyle(
+                                              fontSize: 12, color: cc.black3),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                  SizedBox(height: 10),
+                  categoryController.catIds.isNotEmpty
+                      ? Text(
+                          textAlign: TextAlign.left,
+                          maxLines: 2,
+                          overflow: TextOverflow.visible,
+                          AppLocalizations.of(context)!.selectSubCategory,
+                          style: TextStyle(
+                            color: cc.black3,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        )
+                      : Offstage(),
+                  addServiceController.isLoading
+                      ? OthersHelper().showLoading(cc.primaryColor)
+                      : categoryController.catIds.isNotEmpty
+                          ? ListView.builder(
+                              physics: NeverScrollableScrollPhysics(),
+                              scrollDirection: Axis.vertical,
+                              shrinkWrap: true,
+                              itemCount: categoryController.catIds.length,
+                              itemBuilder: (context, indexRoot) {
+                                var category =
+                                    categoryController.catIds[indexRoot];
+                                var subCategoryList = addServiceController
+                                    .selectedSubCategoryList
+                                    .where((element) =>
+                                        element['category_id'] ==
+                                        category['catId'])
+                                    .toList(); // ✅ Filtered List
+                                return addServiceController.isLoading
+                                    ? OthersHelper()
+                                        .showLoading(cc.primaryColor)
+                                    : Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          SizedBox(height: 10),
+                                          categoryController.catIds.isEmpty
+                                              ? Offstage()
+                                              : Container(
+                                                  width: MediaQuery.of(context)
+                                                      .size
+                                                      .width,
+                                                  decoration: BoxDecoration(
+                                                      color: cc.primaryColor,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              5.0)),
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            4.0),
+                                                    child: Text(
+                                                      textAlign: TextAlign.left,
+                                                      maxLines: 2,
+                                                      overflow:
+                                                          TextOverflow.visible,
+                                                      category['name'],
+                                                      style: TextStyle(
+                                                        color: cc.white,
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                      ),
                                                     ),
                                                   ),
                                                 ),
-                                              ),
-                                        if (categoryController
-                                                .catIds[indexRoot].length !=
-                                            0)
-                                          SizedBox(
-                                            height: 165,
-                                            child: ListView.builder(
-                                              scrollDirection: Axis.horizontal,
-                                              itemCount: subCategoryList.length,
-                                              itemBuilder: (context, index) {
-                                                var subCategory =
-                                                    subCategoryList[index];
-                                                return Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(5.0),
-                                                  child: CategoryCard(
-                                                    onTap: () {
-                                                      print(
-                                                          "category id====> ${subCategory["category_id"]} ");
-                                                      categoryController
-                                                          .addSubCategoryInList(
-                                                              categoryId:
-                                                                  subCategory[
-                                                                      "category_id"],
-                                                              subCategory:
-                                                                  Subcategories(
-                                                                id: subCategory[
-                                                                    "id"],
-                                                                name:
-                                                                    subCategory[
-                                                                        "name"],
-                                                                image:
-                                                                    subCategory[
-                                                                        "image"],
-                                                              ));
-                                                    },
-                                                    name: subCategory["name"],
-                                                    id: subCategory["id"],
-                                                    cc: cc,
-                                                    index: index,
-                                                    imagelink:
-                                                        subCategory["image"]
-                                                            ?.toString(),
-                                                    isSelected: categoryController
-                                                            .catIds
-                                                            .firstWhere(
-                                                                (cat) =>
-                                                                    cat["catId"] ==
+                                          if (categoryController
+                                                  .catIds[indexRoot].length !=
+                                              0)
+                                            SizedBox(
+                                              height: 165,
+                                              child: ListView.builder(
+                                                scrollDirection:
+                                                    Axis.horizontal,
+                                                itemCount:
+                                                    subCategoryList.length,
+                                                itemBuilder: (context, index) {
+                                                  var subCategory =
+                                                      subCategoryList[index];
+                                                  return Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            5.0),
+                                                    child: CategoryCard(
+                                                      onTap: () {
+                                                        print(
+                                                            "category id====> ${subCategory["category_id"]} ");
+                                                        categoryController
+                                                            .addSubCategoryInList(
+                                                                categoryId:
                                                                     subCategory[
                                                                         "category_id"],
-                                                                orElse: () =>
-                                                                    {})
-                                                            .containsKey(
-                                                                "subCatIds") &&
-                                                        categoryController
-                                                            .catIds
-                                                            .firstWhere((cat) =>
-                                                                cat["catId"] ==
-                                                                subCategory[
-                                                                    "category_id"])[
-                                                                "subCatIds"]
-                                                            .any((sub) =>
-                                                                sub["id"] ==
-                                                                subCategory[
-                                                                    "id"]),
-                                                  ),
-                                                );
-                                              },
-                                            ),
-                                          )
-                                        else
-                                          Offstage()
-                                      ],
-                                    );
-                            },
-                          )
-                        : Offstage(),
-              ],
+                                                                subCategory:
+                                                                    Subcategories(
+                                                                  id: subCategory[
+                                                                      "id"],
+                                                                  name: subCategory[
+                                                                      "name"],
+                                                                  image: subCategory[
+                                                                      "image"],
+                                                                ));
+                                                      },
+                                                      name: subCategory["name"],
+                                                      id: subCategory["id"],
+                                                      cc: cc,
+                                                      index: index,
+                                                      imagelink:
+                                                          subCategory["image"]
+                                                              ?.toString(),
+                                                      isSelected: categoryController
+                                                              .catIds
+                                                              .firstWhere(
+                                                                  (cat) =>
+                                                                      cat["catId"] ==
+                                                                      subCategory[
+                                                                          "category_id"],
+                                                                  orElse: () =>
+                                                                      {})
+                                                              .containsKey(
+                                                                  "subCatIds") &&
+                                                          categoryController
+                                                              .catIds
+                                                              .firstWhere((cat) =>
+                                                                  cat["catId"] ==
+                                                                  subCategory[
+                                                                      "category_id"])[
+                                                                  "subCatIds"]
+                                                              .any((sub) =>
+                                                                  sub["id"] ==
+                                                                  subCategory[
+                                                                      "id"]),
+                                                    ),
+                                                  );
+                                                },
+                                              ),
+                                            )
+                                          else
+                                            Offstage()
+                                        ],
+                                      );
+                              },
+                            )
+                          : Offstage(),
+                ],
+              ),
             ),
             bottomNavigationBar: Padding(
                 padding: EdgeInsets.all(8.0),

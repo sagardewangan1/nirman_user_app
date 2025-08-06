@@ -126,6 +126,12 @@ class VendorDashboardService extends ChangeNotifier {
   List<Map<String, dynamic>> _bannerInfo = [];
   List<Map<String, dynamic>> get bannerInfo => _bannerInfo;
 
+  String? _expiryDate;
+  String? get expiryDate => _expiryDate;
+
+  bool? _isSubscribed;
+  bool? get isSubscribed => _isSubscribed;
+
   Future<bool> getSubscriptions({String type = ''}) async {
     _isLoading = true;
     var connection = await checkConnection();
@@ -143,6 +149,7 @@ class VendorDashboardService extends ChangeNotifier {
       notifyListeners();
       return false;
     }
+    print("token====> $token");
 
     try {
       String url = "$baseApi/seller/service/subcription-list?type=$type";
@@ -156,13 +163,18 @@ class VendorDashboardService extends ChangeNotifier {
       // print("🔗 Request URL: $url");
       // print("📩 Request Headers: $headers");
       // print("📡 Response Status Code: ${response.statusCode}");
-      // printLargeResponse("📜 Response Body: ${response.body}");
+      printLargeResponse("📜 Response Body: ${response.body}");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         var responseData = jsonDecode(response.body);
 
         if (responseData.containsKey('subscription_info') &&
             responseData['subscription_info'] is List) {
+          if (responseData['SubscriptionExpireData'] != null) {
+            _expiryDate = responseData["SubscriptionExpireData"];
+          }
+          _isSubscribed = responseData["isSubscribed"];
+
           _subscriptionList.clear(); // Clear old data
 
           // Parse each subscription entry
@@ -189,20 +201,6 @@ class VendorDashboardService extends ChangeNotifier {
             });
           }
 
-          // // Ensure _bannerInfo is cleared before adding new data
-          // _bannerInfo.clear();
-          // if (responseData["banner_info"] != null &&
-          //     responseData["banner_info"] is List &&
-          //     responseData["banner_info"].isNotEmpty) {
-          //   _bannerInfo
-          //       .addAll(responseData["banner_info"]); // Store the entire list
-          //
-          //   debugPrint("✅ Banner Info Updated: $_bannerInfo");
-          // } else {
-          //   debugPrint("🚨 No Banner Info Found");
-          // }
-
-          // print("📜 Parsed Subscription List: ${_subscriptionList}");
           notifyListeners();
           return true;
         } else {
@@ -268,35 +266,6 @@ class VendorDashboardService extends ChangeNotifier {
     } finally {
       _isLoading = false;
       notifyListeners();
-    }
-  }
-
-  Future<bool> checkSubscribe({int index = 0}) async {
-    try {
-      var connection = await checkConnection();
-      if (!connection) {
-        _isLoading = false;
-        notifyListeners();
-        return false;
-      }
-      getSubscriptions();
-      final pref = await SharedPreferences.getInstance();
-      String userId = pref.getString('shashaktnirmanUserId') ?? '';
-
-      if (userId.isEmpty) {
-        print("❌ User ID not found in SharedPreferences.");
-        return false;
-      }
-
-      List<dynamic> sellerList = _subscriptionList[index]["seller"] ?? [];
-
-      bool isSubscribed =
-          sellerList.any((seller) => seller["seller_id"].toString() == userId);
-      print("isSubscribed ====> $isSubscribed");
-      return isSubscribed;
-    } catch (e, stackTrace) {
-      print("❌ Exception in checkSubscribe: $e");
-      return false;
     }
   }
 

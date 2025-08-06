@@ -203,183 +203,6 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage>
                         CommonHelper().dividerCommon(),
                         //Button
                         // sizedBox20(),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: 10),
-                              decoration: BoxDecoration(color: cc.white),
-                              child: Column(
-                                children: [
-                                  // currentTab == 2
-                                  //     ? Column(
-                                  //         children: [
-                                  //           CommonHelper().borderButtonOrange(
-                                  //               asProvider.getString(
-                                  //                   'Write a review'), () {
-                                  //             Navigator.push(
-                                  //               context,
-                                  //               MaterialPageRoute<void>(
-                                  //                 builder:
-                                  //                     (BuildContext context) =>
-                                  //                         WriteReviewPage(
-                                  //                   serviceId: provider
-                                  //                       .serviceDetailsModel
-                                  //                       .serviceDetails
-                                  //                       .id,
-                                  //                 ),
-                                  //               ),
-                                  //             );
-                                  //           }),
-                                  //           const SizedBox(
-                                  //             height: 14,
-                                  //           ),
-                                  //         ],
-                                  //       )
-                                  //     : Container(),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: CommonHelper().buttonOrange(
-                                          AppLocalizations.of(context)!
-                                              .enquiryNow,
-                                          () {
-                                            showDialog(
-                                              context: context,
-                                              builder: (context) {
-                                                return Dialog(
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            12.0),
-                                                  ),
-                                                  child: ConstrainedBox(
-                                                    constraints: BoxConstraints(
-                                                      maxWidth:
-                                                          400, // Set maximum width for the dialog
-                                                      maxHeight:
-                                                          300, // Set maximum height for the dialog
-                                                    ),
-                                                    child: Container(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              20.0),
-                                                      decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(12.0),
-                                                        color: Colors.white,
-                                                      ),
-                                                      child: Column(
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        children: [
-                                                          Text(
-                                                            AppLocalizations.of(
-                                                                    context)!
-                                                                .thankYou,
-                                                            style: TextStyle(
-                                                              fontSize: 16.0,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              color: Colors
-                                                                  .black87,
-                                                            ),
-                                                          ),
-                                                          const SizedBox(
-                                                              height: 10),
-                                                          Divider(
-                                                              color: Colors.grey
-                                                                  .shade300),
-                                                          Text(
-                                                            textAlign: TextAlign
-                                                                .center,
-                                                            AppLocalizations.of(
-                                                                    context)!
-                                                                .thankYouEnquiryText,
-                                                            style: TextStyle(
-                                                              fontSize: 14.0,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500,
-                                                              color: Colors
-                                                                  .black87,
-                                                            ),
-                                                          ),
-                                                          const SizedBox(
-                                                              height: 10),
-                                                          Image.network(
-                                                              height: 85,
-                                                              width: 85,
-                                                              "https://i.postimg.cc/fbKmxjYg/pngwing-com-1.png"),
-                                                          const SizedBox(
-                                                              height: 8),
-                                                          // Text(
-                                                          //   textAlign:
-                                                          //       TextAlign.center,
-                                                          //     "Tap OK to chat, or tap Cancel to dismiss.",
-                                                          //   style: TextStyle(
-                                                          //       fontSize: 14,
-                                                          //       fontWeight:
-                                                          //           FontWeight
-                                                          //               .w500),
-                                                          // ),
-                                                          Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .spaceEvenly,
-                                                            children: [
-                                                              // ElevatedButton(
-                                                              //   onPressed: () {
-                                                              //     Navigator.pop(
-                                                              //         context);
-                                                              //   },
-                                                              //   style:
-                                                              //       ElevatedButton
-                                                              //           .styleFrom(
-                                                              //     backgroundColor:
-                                                              //         Colors
-                                                              //             .redAccent,
-                                                              //   ),
-                                                              //   child: const Text(
-                                                              //       'Cancel'),
-                                                              // ),
-                                                              ElevatedButton(
-                                                                onPressed: () {
-                                                                  Navigator.pop(
-                                                                      context);
-                                                                  // Add your additional action here
-                                                                },
-                                                                style: ElevatedButton
-                                                                    .styleFrom(
-                                                                  backgroundColor:
-                                                                      Colors
-                                                                          .blueAccent,
-                                                                ),
-                                                                child: Text(
-                                                                    AppLocalizations.of(
-                                                                            context)!
-                                                                        .ok),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ),
-                                                );
-                                              },
-                                            );
-                                          },
-                                        ),
-                                      ),
-                                      // chat icon
-                                      // const ServiceDetailsChatIcon()
-                                    ],
-                                  ),
-                                ],
-                              )),
-                        ),
                       ],
                     )
                   :
@@ -394,6 +217,126 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage>
               : OthersHelper().showLoading(cc.primaryColor),
         ),
       ),
+      bottomNavigationBar: isLoggedIn == false
+          ? Offstage()
+          : SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: InkWell(
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return Dialog(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxWidth: 400, // Set maximum width for the dialog
+                              maxHeight:
+                                  300, // Set maximum height for the dialog
+                            ),
+                            child: Container(
+                              padding: const EdgeInsets.all(20.0),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12.0),
+                                color: Colors.white,
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    AppLocalizations.of(context)!.thankYou,
+                                    style: TextStyle(
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Divider(color: Colors.grey.shade300),
+                                  Text(
+                                    textAlign: TextAlign.center,
+                                    AppLocalizations.of(context)!
+                                        .thankYouEnquiryText,
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Image.network(
+                                      height: 85,
+                                      width: 85,
+                                      "https://i.postimg.cc/fbKmxjYg/pngwing-com-1.png"),
+                                  const SizedBox(height: 8),
+                                  // Text(
+                                  //   textAlign:
+                                  //       TextAlign.center,
+                                  //     "Tap OK to chat, or tap Cancel to dismiss.",
+                                  //   style: TextStyle(
+                                  //       fontSize: 14,
+                                  //       fontWeight:
+                                  //           FontWeight
+                                  //               .w500),
+                                  // ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      // ElevatedButton(
+                                      //   onPressed: () {
+                                      //     Navigator.pop(
+                                      //         context);
+                                      //   },
+                                      //   style:
+                                      //       ElevatedButton
+                                      //           .styleFrom(
+                                      //     backgroundColor:
+                                      //         Colors
+                                      //             .redAccent,
+                                      //   ),
+                                      //   child: const Text(
+                                      //       'Cancel'),
+                                      // ),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                          // Add your additional action here
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.blueAccent,
+                                        ),
+                                        child: Text(
+                                            AppLocalizations.of(context)!.ok),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                  child: Container(
+                      height: 65,
+                      alignment: Alignment.center,
+                      width: MediaQuery.of(context).size.width * 0.2,
+                      decoration: BoxDecoration(
+                          color: cc.primaryColor,
+                          borderRadius: BorderRadius.circular(12.0)),
+                      child: Text(
+                        "Enquiry Now",
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600, color: cc.white),
+                      )),
+                ),
+              ),
+            ),
     );
   }
 }

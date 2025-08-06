@@ -99,145 +99,147 @@ class _SignUpVendorViewState extends State<SignUpVendorView> {
             }
             // return Future.value(false);
           },
-          child: Scaffold(
-            backgroundColor: Colors.white,
-            appBar: CommonHelper().appbarCommon(
-                AppLocalizations.of(context)!.addYourDetails, context, () {
-              if (provider.selectedPage == 0) {
-                Navigator.pop(context);
-              } else {
-                context
-                    .read<SignupVendorService>()
-                    .pagecontroller
-                    .animateToPage(provider.selectedPage - 1,
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.ease);
-              }
-            }),
-            body: Listener(
-              onPointerDown: (_) {
-                debugPrint("Listener is working---------------------------"
-                    .toString());
-                FocusScopeNode currentFocus = FocusScope.of(context);
-                if (!currentFocus.hasPrimaryFocus) {
-                  currentFocus.focusedChild?.unfocus();
+          child: SafeArea(
+            child: Scaffold(
+              backgroundColor: Colors.white,
+              appBar: CommonHelper().appbarCommon(
+                  AppLocalizations.of(context)!.addYourDetails, context, () {
+                if (provider.selectedPage == 0) {
+                  Navigator.pop(context);
+                } else {
+                  context
+                      .read<SignupVendorService>()
+                      .pagecontroller
+                      .animateToPage(provider.selectedPage - 1,
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.ease);
                 }
-              },
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(
-                      height: 5,
-                    ),
+              }),
+              body: Listener(
+                onPointerDown: (_) {
+                  debugPrint("Listener is working---------------------------"
+                      .toString());
+                  FocusScopeNode currentFocus = FocusScope.of(context);
+                  if (!currentFocus.hasPrimaryFocus) {
+                    currentFocus.focusedChild?.unfocus();
+                  }
+                },
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(
+                        height: 5,
+                      ),
 
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 25),
-                      child: CommonHelper().titleCommon(
-                          AppLocalizations.of(context)!.shareSubject),
-                    ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 25),
+                        child: CommonHelper().titleCommon(
+                            AppLocalizations.of(context)!.shareSubject),
+                      ),
 
-                    const SizedBox(
-                      height: 35,
-                    ),
+                      const SizedBox(
+                        height: 35,
+                      ),
 
-                    //Page steps show =======>
+                      //Page steps show =======>
 
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        for (var i = 0; i < 2; i++)
-                          Row(
-                            children: [
-                              Container(
-                                height: 40,
-                                width: 40,
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                    color: provider.selectedPage >= i
-                                        ? cc.primaryColor
-                                        : Colors.white,
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                        color: provider.selectedPage >= i
-                                            ? Colors.transparent
-                                            : cc.greyFive)),
-                                child: provider.selectedPage - 1 < i
-                                    ? Text(
-                                        '${i + 1}',
-                                        style: TextStyle(
-                                            color: provider.selectedPage >= i
-                                                ? Colors.white
-                                                : cc.greyPrimary,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold),
-                                      )
-                                    : const Icon(
-                                        Icons.check_outlined,
-                                        color: Colors.white,
-                                        size: 20,
-                                      ),
-                              ),
-                              //line
-                              i > 0
-                                  ? Container()
-                                  : Container(
-                                      height: 3,
-                                      width: size.width / 2 - 85,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          for (var i = 0; i < 2; i++)
+                            Row(
+                              children: [
+                                Container(
+                                  height: 40,
+                                  width: 40,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
                                       color: provider.selectedPage >= i
                                           ? cc.primaryColor
-                                          : cc.greyFive,
-                                    )
-                            ],
-                          ),
-                      ],
-                    ),
+                                          : Colors.white,
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                          color: provider.selectedPage >= i
+                                              ? Colors.transparent
+                                              : cc.greyFive)),
+                                  child: provider.selectedPage - 1 < i
+                                      ? Text(
+                                          '${i + 1}',
+                                          style: TextStyle(
+                                              color: provider.selectedPage >= i
+                                                  ? Colors.white
+                                                  : cc.greyPrimary,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold),
+                                        )
+                                      : const Icon(
+                                          Icons.check_outlined,
+                                          color: Colors.white,
+                                          size: 20,
+                                        ),
+                                ),
+                                //line
+                                i > 0
+                                    ? Container()
+                                    : Container(
+                                        height: 3,
+                                        width: size.width / 2 - 85,
+                                        color: provider.selectedPage >= i
+                                            ? cc.primaryColor
+                                            : cc.greyFive,
+                                      )
+                              ],
+                            ),
+                        ],
+                      ),
 
-                    const SizedBox(
-                      height: 35,
-                    ),
+                      const SizedBox(
+                        height: 35,
+                      ),
 
-                    //Slider =============>
-                    Expanded(
-                      child: PageView.builder(
-                          controller: context
-                              .read<SignupVendorService>()
-                              .pagecontroller,
-                          physics: const NeverScrollableScrollPhysics(),
-                          onPageChanged: (value) {
-                            provider.setSelectedPage(value);
-                          },
-                          itemCount: 2,
-                          // physics: const NeverScrollableScrollPhysics(),
-                          itemBuilder: (context, i) {
-                            if (i == 0) {
-                              return SignupVendorEmailName(
-                                fullNameController: fullNameController,
-                                userNameController: userNameController,
-                                emailController: emailController,
-                                phoneController: numberController,
-                              );
-                            } else {
-                              return SignupVendorBusinessDetails(
-                                state: businessStateController,
-                                city: businessCityController,
-                                fullNameController: fullNameController,
-                                userNameController: userNameController,
-                                emailController: emailController,
-                                phoneController: numberController,
-                              );
-                              // } else {
-                              return Text("Kya Dalu Yaha Par");
-                              // return SignupCountryStates(
-                              //   emailController: emailController,
-                              //   fullNameController: fullNameController,
-                              //   passController: newPasswordController,
-                              //   userNameController:
-                              //       userNameContrtoPageoller,
-                              // );
-                            }
-                          }),
-                    ),
-                  ]),
+                      //Slider =============>
+                      Expanded(
+                        child: PageView.builder(
+                            controller: context
+                                .read<SignupVendorService>()
+                                .pagecontroller,
+                            physics: const NeverScrollableScrollPhysics(),
+                            onPageChanged: (value) {
+                              provider.setSelectedPage(value);
+                            },
+                            itemCount: 2,
+                            // physics: const NeverScrollableScrollPhysics(),
+                            itemBuilder: (context, i) {
+                              if (i == 0) {
+                                return SignupVendorEmailName(
+                                  fullNameController: fullNameController,
+                                  userNameController: userNameController,
+                                  emailController: emailController,
+                                  phoneController: numberController,
+                                );
+                              } else {
+                                return SignupVendorBusinessDetails(
+                                  state: businessStateController,
+                                  city: businessCityController,
+                                  fullNameController: fullNameController,
+                                  userNameController: userNameController,
+                                  emailController: emailController,
+                                  phoneController: numberController,
+                                );
+                                // } else {
+                                return Text("Kya Dalu Yaha Par");
+                                // return SignupCountryStates(
+                                //   emailController: emailController,
+                                //   fullNameController: fullNameController,
+                                //   passController: newPasswordController,
+                                //   userNameController:
+                                //       userNameContrtoPageoller,
+                                // );
+                              }
+                            }),
+                      ),
+                    ]),
+              ),
             ),
           ),
         ),

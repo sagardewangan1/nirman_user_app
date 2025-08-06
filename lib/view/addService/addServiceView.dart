@@ -1361,170 +1361,174 @@ class _AddServiceViewState extends State<AddServiceView> {
                           ],
                         ),
                       ),
-                bottomNavigationBar: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: SizedBox(
-                      height: 55,
-                      child: CommonHelper().buttonOrange(
-                        AppLocalizations.of(context)!.continueText,
-                        () async {
-                          // OthersHelper()
-                          //     .showToast("Service Added", cc.successColor);
-                          if (serviceProvider.isLoading == false) {
-                            // Ensure category IDs are not null
+                bottomNavigationBar: SafeArea(
+                  child: Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: SizedBox(
+                        height: 55,
+                        child: CommonHelper().buttonOrange(
+                          AppLocalizations.of(context)!.continueText,
+                          () async {
+                            // OthersHelper()
+                            //     .showToast("Service Added", cc.successColor);
+                            if (serviceProvider.isLoading == false) {
+                              // Ensure category IDs are not null
 
-                            // Map<String, String> images = {};
-                            // Map<String, String> imageUrls = {};
-                            //
-                            // // Handle image selection
-                            // if (getImageController.files.isNotEmpty) {
-                            //   for (int i = 0;
-                            //       i < getImageController.files.length;
-                            //       i++) {
-                            //     images["image$i"] =
-                            //         getImageController.files[i].path.toString();
-                            //   }
-                            // }
+                              // Map<String, String> images = {};
+                              // Map<String, String> imageUrls = {};
+                              //
+                              // // Handle image selection
+                              // if (getImageController.files.isNotEmpty) {
+                              //   for (int i = 0;
+                              //       i < getImageController.files.length;
+                              //       i++) {
+                              //     images["image$i"] =
+                              //         getImageController.files[i].path.toString();
+                              //   }
+                              // }
 
-                            // Handle existing image URLs if required
-                            // if (existingImageUrls.isNotEmpty) {
-                            //   for (int i = 0; i < existingImageUrls.length; i++) {
-                            //     imageUrls["imageUrl$i"] = existingImageUrls[i];
-                            //   }
-                            // }
+                              // Handle existing image URLs if required
+                              // if (existingImageUrls.isNotEmpty) {
+                              //   for (int i = 0; i < existingImageUrls.length; i++) {
+                              //     imageUrls["imageUrl$i"] = existingImageUrls[i];
+                              //   }
+                              // }
 
-                            if (addServiceController.selectedCatIds == null ||
-                                addServiceController.selectedCatIds == '0' ||
-                                addServiceController.selectedSubIds == null ||
-                                addServiceController.selectedSubIds == '0') {
-                              String message = AppLocalizations.of(context)!
-                                  .categoryAndSubcategoryRequired;
-                              OthersHelper()
-                                  .showToast(message, cc.warningColor);
-                              return;
-                            }
+                              if (addServiceController.selectedCatIds == null ||
+                                  addServiceController.selectedCatIds == '0' ||
+                                  addServiceController.selectedSubIds == null ||
+                                  addServiceController.selectedSubIds == '0') {
+                                String message = AppLocalizations.of(context)!
+                                    .categoryAndSubcategoryRequired;
+                                OthersHelper()
+                                    .showToast(message, cc.warningColor);
+                                return;
+                              }
 
-                            if (_serviceOverview.text.length < 150) {
-                              return OthersHelper().showToast(
-                                  AppLocalizations.of(context)!
-                                      .serviceOverviewMust150Char,
-                                  cc.warningColor);
-                            }
+                              if (_serviceOverview.text.length < 150) {
+                                return OthersHelper().showToast(
+                                    AppLocalizations.of(context)!
+                                        .serviceOverviewMust150Char,
+                                    cc.warningColor);
+                              }
 
-                            if (_formKey.currentState?.validate() ?? false) {
-                              final pref =
-                                  await SharedPreferences.getInstance();
-                              bool isLogged =
-                                  pref.getBool("shashaktnirmanIsLoggedIn") ??
-                                      false;
-                              if (widget.navigationModel?.pageName ==
-                                  "Update Service") {
-                                var body = {
-                                  "service_id": widget.navigationModel?.roleType
-                                      .toString(),
-                                  "category_id":
-                                      "${addServiceController.selectedCatIds}",
-                                  "subcategory_id":
-                                      "${addServiceController.selectedSubIds}",
-                                  "child_category_id":
-                                      "${addServiceController.selectedChildIds ?? 0} ",
-                                  "title": _serviceName.text,
-                                  "description": _serviceOverview.text,
-                                  "price": _servicePrice.text.toString(),
-                                  "service_city_id": context
-                                      .read<StateDropdownService>()
-                                      .selectedStateId
-                                      .toString(),
-                                  // "service_area_id": jsonEncode(context
-                                  //     .read<AreaDropdownService>()
-                                  //     .selectedCityID),
-                                  "service_area_id":
-                                      "[${context.read<AreaDropdownService>().selectedCityID.map((e) => '"$e"').join(",")}]",
-                                  "experience": _serviceExperience.text,
-                                };
+                              if (_formKey.currentState?.validate() ?? false) {
+                                final pref =
+                                    await SharedPreferences.getInstance();
+                                bool isLogged =
+                                    pref.getBool("shashaktnirmanIsLoggedIn") ??
+                                        false;
+                                if (widget.navigationModel?.pageName ==
+                                    "Update Service") {
+                                  var body = {
+                                    "service_id": widget
+                                        .navigationModel?.roleType
+                                        .toString(),
+                                    "category_id":
+                                        "${addServiceController.selectedCatIds}",
+                                    "subcategory_id":
+                                        "${addServiceController.selectedSubIds}",
+                                    "child_category_id":
+                                        "${addServiceController.selectedChildIds ?? 0} ",
+                                    "title": _serviceName.text,
+                                    "description": _serviceOverview.text,
+                                    "price": _servicePrice.text.toString(),
+                                    "service_city_id": context
+                                        .read<StateDropdownService>()
+                                        .selectedStateId
+                                        .toString(),
+                                    // "service_area_id": jsonEncode(context
+                                    //     .read<AreaDropdownService>()
+                                    //     .selectedCityID),
+                                    "service_area_id":
+                                        "[${context.read<AreaDropdownService>().selectedCityID.map((e) => '"$e"').join(",")}]",
+                                    "experience": _serviceExperience.text,
+                                  };
 
-                                print("body=====> $body");
-                                bool success =
-                                    await serviceProvider.updateService(
-                                  context,
-                                  body,
-                                  isLogged,
-                                  imagePath:
-                                      getImageController.fileSingle?.path ??
-                                          '', // ✅ Pass only one image
-                                  images:
-                                      serviceImage, // ✅ This should be a required list
-                                );
+                                  print("body=====> $body");
+                                  bool success =
+                                      await serviceProvider.updateService(
+                                    context,
+                                    body,
+                                    isLogged,
+                                    imagePath:
+                                        getImageController.fileSingle?.path ??
+                                            '', // ✅ Pass only one image
+                                    images:
+                                        serviceImage, // ✅ This should be a required list
+                                  );
 
-                                if (success) {
-                                  OthersHelper().showToast(
-                                      AppLocalizations.of(context)!
-                                          .successfullyUpdated,
-                                      cc.successColor);
-                                  getImageController.removeFile();
-                                  addServiceController.resetCategories();
+                                  if (success) {
+                                    OthersHelper().showToast(
+                                        AppLocalizations.of(context)!
+                                            .successfullyUpdated,
+                                        cc.successColor);
+                                    getImageController.removeFile();
+                                    addServiceController.resetCategories();
 
-                                  Navigator.pop(context);
+                                    Navigator.pop(context);
+                                  } else {
+                                    OthersHelper().showToast(
+                                        AppLocalizations.of(context)!
+                                            .failedUpdateService,
+                                        cc.errorColor);
+                                  }
                                 } else {
-                                  OthersHelper().showToast(
-                                      AppLocalizations.of(context)!
-                                          .failedUpdateService,
-                                      cc.errorColor);
-                                }
-                              } else {
-                                var body = {
-                                  "category_id":
-                                      "${addServiceController.selectedCatIds}",
-                                  "subcategory_id":
-                                      "${addServiceController.selectedSubIds}",
-                                  "child_category_id":
-                                      "${addServiceController.selectedChildIds ?? 0} ",
-                                  "title": _serviceName.text,
-                                  "description": _serviceOverview.text,
-                                  "price": _servicePrice.text.toString(),
-                                  "service_city_id": context
-                                      .read<StateDropdownService>()
-                                      .selectedStateId
-                                      .toString(),
-                                  // "service_area_id": jsonEncode(context
-                                  //     .read<AreaDropdownService>()
-                                  //     .selectedCityID),
-                                  "service_area_id":
-                                      "[${context.read<AreaDropdownService>().selectedCityID.map((e) => '"$e"').join(",")}]",
-                                  "experience": _serviceExperience.text,
-                                };
+                                  var body = {
+                                    "category_id":
+                                        "${addServiceController.selectedCatIds}",
+                                    "subcategory_id":
+                                        "${addServiceController.selectedSubIds}",
+                                    "child_category_id":
+                                        "${addServiceController.selectedChildIds ?? 0} ",
+                                    "title": _serviceName.text,
+                                    "description": _serviceOverview.text,
+                                    "price": _servicePrice.text.toString(),
+                                    "service_city_id": context
+                                        .read<StateDropdownService>()
+                                        .selectedStateId
+                                        .toString(),
+                                    // "service_area_id": jsonEncode(context
+                                    //     .read<AreaDropdownService>()
+                                    //     .selectedCityID),
+                                    "service_area_id":
+                                        "[${context.read<AreaDropdownService>().selectedCityID.map((e) => '"$e"').join(",")}]",
+                                    "experience": _serviceExperience.text,
+                                  };
 
-                                print("body=====> $body");
+                                  print("body=====> $body");
 
-                                bool success = await serviceProvider.addService(
-                                  context,
-                                  body,
-                                  isLogged,
-                                  imagePath: getImageController.fileSingle
-                                      ?.path, // ✅ Pass only one image
-                                  images: getImageController
-                                      .files, // ✅ This should be a required list
-                                );
+                                  bool success =
+                                      await serviceProvider.addService(
+                                    context,
+                                    body,
+                                    isLogged,
+                                    imagePath: getImageController.fileSingle
+                                        ?.path, // ✅ Pass only one image
+                                    images: getImageController
+                                        .files, // ✅ This should be a required list
+                                  );
 
-                                if (success) {
-                                  OthersHelper().showToast(
-                                      "Service Added", cc.successColor);
-                                  getImageController.removeFile();
-                                  addServiceController.resetCategories();
+                                  if (success) {
+                                    OthersHelper().showToast(
+                                        "Service Added", cc.successColor);
+                                    getImageController.removeFile();
+                                    addServiceController.resetCategories();
 
-                                  Navigator.pop(context);
-                                } else {
-                                  OthersHelper().showToast(
-                                      "Failed to add service", cc.errorColor);
+                                    Navigator.pop(context);
+                                  } else {
+                                    OthersHelper().showToast(
+                                        "Failed to add service", cc.errorColor);
+                                  }
                                 }
                               }
                             }
-                          }
-                        },
-                        isloading:
-                            serviceProvider.isLoading == false ? false : true,
-                      ),
-                    )),
+                          },
+                          isloading:
+                              serviceProvider.isLoading == false ? false : true,
+                        ),
+                      )),
+                ),
               ),
             );
           },

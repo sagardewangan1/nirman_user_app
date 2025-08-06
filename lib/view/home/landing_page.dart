@@ -134,11 +134,13 @@ class _LandingPageState extends State<LandingPage> {
               },
               child: _children[landingPageProvider.tabIndex],
             ),
-            bottomNavigationBar: BottomNav(
-              currentIndex: landingPageProvider.tabIndex,
-              onTabTapped: onTabTapped,
-              userType: userType,
-              navIndexes: _navIndexes,
+            bottomNavigationBar: SafeArea(
+              child: BottomNav(
+                currentIndex: landingPageProvider.tabIndex,
+                onTabTapped: onTabTapped,
+                userType: userType,
+                navIndexes: _navIndexes,
+              ),
             ),
           ),
         );

@@ -85,202 +85,212 @@ class _AllServicePageState extends State<AllServicePage> {
           .appbarCommon(AppLocalizations.of(context)!.allServices, context, () {
         Navigator.pop(context);
       }),
-      body: SmartRefresher(
-        controller: _refreshController,
-        onRefresh: _onRefresh,
-        enablePullDown: true,
-        enablePullUp: true,
-        header: ClassicHeader(
-          completeText: 'Refresh completed',
-          refreshingText: 'Refreshing...',
-          idleText: 'Pull down to refresh',
-          releaseText: 'Release to refresh',
-        ),
-        onLoading: _onLoading,
-        footer: ClassicFooter(
-          loadingText: 'Loading more...',
-          noDataText: 'No more data',
-          idleText: 'Pull up to load more',
-          canLoadingText: 'Release to load more',
-        ),
-        child: allServiceController.isLoading
-            ? Center(
-                child: OthersHelper().showLoading(cc.primaryColor),
-              )
-            : SingleChildScrollView(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Consumer<AllServicesService>(
-                    builder: (context, provider, child) => Column(
-                      children: [
-                        12.toHeight,
-                        Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8.0),
-                              color: cc.white,
-                            ),
-                            child: TextFormField(
-                              controller: sfm.searchTextController,
-                              decoration: InputDecoration(
-                                hintText: AppLocalizations.of(context)!.search,
+      body: SafeArea(
+        child: SmartRefresher(
+          controller: _refreshController,
+          onRefresh: _onRefresh,
+          enablePullDown: true,
+          enablePullUp: true,
+          header: ClassicHeader(
+            completeText: 'Refresh completed',
+            refreshingText: 'Refreshing...',
+            idleText: 'Pull down to refresh',
+            releaseText: 'Release to refresh',
+          ),
+          onLoading: _onLoading,
+          footer: ClassicFooter(
+            loadingText: 'Loading more...',
+            noDataText: 'No more data',
+            idleText: 'Pull up to load more',
+            canLoadingText: 'Release to load more',
+          ),
+          child: allServiceController.isLoading
+              ? Center(
+                  child: OthersHelper().showLoading(cc.primaryColor),
+                )
+              : SingleChildScrollView(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Consumer<AllServicesService>(
+                      builder: (context, provider, child) => Column(
+                        children: [
+                          12.toHeight,
+                          Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8.0),
+                                color: cc.white,
                               ),
-                              onChanged: (text) {
-                                sfm.timer?.cancel();
-                                sfm.timer =
-                                    Timer(const Duration(seconds: 1), () {
-                                  final provider =
-                                      Provider.of<AllServicesService>(context,
-                                          listen: false);
-                                  provider.setSearch(context, text);
-                                  provider.fetchAllService(context,
-                                      isRefresh:
-                                          true); // 🔹 Search ke sath API call
-                                });
-                              },
-                            )).hp20,
-                        12.toHeight,
-                        !provider.isLoading
-                            ? provider.serviceMap.isNotEmpty
-                                ? Padding(
-                                    padding: const EdgeInsets.only(top: 15),
-                                    child: ListView.builder(
-                                      physics:
-                                          const NeverScrollableScrollPhysics(),
-                                      shrinkWrap: true,
-                                      itemCount: provider.serviceMap.length,
-                                      itemBuilder: (context, i) {
-                                        final service = provider.serviceMap[i];
-                                        var serviceAreaList =
-                                            service["serviceArea"];
-                                        var areas = (serviceAreaList != null &&
-                                                serviceAreaList.isNotEmpty)
-                                            ? serviceAreaList.join(", ")
-                                            : ""; // Default message when empty
-                                        return Column(
-                                          children: [
-                                            InkWell(
-                                              splashColor: Colors.transparent,
-                                              highlightColor:
-                                                  Colors.transparent,
-                                              onTap: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute<void>(
-                                                    builder: (BuildContext
-                                                            context) =>
-                                                        const ServiceDetailsPage(),
-                                                  ),
-                                                );
-                                                Provider.of<ServiceDetailsService>(
-                                                        context,
-                                                        listen: false)
-                                                    .fetchServiceDetails(
-                                                        service['serviceId']);
-                                              },
-                                              child: ServiceCard(
-                                                cc: cc,
-                                                imageLink:
-                                                    service['businessImage'] ??
-                                                        placeHolderUrl,
-                                                rating: twoDouble(
-                                                    service['rating']),
-                                                title: service['title'],
-                                                sellerName:
-                                                    service['sellerName'],
-                                                price: service['price'],
-                                                buttonText: AppLocalizations.of(
-                                                        context)!
-                                                    .enquiryNow,
-                                                width: double.infinity,
-                                                marginRight: 0.0,
-                                                pressed: () {
-                                                  provider.saveOrUnsave(
-                                                    service['serviceId'],
-                                                    service['title'],
-                                                    service['image'],
-                                                    service['price'].round(),
-                                                    service['sellerName'],
-                                                    twoDouble(
-                                                        service['rating']),
-                                                    i,
+                              child: TextFormField(
+                                controller: sfm.searchTextController,
+                                decoration: InputDecoration(
+                                  hintText:
+                                      AppLocalizations.of(context)!.search,
+                                ),
+                                onChanged: (text) {
+                                  sfm.timer?.cancel();
+                                  sfm.timer =
+                                      Timer(const Duration(seconds: 1), () {
+                                    final provider =
+                                        Provider.of<AllServicesService>(context,
+                                            listen: false);
+                                    provider.setSearch(context, text);
+                                    provider.fetchAllService(context,
+                                        isRefresh:
+                                            true); // 🔹 Search ke sath API call
+                                  });
+                                },
+                              )).hp20,
+                          12.toHeight,
+                          !provider.isLoading
+                              ? provider.serviceMap.isNotEmpty
+                                  ? Padding(
+                                      padding: const EdgeInsets.only(top: 15),
+                                      child: ListView.builder(
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
+                                        shrinkWrap: true,
+                                        itemCount: provider.serviceMap.length,
+                                        itemBuilder: (context, i) {
+                                          final service =
+                                              provider.serviceMap[i];
+                                          var serviceAreaList =
+                                              service["serviceArea"];
+                                          var areas = (serviceAreaList !=
+                                                      null &&
+                                                  serviceAreaList.isNotEmpty)
+                                              ? serviceAreaList.join(", ")
+                                              : ""; // Default message when empty
+                                          return Column(
+                                            children: [
+                                              InkWell(
+                                                splashColor: Colors.transparent,
+                                                highlightColor:
+                                                    Colors.transparent,
+                                                onTap: () {
+                                                  Navigator.push(
                                                     context,
-                                                    service['sellerId'],
-                                                    service['experience'] ?? '',
+                                                    MaterialPageRoute<void>(
+                                                      builder: (BuildContext
+                                                              context) =>
+                                                          const ServiceDetailsPage(),
+                                                    ),
                                                   );
-                                                },
-                                                isSaved:
-                                                    service['isSaved'] == true,
-                                                serviceId: service['serviceId'],
-                                                sellerId: service['sellerId'],
-                                                cardFrom: 'Home',
-                                                address: areas
-                                                    .toString()
-                                                    .capitalizeWords,
-                                                experience: service[
-                                                            'experience'] ==
-                                                        null
-                                                    ? ''
-                                                    : (RegExp(r'^\d+$')
-                                                            .hasMatch(service[
-                                                                    'experience']
-                                                                .toString())
-                                                        ? "${service['experience']} year"
-                                                        : "${service['experience']}"),
-                                                status: service['status']
-                                                    .toString(),
-                                                onTapCall: () {
-                                                  ContactFeatures()
-                                                      .launchCalling(
+                                                  Provider.of<ServiceDetailsService>(
                                                           context,
-                                                          service[
-                                                              'callNumber']);
+                                                          listen: false)
+                                                      .fetchServiceDetails(
+                                                          service['serviceId']);
                                                 },
-                                                onTapWhatsapp: () {
-                                                  ContactFeatures().launchWhatsapp(
+                                                child: ServiceCard(
+                                                  cc: cc,
+                                                  imageLink: service[
+                                                          'businessImage'] ??
+                                                      placeHolderUrl,
+                                                  rating: twoDouble(
+                                                      service['rating']),
+                                                  title: service['title'],
+                                                  sellerName:
+                                                      service['sellerName'],
+                                                  price: service['price'],
+                                                  buttonText:
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .enquiryNow,
+                                                  width: double.infinity,
+                                                  marginRight: 0.0,
+                                                  pressed: () {
+                                                    provider.saveOrUnsave(
+                                                      service['serviceId'],
+                                                      service['title'],
+                                                      service['image'],
+                                                      service['price'].round(),
+                                                      service['sellerName'],
+                                                      twoDouble(
+                                                          service['rating']),
+                                                      i,
                                                       context,
-                                                      service['callNumber'],
-                                                      "${AppLocalizations.of(context)!.whatsappContactMsg} *${service['title']}*.");
-                                                },
+                                                      service['sellerId'],
+                                                      service['experience'] ??
+                                                          '',
+                                                    );
+                                                  },
+                                                  isSaved: service['isSaved'] ==
+                                                      true,
+                                                  serviceId:
+                                                      service['serviceId'],
+                                                  sellerId: service['sellerId'],
+                                                  cardFrom: 'Home',
+                                                  address: areas
+                                                      .toString()
+                                                      .capitalizeWords,
+                                                  experience: service[
+                                                              'experience'] ==
+                                                          null
+                                                      ? ''
+                                                      : (RegExp(r'^\d+$')
+                                                              .hasMatch(service[
+                                                                      'experience']
+                                                                  .toString())
+                                                          ? "${service['experience']} year"
+                                                          : "${service['experience']}"),
+                                                  status: service['status']
+                                                      .toString(),
+                                                  onTapCall: () {
+                                                    ContactFeatures()
+                                                        .launchCalling(
+                                                            context,
+                                                            service[
+                                                                'callNumber']);
+                                                  },
+                                                  onTapWhatsapp: () {
+                                                    ContactFeatures()
+                                                        .launchWhatsapp(
+                                                            context,
+                                                            service[
+                                                                'callNumber'],
+                                                            "${AppLocalizations.of(context)!.whatsappContactMsg} *${service['title']}*.");
+                                                  },
+                                                ),
                                               ),
-                                            ),
-                                            const SizedBox(height: 10),
-                                          ],
-                                        );
-                                      },
+                                              const SizedBox(height: 10),
+                                            ],
+                                          );
+                                        },
+                                      ),
+                                    )
+                                  : Container(
+                                      alignment: Alignment.center,
+                                      height: screenHeight - 140,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Image.asset(
+                                            "assets/images/nodata.png",
+                                            fit: BoxFit.contain,
+                                          ),
+                                          Gap(10),
+                                          Text(AppLocalizations.of(context)!
+                                              .noServiceProviderInYourArea),
+                                        ],
+                                      ),
+                                    )
+                              : Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(top: 60),
+                                    child: CircularProgressIndicator(
+                                      color: cc.primaryColor,
                                     ),
-                                  )
-                                : Container(
-                                    alignment: Alignment.center,
-                                    height: screenHeight - 140,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Image.asset(
-                                          "assets/images/nodata.png",
-                                          fit: BoxFit.contain,
-                                        ),
-                                        Gap(10),
-                                        Text(AppLocalizations.of(context)!
-                                            .noServiceProviderInYourArea),
-                                      ],
-                                    ),
-                                  )
-                            : Center(
-                                child: Padding(
-                                  padding: const EdgeInsets.only(top: 60),
-                                  child: CircularProgressIndicator(
-                                    color: cc.primaryColor,
                                   ),
                                 ),
-                              ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
+        ),
       ),
     );
   }

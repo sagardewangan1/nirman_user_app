@@ -74,74 +74,78 @@ class _AllVendroServiceListState extends State<AllVendroServiceList> {
                   Navigator.pop(context);
                 },
               ),
-              body: Consumer<VendorDashboardService>(
-                builder: (context, vendorProvider, child) {
-                  return vendorProvider.isLoading
-                      ? Center(
-                          child: OthersHelper().showLoading(cc.primaryColor))
-                      : vendorProvider
-                                  .myServiceListDataModel.myServices?.length !=
-                              0
-                          ? ListView.builder(
-                              itemCount: vendorProvider
-                                  .myServiceListDataModel.myServices?.length,
-                              itemBuilder: (context, index) {
-                                final service = vendorProvider
-                                    .myServiceListDataModel.myServices?[index];
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 15.0, vertical: 5.0),
-                                  child: MyServiceCard(
-                                    featureImage: service
-                                            ?.seller?.businessImage?.imgUrl ??
-                                        placeHolderUrl,
-                                    serviceName: service?.title ?? '',
-                                    category:
-                                        service?.category?.name.toString() ??
-                                            '',
-                                    subCategory:
-                                        service?.subcategory?.name.toString() ??
-                                            '',
-                                    createdDate: DateTime.now().toString(),
-                                    isActive:
-                                        service?.status == 0 ? false : true,
-                                    onEdit: () async {
-                                      final pref =
-                                          await SharedPreferences.getInstance();
-                                      if (mounted) {
-                                        editServiceBottomSheet(
-                                            context, _searchController,
-                                            serviceId: service?.id.toString());
-                                      }
-                                    },
-                                    onDelete: () {
-                                      SettingsHelper()
-                                          .deleteServicePopup(
-                                              context, service?.id.toString())
-                                          .then(
-                                        (value) {
-                                          if (value) {
-                                            firstLoad();
-                                          }
-                                        },
-                                      );
-                                    },
-                                    onToggleActive: () {
-                                      // print("${service.isActive ? 'Deactivate' : 'Activate'} ${service.serviceName}");
-                                    },
-                                  ),
-                                );
-                              },
-                            )
-                          : Container(
-                              alignment: Alignment.center,
-                              height: screenHeight - 140,
-                              child: Image.asset(
-                                "assets/images/nodata.png",
-                                fit: BoxFit.contain,
-                              ),
-                            );
-                },
+              body: SafeArea(
+                child: Consumer<VendorDashboardService>(
+                  builder: (context, vendorProvider, child) {
+                    return vendorProvider.isLoading
+                        ? Center(
+                            child: OthersHelper().showLoading(cc.primaryColor))
+                        : vendorProvider.myServiceListDataModel.myServices
+                                    ?.length !=
+                                0
+                            ? ListView.builder(
+                                itemCount: vendorProvider
+                                    .myServiceListDataModel.myServices?.length,
+                                itemBuilder: (context, index) {
+                                  final service = vendorProvider
+                                      .myServiceListDataModel
+                                      .myServices?[index];
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 15.0, vertical: 5.0),
+                                    child: MyServiceCard(
+                                      featureImage: service
+                                              ?.seller?.businessImage?.imgUrl ??
+                                          placeHolderUrl,
+                                      serviceName: service?.title ?? '',
+                                      category:
+                                          service?.category?.name.toString() ??
+                                              '',
+                                      subCategory: service?.subcategory?.name
+                                              .toString() ??
+                                          '',
+                                      createdDate: DateTime.now().toString(),
+                                      isActive:
+                                          service?.status == 0 ? false : true,
+                                      onEdit: () async {
+                                        final pref = await SharedPreferences
+                                            .getInstance();
+                                        if (mounted) {
+                                          editServiceBottomSheet(
+                                              context, _searchController,
+                                              serviceId:
+                                                  service?.id.toString());
+                                        }
+                                      },
+                                      onDelete: () {
+                                        SettingsHelper()
+                                            .deleteServicePopup(
+                                                context, service?.id.toString())
+                                            .then(
+                                          (value) {
+                                            if (value) {
+                                              firstLoad();
+                                            }
+                                          },
+                                        );
+                                      },
+                                      onToggleActive: () {
+                                        // print("${service.isActive ? 'Deactivate' : 'Activate'} ${service.serviceName}");
+                                      },
+                                    ),
+                                  );
+                                },
+                              )
+                            : Container(
+                                alignment: Alignment.center,
+                                height: screenHeight - 140,
+                                child: Image.asset(
+                                  "assets/images/nodata.png",
+                                  fit: BoxFit.contain,
+                                ),
+                              );
+                  },
+                ),
               )),
         );
       },

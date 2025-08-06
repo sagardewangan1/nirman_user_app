@@ -46,69 +46,71 @@ class _AllCategoriesPageState extends State<AllCategoriesPage> {
             .appbarCommon(widget.title ?? 'All Categories', context, () {
           Navigator.pop(context);
         }),
-        body: Consumer<AllServicesService>(
-          builder: (context, provider, child) => Container(
-            padding: EdgeInsets.symmetric(horizontal: screenPadding),
-            child: GridView.builder(
-              clipBehavior: Clip.none,
-              gridDelegate: const FlutterzillaFixedGridView(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 19,
-                  crossAxisSpacing: 19,
-                  height: 140),
-              padding: const EdgeInsets.only(top: 12),
-              itemCount: provider.subCatList.length,
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                final subCate = provider.subCatList[index];
-                return provider.subCatList != null
-                    ? provider.subCatList != 'error'
-                        ? CategoryCard(
-                            onTap: () {
-                              // final sbcProvider =
-                              //     Provider.of<ServiceByCategoryService>(
-                              //   context,
-                              //   listen: false,
-                              // );
-                              // sbcProvider.fetchSubcategoryList(subCate.id);
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute<void>(
-                                  builder: (BuildContext context) =>
-                                      ServiceCategoryPage(
-                                    categoryName: subCate.name ?? '',
-                                    categoryId: widget.catId,
-                                    subCatId: subCate.id,
+        body: SafeArea(
+          child: Consumer<AllServicesService>(
+            builder: (context, provider, child) => Container(
+              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+              child: GridView.builder(
+                clipBehavior: Clip.none,
+                gridDelegate: const FlutterzillaFixedGridView(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 19,
+                    crossAxisSpacing: 19,
+                    height: 140),
+                padding: const EdgeInsets.only(top: 12),
+                itemCount: provider.subCatList.length,
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  final subCate = provider.subCatList[index];
+                  return provider.subCatList != null
+                      ? provider.subCatList != 'error'
+                          ? CategoryCard(
+                              onTap: () {
+                                // final sbcProvider =
+                                //     Provider.of<ServiceByCategoryService>(
+                                //   context,
+                                //   listen: false,
+                                // );
+                                // sbcProvider.fetchSubcategoryList(subCate.id);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute<void>(
+                                    builder: (BuildContext context) =>
+                                        ServiceCategoryPage(
+                                      categoryName: subCate.name ?? '',
+                                      categoryId: widget.catId,
+                                      subCatId: subCate.id,
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
-                            name: subCate.name,
-                            id: subCate.id,
-                            cc: cc,
-                            index: index,
-                            imagelink: subCate.image ??
-                                "", // Correctly accessing the mobileIcon data
-                          )
-                        : Container(
-                            alignment: Alignment.center,
-                            height: screenHeight - 140,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Image.asset(
-                                  "assets/images/nodata.png",
-                                  fit: BoxFit.contain,
-                                ),
-                                Gap(10),
-                                Text(AppLocalizations.of(context)!
-                                    .noServiceProviderInYourArea),
-                              ],
-                            ),
-                          )
-                    : OthersHelper().showLoading(cc.primaryColor);
-              },
+                                );
+                              },
+                              name: subCate.name,
+                              id: subCate.id,
+                              cc: cc,
+                              index: index,
+                              imagelink: subCate.image ??
+                                  "", // Correctly accessing the mobileIcon data
+                            )
+                          : Container(
+                              alignment: Alignment.center,
+                              height: screenHeight - 140,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Image.asset(
+                                    "assets/images/nodata.png",
+                                    fit: BoxFit.contain,
+                                  ),
+                                  Gap(10),
+                                  Text(AppLocalizations.of(context)!
+                                      .noServiceProviderInYourArea),
+                                ],
+                              ),
+                            )
+                      : OthersHelper().showLoading(cc.primaryColor);
+                },
+              ),
             ),
           ),
         ));

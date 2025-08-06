@@ -30,55 +30,58 @@ class _WriteReportPageState extends State<WriteReportPage> {
   @override
   Widget build(BuildContext context) {
     ConstantColors cc = ConstantColors();
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: CommonHelper().appbarCommon('Report', context, () {
-        Navigator.pop(context);
-      }),
-      body: SingleChildScrollView(
-        physics: physicsCommon,
-        child: Consumer<ProfileService>(
-          builder: (context, profileProvider, child) => Container(
-            padding: EdgeInsets.symmetric(horizontal: screenPadding),
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const SizedBox(
-                height: 15,
-              ),
-              sizedBox20(),
-              Text(
-                lnProvider.getString('What went wrong?'),
-                style: TextStyle(
-                    color: cc.greyFour,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(
-                height: 14,
-              ),
-              TextareaField(
-                notesController: reportController,
-                hintText: lnProvider.getString('Write the issue'),
-              ),
-              sizedBox20(),
-              Consumer<LeaveFeedbackService>(
-                builder: (context, lfProvider, child) =>
-                    CommonHelper().buttonOrange('Submit Report', () {
-                  if (lfProvider.reportLoading == false) {
-                    if (reportController.text.trim().isEmpty) {
-                      OthersHelper().showToast(
-                          'You must write something to submit report',
-                          Colors.black);
-                      return;
-                    }
-                    lfProvider.leaveReport(context,
-                        message: reportController.text,
-                        orderId: widget.orderId,
-                        serviceId: widget.serviceId);
-                  }
-                }, isloading: lfProvider.reportLoading),
-              )
-            ]),
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: CommonHelper().appbarCommon('Report', context, () {
+          Navigator.pop(context);
+        }),
+        body: SingleChildScrollView(
+          physics: physicsCommon,
+          child: Consumer<ProfileService>(
+            builder: (context, profileProvider, child) => Container(
+              padding: EdgeInsets.symmetric(horizontal: screenPadding),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    sizedBox20(),
+                    Text(
+                      lnProvider.getString('What went wrong?'),
+                      style: TextStyle(
+                          color: cc.greyFour,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(
+                      height: 14,
+                    ),
+                    TextareaField(
+                      notesController: reportController,
+                      hintText: lnProvider.getString('Write the issue'),
+                    ),
+                    sizedBox20(),
+                    Consumer<LeaveFeedbackService>(
+                      builder: (context, lfProvider, child) =>
+                          CommonHelper().buttonOrange('Submit Report', () {
+                        if (lfProvider.reportLoading == false) {
+                          if (reportController.text.trim().isEmpty) {
+                            OthersHelper().showToast(
+                                'You must write something to submit report',
+                                Colors.black);
+                            return;
+                          }
+                          lfProvider.leaveReport(context,
+                              message: reportController.text,
+                              orderId: widget.orderId,
+                              serviceId: widget.serviceId);
+                        }
+                      }, isloading: lfProvider.reportLoading),
+                    )
+                  ]),
+            ),
           ),
         ),
       ),

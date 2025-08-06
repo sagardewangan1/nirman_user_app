@@ -172,6 +172,7 @@ class FilterServicesService with ChangeNotifier {
     markerKeys = [];
     searchLoading = true;
     // notifyListeners();
+    print("searchUrl===> $searchUrl");
     final responseData = await NetworkApiServices().getApi(
       searchUrl,
       "Search services",

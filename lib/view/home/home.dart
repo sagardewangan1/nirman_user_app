@@ -6,10 +6,6 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:qixer/helper/extension/widget_extension.dart';
 import 'package:qixer/service/app_string_service.dart';
 import 'package:qixer/service/cityAndAreaController/cityAndAreaController.dart';
-import 'package:qixer/service/common_service.dart';
-import 'package:qixer/service/country_states_service.dart';
-import 'package:qixer/service/dropdowns_services/area_dropdown_service.dart';
-import 'package:qixer/service/dropdowns_services/state_dropdown_services.dart';
 import 'package:qixer/service/filter_services_service.dart';
 import 'package:qixer/service/home_services/category_service.dart';
 import 'package:qixer/service/home_services/landingPageService.dart';
@@ -22,25 +18,16 @@ import 'package:qixer/service/permissions_service.dart';
 import 'package:qixer/service/profile_service.dart';
 import 'package:qixer/service/vendorDashboardService/vendorDashboardService.dart';
 import 'package:qixer/view/VenderDashBoard/subscriptionModule.dart';
-import 'package:qixer/view/auth/signup/components/area_dropdown.dart';
-import 'package:qixer/view/auth/signup/components/area_dropdown_popup.dart';
-import 'package:qixer/view/auth/signup/components/state_dropdown.dart';
-import 'package:qixer/view/auth/signup/dropdowns/country_states_dropdowns.dart';
-import 'package:qixer/view/auth/signup/dropdowns/state_dropdown_popup.dart';
 import 'package:qixer/view/home/components/categories.dart';
 import 'package:qixer/view/home/components/location_section.dart';
-import 'package:qixer/view/home/components/recent_jobs.dart';
 import 'package:qixer/view/home/components/recent_services.dart';
 import 'package:qixer/view/home/components/slider_home.dart';
-import 'package:qixer/view/home/components/top_rated_services.dart';
-import 'package:qixer/view/home/homepage_helper.dart';
 import 'package:qixer/view/search/service_filter_model.dart';
 import 'package:qixer/view/utils/common_helper.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:qixer/view/utils/others_helper.dart';
 import 'package:qixer/view/utils/responsive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../search/components/location_sheet.dart';
 import '../utils/constant_styles.dart';
 import '../utils/custom_input.dart';
 import 'components/home_app_bar.dart';
@@ -55,7 +42,6 @@ class Homepage extends StatefulWidget {
 
 class _HomepageState extends State<Homepage> {
   String? userType;
-  bool _isSubscribed = false;
 
   final TextEditingController searchController = TextEditingController();
 
@@ -63,50 +49,47 @@ class _HomepageState extends State<Homepage> {
   void initState() {
     super.initState();
     setChatSellerId(null);
-    firstLoad();
+    WidgetsBinding.instance.addPostFrameCallback((_) => firstLoad());
   }
 
   bool isLoggedIn = false;
-  firstLoad() async {
-    if (!mounted) return; // Ensure the widget is still mounted
+  Future<void> firstLoad() async {
+    if (!mounted) return;
+
     final pref = await SharedPreferences.getInstance();
-    // Fetch cities safely
-    if (mounted) {
-      Provider.of<RecentJobsService>(context, listen: false)
-          .fetchAllCities(context);
-      Provider.of<SliderService>(context, listen: false).loadSlider();
-      String cityId = Provider.of<CityAndAreaController>(context, listen: false)
-              .cityId
-              .toString() ??
-          '';
-      Provider.of<RecentServicesService>(context, listen: false)
-          .fetchRecentService(context: context, areaID: cityId);
+    userType = pref.getString('shashaktnirmanusertype') ?? '';
+    isLoggedIn = pref.getBool('shashaktnirman_is_logged_in') ?? false;
 
-      Provider.of<CategoryService>(context, listen: false)
-          .fetchCategory(location_id: cityId.toString() ?? '');
+    final recentJobs = Provider.of<RecentJobsService>(context, listen: false);
+    final sliderService = Provider.of<SliderService>(context, listen: false);
+    final areaCtrlService =
+        Provider.of<CityAndAreaController>(context, listen: false);
+    final recentService =
+        Provider.of<RecentServicesService>(context, listen: false);
+    final topRatedService =
+        Provider.of<TopRatedServicesSerivce>(context, listen: false);
+    final catService = Provider.of<CategoryService>(context, listen: false);
+    final permService = Provider.of<PermissionsService>(context, listen: false);
+    final profileService = Provider.of<ProfileService>(context, listen: false);
+    final vendorDashboard =
+        Provider.of<VendorDashboardService>(context, listen: false);
 
-      Provider.of<PermissionsService>(context, listen: false)
-          .fetchUserPermissions(context);
-
-      Provider.of<TopRatedServicesSerivce>(context, listen: false)
-          .fetchTopService();
-
-      Provider.of<ProfileService>(context, listen: false)
-          .getProfileDetails(context: context);
-    }
-    if (mounted) {
-      final vendorDashboardController =
-          Provider.of<VendorDashboardService>(context, listen: false);
-      await vendorDashboardController.getSubscriptions();
-      if (vendorDashboardController.subscriptionList.isNotEmpty) {
-        bool result = await vendorDashboardController.checkSubscribe(index: 0);
-        setState(() {
-          userType = pref.getString("shashaktnirmanusertype");
-          isLoggedIn = pref.getBool("shashaktnirman_is_logged_in") ?? false;
-          _isSubscribed = result;
-        });
-      }
-    }
+    // Prepare Futures (wrap void-return to Future<void> via `() async {…}`)
+    final futures = <Future<void>>[
+      recentJobs.fetchAllCities(context),
+      sliderService.loadSlider(),
+      () async {
+        final cityId = areaCtrlService.cityId.toString();
+        await recentService.fetchRecentService(
+            context: context, areaID: cityId);
+        await catService.fetchCategory(location_id: cityId);
+      }(),
+      permService.fetchUserPermissions(context),
+      profileService.getProfileDetails(context: context),
+      vendorDashboard.getSubscriptions(),
+      topRatedService.fetchTopService(),
+    ];
+    await Future.wait(futures);
   }
 
   // Future<void> showLocationBottomSheet(BuildContext context) async {
@@ -359,8 +342,7 @@ class _HomepageState extends State<Homepage> {
   @override
   Widget build(BuildContext context) {
     ConstantColors cc = ConstantColors();
-    final vendorDashboardController =
-        Provider.of<VendorDashboardService>(context);
+    final vendorDashboard = Provider.of<VendorDashboardService>(context);
     final categoryController = Provider.of<CategoryService>(context);
     final landingPageService = Provider.of<LandingPageService>(context);
     return Listener(
@@ -406,10 +388,13 @@ class _HomepageState extends State<Homepage> {
         ),
         body: SafeArea(
           child: SingleChildScrollView(
-              physics: physicsCommon,
+              physics: AlwaysScrollableScrollPhysics(),
               child: categoryController.isLoading
-                  ? Center(
-                      child: OthersHelper().showLoading(cc.primaryColor),
+                  ? Padding(
+                      padding: const EdgeInsets.all(50.0),
+                      child: Center(
+                        child: OthersHelper().showLoading(cc.primaryColor),
+                      ),
                     )
                   : categoryController.categoryDataModel.categories?.length != 0
                       ? Consumer<AppStringService>(
@@ -419,12 +404,14 @@ class _HomepageState extends State<Homepage> {
                                 AnimatedContainer(
                                   duration: Duration(
                                       milliseconds: 800), // Animation Duration
-                                  height: (userType == "0" && !_isSubscribed)
+                                  height: (userType == "0" &&
+                                          vendorDashboard.isSubscribed == false)
                                       ? 100
                                       : 0,
                                   width: double.infinity,
                                   curve: Curves.easeInOut, // Smooth Animation
-                                  child: (userType == "0" && !_isSubscribed)
+                                  child: (userType == "0" &&
+                                          vendorDashboard.isSubscribed == false)
                                       ? Padding(
                                           padding: const EdgeInsets.all(8.0),
                                           child: InkWell(

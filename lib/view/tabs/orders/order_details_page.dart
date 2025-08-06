@@ -36,145 +36,152 @@ class _OrdersDetailsPageState extends State<OrderDetailsPage> {
   ConstantColors cc = ConstantColors();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: cc.bgColor,
-        appBar: CommonHelper()
-            .appbarCommon(lnProvider.getString('Order Details'), context, () {
-          Navigator.pop(context);
-        }),
-        body: SafeArea(
-          child: SingleChildScrollView(
-            physics: physicsCommon,
-            child: Consumer<AppStringService>(
-              builder: (context, asProvider, child) =>
-                  Consumer<OrderDetailsService>(
-                builder: (context, provider, child) => provider.isLoading ==
-                        false
-                    ? provider.orderDetails != 'error'
-                        ? Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 15),
-                            child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
+    return SafeArea(
+      child: Scaffold(
+          backgroundColor: cc.bgColor,
+          appBar: CommonHelper()
+              .appbarCommon(lnProvider.getString('Order Details'), context, () {
+            Navigator.pop(context);
+          }),
+          body: SafeArea(
+            child: SingleChildScrollView(
+              physics: physicsCommon,
+              child: Consumer<AppStringService>(
+                builder: (context, asProvider, child) =>
+                    Consumer<OrderDetailsService>(
+                  builder: (context, provider, child) => provider.isLoading ==
+                          false
+                      ? provider.orderDetails != 'error'
+                          ? Container(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 15),
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
 
-                                  //Seller details
-                                  const SellerDetails(),
-                                  // Date and schedule
-                                  provider.orderDetails.isOrderOnline == 0
-                                      ? Container(
-                                          margin:
-                                              const EdgeInsets.only(bottom: 25),
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 20, vertical: 20),
-                                          decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(9)),
-                                          child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                CommonHelper().titleCommon(
-                                                    asProvider.getString(
-                                                        'Date & Schedule')),
-                                                const SizedBox(
-                                                  height: 25,
-                                                ),
-                                                //Service row
-
-                                                Container(
-                                                  child: BookingHelper().bRow(
-                                                      'null',
-                                                      asProvider
-                                                          .getString('Date'),
-                                                      provider.orderDetails
-                                                                  .date ==
-                                                              null
-                                                          ? lnProvider.getString(
-                                                              "No date found")
-                                                          : DateFormat.MMMMEEEEd(
-                                                                  rtlProvider
-                                                                      .langSlug
-                                                                      .substring(
-                                                                          0, 2))
-                                                              .format(provider
-                                                                  .orderDetails
-                                                                  .date)),
-                                                ),
-
-                                                Container(
-                                                  child: BookingHelper().bRow(
-                                                      'null',
+                                    //Seller details
+                                    const SellerDetails(),
+                                    // Date and schedule
+                                    provider.orderDetails.isOrderOnline == 0
+                                        ? Container(
+                                            margin: const EdgeInsets.only(
+                                                bottom: 25),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 20, vertical: 20),
+                                            decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(9)),
+                                            child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  CommonHelper().titleCommon(
                                                       asProvider.getString(
-                                                          'Schedule'),
-                                                      asProvider.getString(
-                                                          provider.orderDetails
-                                                              .schedule),
-                                                      lastBorder: false),
-                                                ),
-                                              ]),
-                                        )
-                                      : Container(),
+                                                          'Date & Schedule')),
+                                                  const SizedBox(
+                                                    height: 25,
+                                                  ),
+                                                  //Service row
 
-                                  //amount details
-                                  const AmountDetails(),
+                                                  Container(
+                                                    child: BookingHelper().bRow(
+                                                        'null',
+                                                        asProvider
+                                                            .getString('Date'),
+                                                        provider.orderDetails
+                                                                    .date ==
+                                                                null
+                                                            ? lnProvider.getString(
+                                                                "No date found")
+                                                            : DateFormat.MMMMEEEEd(
+                                                                    rtlProvider
+                                                                        .langSlug
+                                                                        .substring(
+                                                                            0,
+                                                                            2))
+                                                                .format(provider
+                                                                    .orderDetails
+                                                                    .date)),
+                                                  ),
 
-                                  // Date and schedule
-                                  Container(
-                                    margin: const EdgeInsets.only(bottom: 25),
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 20, vertical: 20),
-                                    decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(9)),
-                                    child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          CommonHelper().titleCommon(asProvider
-                                              .getString('Order Status')),
-                                          const SizedBox(
-                                            height: 25,
-                                          ),
-                                          Container(
-                                            child: BookingHelper().bRow(
-                                                'null',
+                                                  Container(
+                                                    child: BookingHelper().bRow(
+                                                        'null',
+                                                        asProvider.getString(
+                                                            'Schedule'),
+                                                        asProvider.getString(
+                                                            provider
+                                                                .orderDetails
+                                                                .schedule),
+                                                        lastBorder: false),
+                                                  ),
+                                                ]),
+                                          )
+                                        : Container(),
+
+                                    //amount details
+                                    const AmountDetails(),
+
+                                    // Date and schedule
+                                    Container(
+                                      margin: const EdgeInsets.only(bottom: 25),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 20, vertical: 20),
+                                      decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(9)),
+                                      child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            CommonHelper().titleCommon(
                                                 asProvider
-                                                    .getString('Order Status'),
-                                                asProvider.getString(
-                                                    provider.orderStatus),
-                                                lastBorder: false),
-                                          ),
-                                        ]),
-                                  ),
+                                                    .getString('Order Status')),
+                                            const SizedBox(
+                                              height: 25,
+                                            ),
+                                            Container(
+                                              child: BookingHelper().bRow(
+                                                  'null',
+                                                  asProvider.getString(
+                                                      'Order Status'),
+                                                  asProvider.getString(
+                                                      provider.orderStatus),
+                                                  lastBorder: false),
+                                            ),
+                                          ]),
+                                    ),
 
-                                  const DeclineHistory(),
+                                    const DeclineHistory(),
 
-                                  // order extras
-                                  // ==============>
-                                  OrderExtras(
-                                    orderId: widget.orderId,
-                                    sellerId: provider.orderDetails.sellerId,
-                                  ),
+                                    // order extras
+                                    // ==============>
+                                    OrderExtras(
+                                      orderId: widget.orderId,
+                                      sellerId: provider.orderDetails.sellerId,
+                                    ),
 
-                                  //complete request
-                                  CompleteRequest(
-                                    orderId: widget.orderId,
-                                  ),
-                                ]),
-                          )
-                        : CommonHelper().nothingfound(
-                            context, asProvider.getString('No details found'))
-                    : Container(
-                        alignment: Alignment.center,
-                        height: MediaQuery.of(context).size.height - 120,
-                        child: OthersHelper().showLoading(cc.primaryColor)),
+                                    //complete request
+                                    CompleteRequest(
+                                      orderId: widget.orderId,
+                                    ),
+                                  ]),
+                            )
+                          : CommonHelper().nothingfound(
+                              context, asProvider.getString('No details found'))
+                      : Container(
+                          alignment: Alignment.center,
+                          height: MediaQuery.of(context).size.height - 120,
+                          child: OthersHelper().showLoading(cc.primaryColor)),
+                ),
               ),
             ),
-          ),
-        ));
+          )),
+    );
   }
 }

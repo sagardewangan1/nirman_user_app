@@ -1,13 +1,6 @@
 import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:qixer/helper/extension/context_extension.dart';
-import 'package:qixer/service/common_service.dart';
-import 'package:qixer/service/profile_service.dart';
-
 import 'package:qixer/view/home/landing_page.dart';
-import 'package:qixer/view/utils/constant_colors.dart';
-import 'package:qixer/view/utils/others_helper.dart';
 import 'package:qixer/view/utils/responsive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'introduction_page.dart';

@@ -43,374 +43,394 @@ class _MenuPageState extends State<MenuPage> {
     super.initState();
   }
 
-  firstLoad() async {
-    final profileController =
-        Provider.of<ProfileService>(context, listen: false);
-    await profileController.getProfileDetails(context: context);
-    await profileController.getLoggedIn();
-    final pref = await SharedPreferences.getInstance();
-    userType = pref.getString("shashaktnirmanusertype");
+  Future<void> firstLoad() async {
+    final profile = Provider.of<ProfileService>(context, listen: false);
+    final SharedPreferences pref = await SharedPreferences.getInstance();
+    final String? savedUserType = pref.getString("shashaktnirmanusertype");
+
+    try {
+      await Future.wait([
+        profile.getProfileDetails(context: context),
+      ]);
+      profile.getLoggedIn();
+    } catch (e, st) {
+      debugPrint('Error in firstLoad(): $e\n$st');
+      // Optionally: show an alert or fallback UI
+    }
+
+    if (!mounted) return;
+    setState(() {
+      userType = savedUserType;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     ConstantColors cc = ConstantColors();
 
-    return Scaffold(
-        body: Consumer<ProfileService>(builder: (context, ps, child) {
-      return ps.isloading
-          ? OthersHelper().showLoading(cc.primaryColor)
-          : ps.isLoggedIn == false
-              ? const LoginOrRegister()
-              : SafeArea(
-                  child: Stack(
-                    children: [
-                      SingleChildScrollView(
-                        physics: physicsCommon,
-                        child: Consumer<PermissionsService>(
-                          builder: (context, pProvider, child) =>
-                              Consumer<AppStringService>(
-                            builder: (context, asProvider, child) =>
-                                Consumer<ProfileService>(
-                              builder: (context, profileProvider, child) =>
-                                  profileProvider.profileDetails != null
-                                      ? profileProvider.profileDetails !=
-                                              'error'
-                                          ? Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                //
-                                                MenuNameImageSection(
-                                                  userType: userType.toString(),
-                                                  navfrom: "menu tab",
-                                                ),
+    return SafeArea(
+      child: Scaffold(
+          body: Consumer<ProfileService>(builder: (context, ps, child) {
+        return ps.isloading
+            ? OthersHelper().showLoading(cc.primaryColor)
+            : ps.isLoggedIn == false
+                ? const LoginOrRegister()
+                : SafeArea(
+                    child: Stack(
+                      children: [
+                        SingleChildScrollView(
+                          physics: physicsCommon,
+                          child: Consumer<PermissionsService>(
+                            builder: (context, pProvider, child) =>
+                                Consumer<AppStringService>(
+                              builder: (context, asProvider, child) =>
+                                  Consumer<ProfileService>(
+                                builder: (context, profileProvider, child) =>
+                                    profileProvider.profileDetails != null
+                                        ? profileProvider.profileDetails !=
+                                                'error'
+                                            ? Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  //
+                                                  MenuNameImageSection(
+                                                    userType:
+                                                        userType.toString(),
+                                                    navfrom: "menu tab",
+                                                  ),
 
-                                                // Personal information ==========>
-                                                Padding(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 8.0),
-                                                  child:
-                                                      const MenuPersonalInfoSection(),
-                                                ),
-
-                                                SettingsHelper()
-                                                    .borderBold(25, 8),
-
-                                                //Other settings options ========>
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: Container(
-                                                    decoration: BoxDecoration(
-                                                      color: cc.white,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              8.0),
-                                                    ),
+                                                  // Personal information ==========>
+                                                  Padding(
                                                     padding: const EdgeInsets
                                                         .symmetric(
-                                                        horizontal: 10),
-                                                    child: Column(children: [
-                                                      // SettingsHelper().settingOption(
-                                                      //     'assets/svg/menu_job.svg',
-                                                      //     asProvider.getString(
-                                                      //         "My jobs"), () {
-                                                      //   if (!pProvider
-                                                      //       .jobPermission) {
-                                                      //     OthersHelper().showToast(
-                                                      //         'You don\'t have permission to access this feature',
-                                                      //         Colors.black);
-                                                      //     return;
-                                                      //   }
-                                                      //
-                                                      //   Navigator.push(
-                                                      //     context,
-                                                      //     MaterialPageRoute<void>(
-                                                      //       builder: (BuildContext
-                                                      //               context) =>
-                                                      //           const MyJobsPage(),
-                                                      //     ),
-                                                      //   );
-                                                      // }),
-                                                      // //============>
-                                                      // CommonHelper()
-                                                      //     .dividerCommon(),
-                                                      // SettingsHelper().settingOption(
-                                                      //     'assets/svg/menu_job_list.svg',
-                                                      //     asProvider.getString(
-                                                      //         "Job requests"), () {
-                                                      //   if (!pProvider
-                                                      //       .jobPermission) {
-                                                      //     OthersHelper().showToast(
-                                                      //         'You don\'t have permission to access this feature',
-                                                      //         Colors.black);
-                                                      //     return;
-                                                      //   }
-                                                      //   //=====>
-                                                      //   Navigator.push(
-                                                      //     context,
-                                                      //     MaterialPageRoute<void>(
-                                                      //       builder: (BuildContext
-                                                      //               context) =>
-                                                      //           const JobRequestPage(),
-                                                      //     ),
-                                                      //   );
-                                                      // }),
+                                                        horizontal: 8.0),
+                                                    child:
+                                                        const MenuPersonalInfoSection(),
+                                                  ),
 
-                                                      //===========>
-                                                      // CommonHelper()
-                                                      //     .dividerCommon(),
-                                                      // SettingsHelper().settingOption(
-                                                      //     'assets/svg/menu_ticket.svg',
-                                                      //     asProvider.getString(
-                                                      //         "Support Ticket"),
-                                                      //     () {
-                                                      //   //=====>
-                                                      //   Navigator.push(
-                                                      //     context,
-                                                      //     MaterialPageRoute<void>(
-                                                      //       builder: (BuildContext
-                                                      //               context) =>
-                                                      //           const MyTicketsPage(),
-                                                      //     ),
-                                                      //   );
-                                                      // }),
-                                                      //
-                                                      // CommonHelper()
-                                                      //     .dividerCommon(),
-                                                      // SettingsHelper().settingOption(
-                                                      //     'assets/svg/menu_wallet.svg',
-                                                      //     asProvider.getString(
-                                                      //         "Wallet"), () {
-                                                      //   if (!pProvider
-                                                      //       .walletPermission) {
-                                                      //     OthersHelper().showToast(
-                                                      //         'You don\'t have permission to access this feature',
-                                                      //         Colors.black);
-                                                      //     return;
-                                                      //   }
-                                                      //   Navigator.push(
-                                                      //     context,
-                                                      //     MaterialPageRoute<void>(
-                                                      //       builder: (BuildContext
-                                                      //               context) =>
-                                                      //           const WalletPage(),
-                                                      //     ),
-                                                      //   );
-                                                      // }),
+                                                  SettingsHelper()
+                                                      .borderBold(25, 8),
 
-                                                      SettingsHelper().settingOption(
-                                                          'assets/svg/profile-edit.svg',
-                                                          AppLocalizations.of(
-                                                                  context)!
-                                                              .editProfile, () {
-                                                        Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute<
-                                                              void>(
-                                                            builder: (BuildContext
-                                                                    context) =>
-                                                                const ProfileEditPage(),
-                                                          ),
-                                                        );
-                                                      }, context),
-                                                      CommonHelper()
-                                                          .dividerCommon(),
-                                                      // Edit Business Profile
-                                                      userType == '0'
-                                                          ? SettingsHelper().settingOption(
-                                                              'assets/svg/profile-edit.svg',
-                                                              AppLocalizations.of(
-                                                                      context)!
-                                                                  .editBusinessProfile,
-                                                              () {
-                                                              Navigator.push(
-                                                                context,
-                                                                MaterialPageRoute<
-                                                                    void>(
-                                                                  builder: (BuildContext
-                                                                          context) =>
-                                                                      BusinessProfileEdit(
-                                                                    navigationModel:
-                                                                        NavigationModel(
-                                                                            pageName:
-                                                                                "Update Profile"),
-                                                                  ),
-                                                                ),
-                                                              );
-                                                            }, context)
-                                                          : Offstage(),
-                                                      CommonHelper()
-                                                          .dividerCommon(),
-                                                      // Setting App
-                                                      // SettingsHelper().settingOption(
-                                                      //     'assets/svg/setting_icon.svg',
-                                                      //     AppLocalizations.of(
-                                                      //             context)!
-                                                      //         .appSetting, () {
-                                                      //   Navigator.push(
-                                                      //     context,
-                                                      //     MaterialPageRoute<
-                                                      //         void>(
-                                                      //       builder: (BuildContext
-                                                      //               context) =>
-                                                      //           const AppSettings(),
-                                                      //     ),
-                                                      //   );
-                                                      // }, context),
-                                                      //
-                                                      // CommonHelper()
-                                                      //     .dividerCommon(),
-                                                      SettingsHelper().settingOption(
-                                                          'assets/icons/phone.png',
-                                                          AppLocalizations.of(
-                                                                  context)!
-                                                              .contactUs, () {
-                                                        Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  SupportView(),
-                                                            ));
-                                                        FocusScope.of(context)
-                                                            .unfocus();
-                                                      }, context),
-                                                      CommonHelper()
-                                                          .dividerCommon(),
-                                                      SettingsHelper().settingOption(
-                                                          'assets/svg/menu_job_list.svg',
-                                                          AppLocalizations.of(
-                                                                  context)!
-                                                              .privacyPolicy,
-                                                          () {
-                                                        context
-                                                            .toPage(const TacPP(
-                                                          route:
-                                                              "/privacy-policy",
-                                                        ));
-                                                        FocusScope.of(context)
-                                                            .unfocus();
-                                                      }, context),
-                                                      CommonHelper()
-                                                          .dividerCommon(),
-                                                      SettingsHelper().settingOption(
-                                                          'assets/svg/tasks.svg',
-                                                          AppLocalizations.of(
-                                                                  context)!
-                                                              .termsAndCondition,
-                                                          () {
-                                                        context
-                                                            .toPage(const TacPP(
-                                                          route:
-                                                              "/terms-and-condition",
-                                                        ));
-                                                        FocusScope.of(context)
-                                                            .unfocus();
-                                                      }, context),
-                                                      // share
-                                                      CommonHelper()
-                                                          .dividerCommon(),
-                                                      SettingsHelper().settingOption(
-                                                          'assets/svg/share_icon.svg',
-                                                          AppLocalizations.of(
-                                                                  context)!
-                                                              .shareNow, () {
-                                                        Share.share(
+                                                  //Other settings options ========>
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: Container(
+                                                      decoration: BoxDecoration(
+                                                        color: cc.white,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8.0),
+                                                      ),
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 10),
+                                                      child: Column(children: [
+                                                        // SettingsHelper().settingOption(
+                                                        //     'assets/svg/menu_job.svg',
+                                                        //     asProvider.getString(
+                                                        //         "My jobs"), () {
+                                                        //   if (!pProvider
+                                                        //       .jobPermission) {
+                                                        //     OthersHelper().showToast(
+                                                        //         'You don\'t have permission to access this feature',
+                                                        //         Colors.black);
+                                                        //     return;
+                                                        //   }
+                                                        //
+                                                        //   Navigator.push(
+                                                        //     context,
+                                                        //     MaterialPageRoute<void>(
+                                                        //       builder: (BuildContext
+                                                        //               context) =>
+                                                        //           const MyJobsPage(),
+                                                        //     ),
+                                                        //   );
+                                                        // }),
+                                                        // //============>
+                                                        // CommonHelper()
+                                                        //     .dividerCommon(),
+                                                        // SettingsHelper().settingOption(
+                                                        //     'assets/svg/menu_job_list.svg',
+                                                        //     asProvider.getString(
+                                                        //         "Job requests"), () {
+                                                        //   if (!pProvider
+                                                        //       .jobPermission) {
+                                                        //     OthersHelper().showToast(
+                                                        //         'You don\'t have permission to access this feature',
+                                                        //         Colors.black);
+                                                        //     return;
+                                                        //   }
+                                                        //   //=====>
+                                                        //   Navigator.push(
+                                                        //     context,
+                                                        //     MaterialPageRoute<void>(
+                                                        //       builder: (BuildContext
+                                                        //               context) =>
+                                                        //           const JobRequestPage(),
+                                                        //     ),
+                                                        //   );
+                                                        // }),
+
+                                                        //===========>
+                                                        // CommonHelper()
+                                                        //     .dividerCommon(),
+                                                        // SettingsHelper().settingOption(
+                                                        //     'assets/svg/menu_ticket.svg',
+                                                        //     asProvider.getString(
+                                                        //         "Support Ticket"),
+                                                        //     () {
+                                                        //   //=====>
+                                                        //   Navigator.push(
+                                                        //     context,
+                                                        //     MaterialPageRoute<void>(
+                                                        //       builder: (BuildContext
+                                                        //               context) =>
+                                                        //           const MyTicketsPage(),
+                                                        //     ),
+                                                        //   );
+                                                        // }),
+                                                        //
+                                                        // CommonHelper()
+                                                        //     .dividerCommon(),
+                                                        // SettingsHelper().settingOption(
+                                                        //     'assets/svg/menu_wallet.svg',
+                                                        //     asProvider.getString(
+                                                        //         "Wallet"), () {
+                                                        //   if (!pProvider
+                                                        //       .walletPermission) {
+                                                        //     OthersHelper().showToast(
+                                                        //         'You don\'t have permission to access this feature',
+                                                        //         Colors.black);
+                                                        //     return;
+                                                        //   }
+                                                        //   Navigator.push(
+                                                        //     context,
+                                                        //     MaterialPageRoute<void>(
+                                                        //       builder: (BuildContext
+                                                        //               context) =>
+                                                        //           const WalletPage(),
+                                                        //     ),
+                                                        //   );
+                                                        // }),
+
+                                                        SettingsHelper().settingOption(
+                                                            'assets/svg/profile-edit.svg',
                                                             AppLocalizations.of(
                                                                     context)!
-                                                                .shareText);
-                                                      }, context),
-                                                    ]),
-                                                  ),
-                                                ),
-
-                                                // logout
-                                                SettingsHelper()
-                                                    .borderBold(12, 5),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: Container(
-                                                    decoration: BoxDecoration(
-                                                      color: cc.white,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              8.0),
-                                                    ),
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                        horizontal: 10),
-                                                    child: Column(children: [
-                                                      SettingsHelper().settingOption(
-                                                          'assets/svg/menu_delete_account.svg',
-                                                          asProvider.getString(
+                                                                .editProfile,
+                                                            () {
+                                                          Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute<
+                                                                void>(
+                                                              builder: (BuildContext
+                                                                      context) =>
+                                                                  const ProfileEditPage(),
+                                                            ),
+                                                          );
+                                                        }, context),
+                                                        CommonHelper()
+                                                            .dividerCommon(),
+                                                        // Edit Business Profile
+                                                        userType == '0'
+                                                            ? SettingsHelper().settingOption(
+                                                                'assets/svg/profile-edit.svg',
+                                                                AppLocalizations.of(
+                                                                        context)!
+                                                                    .editBusinessProfile,
+                                                                () {
+                                                                Navigator.push(
+                                                                  context,
+                                                                  MaterialPageRoute<
+                                                                      void>(
+                                                                    builder: (BuildContext
+                                                                            context) =>
+                                                                        BusinessProfileEdit(
+                                                                      navigationModel:
+                                                                          NavigationModel(
+                                                                              pageName: "Update Profile"),
+                                                                    ),
+                                                                  ),
+                                                                );
+                                                              }, context)
+                                                            : Offstage(),
+                                                        CommonHelper()
+                                                            .dividerCommon(),
+                                                        // Setting App
+                                                        // SettingsHelper().settingOption(
+                                                        //     'assets/svg/setting_icon.svg',
+                                                        //     AppLocalizations.of(
+                                                        //             context)!
+                                                        //         .appSetting, () {
+                                                        //   Navigator.push(
+                                                        //     context,
+                                                        //     MaterialPageRoute<
+                                                        //         void>(
+                                                        //       builder: (BuildContext
+                                                        //               context) =>
+                                                        //           const AppSettings(),
+                                                        //     ),
+                                                        //   );
+                                                        // }, context),
+                                                        //
+                                                        // CommonHelper()
+                                                        //     .dividerCommon(),
+                                                        SettingsHelper().settingOption(
+                                                            'assets/icons/phone.png',
+                                                            AppLocalizations.of(
+                                                                    context)!
+                                                                .contactUs, () {
+                                                          Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder:
+                                                                    (context) =>
+                                                                        SupportView(),
+                                                              ));
+                                                          FocusScope.of(context)
+                                                              .unfocus();
+                                                        }, context),
+                                                        CommonHelper()
+                                                            .dividerCommon(),
+                                                        SettingsHelper().settingOption(
+                                                            'assets/svg/menu_job_list.svg',
+                                                            AppLocalizations.of(
+                                                                    context)!
+                                                                .privacyPolicy,
+                                                            () {
+                                                          context.toPage(
+                                                              const TacPP(
+                                                            route:
+                                                                "/privacy-policy",
+                                                          ));
+                                                          FocusScope.of(context)
+                                                              .unfocus();
+                                                        }, context),
+                                                        CommonHelper()
+                                                            .dividerCommon(),
+                                                        SettingsHelper().settingOption(
+                                                            'assets/svg/tasks.svg',
+                                                            AppLocalizations.of(
+                                                                    context)!
+                                                                .termsAndCondition,
+                                                            () {
+                                                          context.toPage(
+                                                              const TacPP(
+                                                            route:
+                                                                "/terms-and-condition",
+                                                          ));
+                                                          FocusScope.of(context)
+                                                              .unfocus();
+                                                        }, context),
+                                                        // share
+                                                        CommonHelper()
+                                                            .dividerCommon(),
+                                                        SettingsHelper().settingOption(
+                                                            'assets/svg/share_icon.svg',
+                                                            AppLocalizations.of(
+                                                                    context)!
+                                                                .shareNow, () {
+                                                          Share.share(
                                                               AppLocalizations.of(
                                                                       context)!
-                                                                  .deleteAccount),
-                                                          () {
-                                                        Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute<
-                                                              void>(
-                                                            builder: (BuildContext
-                                                                    context) =>
-                                                                DeleteAccountPage(),
-                                                          ),
-                                                        );
-                                                      }, context),
-                                                    ]),
-                                                  ),
-                                                ),
-                                                CommonHelper().dividerCommon(),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: Container(
-                                                    decoration: BoxDecoration(
-                                                      color: cc.white,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              8.0),
+                                                                  .shareText);
+                                                        }, context),
+                                                      ]),
                                                     ),
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                        horizontal: 10),
-                                                    child: Column(children: [
-                                                      SettingsHelper().settingOption(
-                                                          'assets/svg/logout-circle.svg',
-                                                          AppLocalizations.of(
-                                                                  context)!
-                                                              .logout, () {
-                                                        SettingsHelper()
-                                                            .logoutPopup(
-                                                                context);
-                                                      }, context),
-                                                    ]),
                                                   ),
-                                                )
-                                              ],
-                                            )
-                                          : OthersHelper().showError(context)
-                                      : Container(
-                                          alignment: Alignment.center,
-                                          height: MediaQuery.of(context)
-                                                  .size
-                                                  .height -
-                                              150,
-                                          child: OthersHelper()
-                                              .showLoading(cc.primaryColor),
-                                        ),
+
+                                                  // logout
+                                                  SettingsHelper()
+                                                      .borderBold(12, 5),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: Container(
+                                                      decoration: BoxDecoration(
+                                                        color: cc.white,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8.0),
+                                                      ),
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 10),
+                                                      child: Column(children: [
+                                                        SettingsHelper().settingOption(
+                                                            'assets/svg/menu_delete_account.svg',
+                                                            asProvider.getString(
+                                                                AppLocalizations.of(
+                                                                        context)!
+                                                                    .deleteAccount),
+                                                            () {
+                                                          Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute<
+                                                                void>(
+                                                              builder: (BuildContext
+                                                                      context) =>
+                                                                  DeleteAccountPage(),
+                                                            ),
+                                                          );
+                                                        }, context),
+                                                      ]),
+                                                    ),
+                                                  ),
+                                                  CommonHelper()
+                                                      .dividerCommon(),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: Container(
+                                                      decoration: BoxDecoration(
+                                                        color: cc.white,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8.0),
+                                                      ),
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 10),
+                                                      child: Column(children: [
+                                                        SettingsHelper().settingOption(
+                                                            'assets/svg/logout-circle.svg',
+                                                            AppLocalizations.of(
+                                                                    context)!
+                                                                .logout, () {
+                                                          SettingsHelper()
+                                                              .logoutPopup(
+                                                                  context);
+                                                        }, context),
+                                                      ]),
+                                                    ),
+                                                  )
+                                                ],
+                                              )
+                                            : OthersHelper().showError(context)
+                                        : Container(
+                                            alignment: Alignment.center,
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height -
+                                                150,
+                                            child: OthersHelper()
+                                                .showLoading(cc.primaryColor),
+                                          ),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      //chat icon ========>
-                      // const ChatIcon(),
-                    ],
-                  ),
-                );
-    }));
+                        //chat icon ========>
+                        // const ChatIcon(),
+                      ],
+                    ),
+                  );
+      })),
+    );
   }
 }

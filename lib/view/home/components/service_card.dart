@@ -434,7 +434,9 @@ class ServiceCardContents extends StatelessWidget {
             children: [
               // Service Name
               Text(
-                sellerName.toString().capitalizeEachWord(),
+                sellerName != null
+                    ? sellerName.toString().capitalizeEachWord() ?? ''
+                    : 'Unknown Seller',
                 textAlign: TextAlign.start,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,

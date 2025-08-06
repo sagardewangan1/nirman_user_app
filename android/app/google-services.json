@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "696908542061",
-    "project_id": "sashaktnirmaan-bb3f8",
-    "storage_bucket": "sashaktnirmaan-bb3f8.firebasestorage.app"
+    "project_number": "260399192166",
+    "project_id": "sashaktnirman",
+    "storage_bucket": "sashaktnirman.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:696908542061:android:38befe5b0669bb18464f64",
+        "mobilesdk_app_id": "1:260399192166:android:446001302bdd807cff35a7",
         "android_client_info": {
           "package_name": "com.sashakt_nirman_app"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBXBa8xPHn6B5Ji2i7OyuE-1J8wBcZjaWg"
+          "current_key": "AIzaSyBk1gumz9QNymhTybKabsmXvgHOFeHgp7c"
         }
       ],
       "services": {

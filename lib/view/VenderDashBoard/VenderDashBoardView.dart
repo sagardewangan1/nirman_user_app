@@ -1,25 +1,19 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:qixer/helper/extension/context_extension.dart';
 import 'package:qixer/helper/extension/string_extension.dart';
-import 'package:qixer/model/dropdown_models/area_dropdown_model.dart';
 import 'package:qixer/model/navigationModel.dart';
 import 'package:qixer/service/app_string_service.dart';
 import 'package:qixer/service/profile_service.dart';
 import 'package:qixer/service/vendorDashboardService/vendorDashboardService.dart';
 import 'package:qixer/view/VenderDashBoard/AddRequestForPoster.dart';
 import 'package:qixer/view/VenderDashBoard/allVendorServiceList/allVendorServiceList.dart';
-import 'package:qixer/view/VenderDashBoard/createSchedule.dart';
-import 'package:qixer/view/VenderDashBoard/helpSupport.dart';
 import 'package:qixer/view/VenderDashBoard/subscriptionModule.dart';
-import 'package:qixer/view/addService/addServiceView.dart';
 import 'package:qixer/view/chooseCategory/chooseCategorView.dart';
 import 'package:qixer/view/home/landing_page.dart';
-import 'package:qixer/view/services/components/image_big.dart';
-import 'package:qixer/view/tabs/leads/leadsView.dart';
-import 'package:qixer/view/tabs/settings/components/menu_name_image_section.dart';
 import 'package:qixer/view/utils/common_helper.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:qixer/view/utils/others_helper.dart';
@@ -44,26 +38,32 @@ class _VendorDashBoardViesState extends State<VendorDashBoardVies> {
   }
 
   String? userType;
-  bool _isSubscribed = false;
 
-  firstLoad() async {
+  Future<void> firstLoad() async {
     final pref = await SharedPreferences.getInstance();
+    userType = pref.getString('shashaktnirmanusertype') ?? '';
+
     final profileController =
         Provider.of<ProfileService>(context, listen: false);
-    await profileController.getProfileDetails(
-        isFromProfileupdatePage: true, context: context);
-    final vendorDashboardController =
+    final vendorController =
         Provider.of<VendorDashboardService>(context, listen: false);
-    await vendorDashboardController.getSubscriptions();
-    bool result = await vendorDashboardController.checkSubscribe(index: 0);
-    setState(() {
-      userType = pref.getString("shashaktnirmanusertype");
-      _isSubscribed = result;
-    });
+    final results = await Future.wait([
+      profileController.getProfileDetails(
+        isFromProfileupdatePage: true,
+        context: context,
+      ),
+      vendorController.getSubscriptions(),
+    ]);
   }
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent, // 🔹 Make background transparent
+        statusBarIconBrightness: Brightness.light, // or Brightness.light
+      ),
+    );
     Size size = MediaQuery.of(context).size;
     final vendorDashboardController =
         Provider.of<VendorDashboardService>(context);
@@ -108,304 +108,310 @@ class _VendorDashBoardViesState extends State<VendorDashBoardVies> {
                     //       )),
                     // ]
                   ),
-                  body: ListView(
-                    children: [
-                      // Consumer<ProfileService>(builder: (context, profileProvider, child) {
-                      //   return Container(
-                      //     decoration: BoxDecoration(
-                      //       color: cc.primaryColor.withOpacity(0.2),
-                      //     ),
-                      //     child: Padding(
-                      //       padding: const EdgeInsets.all(8.0),
-                      //       child: Row(
-                      //         children: [
-                      //           CircleAvatar(
-                      //             backgroundColor: Colors.black,
-                      //             radius: 19,
-                      //             child: ClipOval(
-                      //               child: CommonHelper().profileImage(
-                      //                   "https://static.vecteezy.com/system/resources/previews/000/590/446/non_2x/tick-logo-design-is-on-the-stage-for-your-business-or-brand-vector.jpg",
-                      //                   35,
-                      //                   35),
-                      //             ),
-                      //           ),
-                      //           SizedBox(
-                      //             width: 10,
-                      //           ),
-                      //           Column(
-                      //             crossAxisAlignment: CrossAxisAlignment.start,
-                      //             children: [
-                      //               Text(
-                      //                 "Surya Ferm",
-                      //                 style: TextStyle(
-                      //                     fontSize: 16,
-                      //                     fontWeight: FontWeight.w500),
-                      //               ),
-                      //               Text(
-                      //                 "7869308928",
-                      //                 style: TextStyle(
-                      //                     fontSize: 13,
-                      //                     fontWeight: FontWeight.w400),
-                      //               ),
-                      //             ],
-                      //           ),
-                      //           // Spacer(),
-                      //           // Icon(Icons.arrow_forward_ios),
-                      //         ],
-                      //       ),
-                      //     ),
-                      //   );
-                      // },),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          CommonHelper().profileImage(
-                              profileController.businessProfile ?? '',
-                              150,
-                              150),
-                          Gap(15),
-                          Text(
-                            profileController
-                                    .profileDetails?.userDetails?.businessName
-                                    .toString()
-                                    .capitalizeWords ??
-                                "N/A",
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(15),
-                        child: Column(
+                  body: SafeArea(
+                    child: ListView(
+                      children: [
+                        // Consumer<ProfileService>(builder: (context, profileProvider, child) {
+                        //   return Container(
+                        //     decoration: BoxDecoration(
+                        //       color: cc.primaryColor.withOpacity(0.2),
+                        //     ),
+                        //     child: Padding(
+                        //       padding: const EdgeInsets.all(8.0),
+                        //       child: Row(
+                        //         children: [
+                        //           CircleAvatar(
+                        //             backgroundColor: Colors.black,
+                        //             radius: 19,
+                        //             child: ClipOval(
+                        //               child: CommonHelper().profileImage(
+                        //                   "https://static.vecteezy.com/system/resources/previews/000/590/446/non_2x/tick-logo-design-is-on-the-stage-for-your-business-or-brand-vector.jpg",
+                        //                   35,
+                        //                   35),
+                        //             ),
+                        //           ),
+                        //           SizedBox(
+                        //             width: 10,
+                        //           ),
+                        //           Column(
+                        //             crossAxisAlignment: CrossAxisAlignment.start,
+                        //             children: [
+                        //               Text(
+                        //                 "Surya Ferm",
+                        //                 style: TextStyle(
+                        //                     fontSize: 16,
+                        //                     fontWeight: FontWeight.w500),
+                        //               ),
+                        //               Text(
+                        //                 "7869308928",
+                        //                 style: TextStyle(
+                        //                     fontSize: 13,
+                        //                     fontWeight: FontWeight.w400),
+                        //               ),
+                        //             ],
+                        //           ),
+                        //           // Spacer(),
+                        //           // Icon(Icons.arrow_forward_ios),
+                        //         ],
+                        //       ),
+                        //     ),
+                        //   );
+                        // },),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            // Row(
-                            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            //   children: [
-                            //     buildCustomCard(
-                            //       size: size,
-                            //       gradientColors: [
-                            //         Colors.teal.shade300,
-                            //         Colors.cyan.shade400
-                            //       ],
-                            //       icon: Icons.miscellaneous_services,
-                            //       iconColor: Colors.teal.shade300,
-                            //       iconBgColor: Colors.white,
-                            //       title: "50",
-                            //       subtitle: "Total Services",
-                            //     ),
-                            //     buildCustomCard(
-                            //       size: size,
-                            //       gradientColors: [
-                            //         Colors.red.shade200,
-                            //         Colors.red.shade400
-                            //       ],
-                            //       icon: Icons.leaderboard,
-                            //       iconColor: Colors.red.shade400,
-                            //       iconBgColor: cc.white,
-                            //       title: "50",
-                            //       subtitle: "Leads Generated",
-                            //       onTap: () => context.toPage(LeadsView()),
-                            //     ),
-                            //   ],
-                            // ),
-                            // SizedBox(height: 15),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                buildCustomCard(
-                                  onTap: () =>
-                                      context.toPage(AllVendroServiceList()),
-                                  size: size,
-                                  gradientColors: [
-                                    Color(0xffFF6B2C),
-                                    Color(0xffffa500)
-                                  ],
-                                  icon: Icons.miscellaneous_services,
-                                  iconColor: Color(0xffffa500),
-                                  iconBgColor: cc.white,
-                                  title:
-                                      AppLocalizations.of(context)!.myServices,
-                                ),
-                                buildCustomCard(
-                                  onTap: () =>
-                                      context.toPage(SubscriptionModule()),
-                                  size: size,
-                                  gradientColors: [
-                                    Color(0xffFF6B2C),
-                                    Color(0xffffa500)
-                                  ],
-                                  icon: Icons.subscriptions,
-                                  iconColor: Color(0xffffa500),
-                                  iconBgColor: cc.white,
-                                  title: AppLocalizations.of(context)!
-                                      .subscriptions,
-                                ),
-                              ],
+                            CommonHelper().profileImage(
+                                profileController.businessProfile ?? '',
+                                150,
+                                150),
+                            Gap(15),
+                            Text(
+                              profileController
+                                      .profileDetails?.userDetails?.businessName
+                                      .toString()
+                                      .capitalizeWords ??
+                                  "N/A",
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
                             ),
-                            SizedBox(height: 15),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                buildCustomCard(
-                                  onTap: () {
-                                    context.toPage(
-                                      ChooseCategoryView(
-                                          navigationModel: NavigationModel(
-                                        navFrom: "Dashboard",
-                                        roleType: "Vendor",
-                                        pageName: AppLocalizations.of(context)!
-                                            .addService,
-                                      )),
-                                    );
-                                  },
-                                  size: size,
-                                  gradientColors: [
-                                    Color(0xffFF6B2C),
-                                    Color(0xffffa500)
-                                  ],
-                                  icon: Icons.category,
-                                  iconColor: Color(0xffffa500),
-                                  iconBgColor: cc.white,
-                                  title:
-                                      AppLocalizations.of(context)!.addService,
-                                ),
-                                buildCustomCard(
-                                  onTap: () {
-                                    context.toPage(AddRequestForPosterAdd());
-                                  },
-                                  size: size,
-                                  gradientColors: [
-                                    Color(0xffFF6B2C),
-                                    Color(0xffffa500)
-                                  ],
-                                  icon: Icons.signpost_rounded,
-                                  iconColor: Color(0xffffa500),
-                                  iconBgColor: cc.white,
-                                  title:
-                                      AppLocalizations.of(context)!.promotion,
-                                ),
-                                // buildCustomCard(
-                                //   onTap: () async {
-                                //     final pref =
-                                //         await SharedPreferences.getInstance();
-                                //     context.toPage(AddServiceView(
-                                //       navigationModel: NavigationModel(
-                                //         isLoggedIn: pref.getBool(
-                                //             "shashaktnirman_is_logged_in"),
-                                //         navFrom: "Dashboard",
-                                //         roleType: "Vendor",
-                                //         pageName: AppLocalizations.of(context)!
-                                //             .addService,
-                                //       ),
-                                //     ));
-                                //   },
-                                //   size: size,
-                                //   gradientColors: [
-                                //     Color(0xffFF6B2C),
-                                //     Color(0xffffa500)
-                                //   ],
-                                //   icon: Icons.miscellaneous_services,
-                                //   iconColor: Color(0xffffa500),
-                                //   iconBgColor: cc.white,
-                                //   title:
-                                //       AppLocalizations.of(context)!.addService,
-                                // ),
-                              ],
-                            ),
-                            SizedBox(height: 15),
-                            // Row(
-                            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            //   children: [
-                            //     buildCustomCard(
-                            //       onTap: () {
-                            //         context.toPage(AddRequestForPosterAdd());
-                            //       },
-                            //       size: size,
-                            //       gradientColors: [
-                            //         Color(0xffFF6B2C),
-                            //         Color(0xffffa500)
-                            //       ],
-                            //       icon: Icons.signpost_rounded,
-                            //       iconColor: Color(0xffffa500),
-                            //       iconBgColor: cc.white,
-                            //       title:
-                            //           AppLocalizations.of(context)!.promotion,
-                            //     ),
-                            //   ],
-                            // ),
-
-                            // SizedBox(height: 15),
-                            // Row(
-                            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            //   children: [
-                            //     buildCustomCard(
-                            //       onTap: () {
-                            //         context.toPage(CreateSchedule());
-                            //       },
-                            //       size: size,
-                            //       gradientColors: [
-                            //         Colors.purple.shade200,
-                            //         Colors.pink.shade400
-                            //       ],
-                            //       icon: Icons.schedule,
-                            //       iconColor: Colors.pink.shade400,
-                            //       iconBgColor: cc.white,
-                            //       title: "Create Opening Schedule",
-                            //     ),
-                            //     buildCustomCard(
-                            //       onTap: () => context.toPage(HelpSupport()),
-                            //       size: size,
-                            //       gradientColors: [
-                            //         Colors.tealAccent.shade200,
-                            //         Colors.teal.shade400
-                            //       ],
-                            //       icon: Icons.support,
-                            //       iconColor: Colors.teal.shade400,
-                            //       iconBgColor: cc.white,
-                            //       title: "Help & Support",
-                            //     ),
-                            //   ],
-                            // ),
-                            vendorDashboardController.isLoading
-                                ? Padding(
-                                    padding: EdgeInsets.only(top: 50),
-                                    child: OthersHelper()
-                                        .showLoading(cc.primaryColor),
-                                  )
-                                : _isSubscribed
-                                    ? Offstage()
-                                    : InkWell(
-                                        onTap: () {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    SubscriptionModule(
-                                                  navFrom: "Dashboard",
-                                                ),
-                                              ));
-                                        },
-                                        child: SizedBox(
-                                            height: 150,
-                                            width: double.infinity,
-                                            child: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(8.0),
-                                              child: CachedNetworkImage(
-                                                imageUrl:
-                                                    "https://sashaktnirmaan.com/assets/subscription.gif",
-                                                errorWidget:
-                                                    (context, url, error) =>
-                                                        const Icon(Icons.error),
-                                                fit: BoxFit.cover,
-                                              ),
-                                            )),
-                                      )
                           ],
                         ),
-                      )
-                    ],
+                        Padding(
+                          padding: const EdgeInsets.all(15),
+                          child: Column(
+                            children: [
+                              // Row(
+                              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              //   children: [
+                              //     buildCustomCard(
+                              //       size: size,
+                              //       gradientColors: [
+                              //         Colors.teal.shade300,
+                              //         Colors.cyan.shade400
+                              //       ],
+                              //       icon: Icons.miscellaneous_services,
+                              //       iconColor: Colors.teal.shade300,
+                              //       iconBgColor: Colors.white,
+                              //       title: "50",
+                              //       subtitle: "Total Services",
+                              //     ),
+                              //     buildCustomCard(
+                              //       size: size,
+                              //       gradientColors: [
+                              //         Colors.red.shade200,
+                              //         Colors.red.shade400
+                              //       ],
+                              //       icon: Icons.leaderboard,
+                              //       iconColor: Colors.red.shade400,
+                              //       iconBgColor: cc.white,
+                              //       title: "50",
+                              //       subtitle: "Leads Generated",
+                              //       onTap: () => context.toPage(LeadsView()),
+                              //     ),
+                              //   ],
+                              // ),
+                              // SizedBox(height: 15),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  buildCustomCard(
+                                    onTap: () =>
+                                        context.toPage(AllVendroServiceList()),
+                                    size: size,
+                                    gradientColors: [
+                                      Color(0xffFF6B2C),
+                                      Color(0xffffa500)
+                                    ],
+                                    icon: Icons.miscellaneous_services,
+                                    iconColor: Color(0xffffa500),
+                                    iconBgColor: cc.white,
+                                    title: AppLocalizations.of(context)!
+                                        .myServices,
+                                  ),
+                                  buildCustomCard(
+                                    onTap: () =>
+                                        context.toPage(SubscriptionModule()),
+                                    size: size,
+                                    gradientColors: [
+                                      Color(0xffFF6B2C),
+                                      Color(0xffffa500)
+                                    ],
+                                    icon: Icons.subscriptions,
+                                    iconColor: Color(0xffffa500),
+                                    iconBgColor: cc.white,
+                                    title: AppLocalizations.of(context)!
+                                        .subscriptions,
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 15),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  buildCustomCard(
+                                    onTap: () {
+                                      context.toPage(
+                                        ChooseCategoryView(
+                                            navigationModel: NavigationModel(
+                                          navFrom: "Dashboard",
+                                          roleType: "Vendor",
+                                          pageName:
+                                              AppLocalizations.of(context)!
+                                                  .addService,
+                                        )),
+                                      );
+                                    },
+                                    size: size,
+                                    gradientColors: [
+                                      Color(0xffFF6B2C),
+                                      Color(0xffffa500)
+                                    ],
+                                    icon: Icons.category,
+                                    iconColor: Color(0xffffa500),
+                                    iconBgColor: cc.white,
+                                    title: AppLocalizations.of(context)!
+                                        .addService,
+                                  ),
+                                  buildCustomCard(
+                                    onTap: () {
+                                      context.toPage(AddRequestForPosterAdd());
+                                    },
+                                    size: size,
+                                    gradientColors: [
+                                      Color(0xffFF6B2C),
+                                      Color(0xffffa500)
+                                    ],
+                                    icon: Icons.signpost_rounded,
+                                    iconColor: Color(0xffffa500),
+                                    iconBgColor: cc.white,
+                                    title:
+                                        AppLocalizations.of(context)!.promotion,
+                                  ),
+                                  // buildCustomCard(
+                                  //   onTap: () async {
+                                  //     final pref =
+                                  //         await SharedPreferences.getInstance();
+                                  //     context.toPage(AddServiceView(
+                                  //       navigationModel: NavigationModel(
+                                  //         isLoggedIn: pref.getBool(
+                                  //             "shashaktnirman_is_logged_in"),
+                                  //         navFrom: "Dashboard",
+                                  //         roleType: "Vendor",
+                                  //         pageName: AppLocalizations.of(context)!
+                                  //             .addService,
+                                  //       ),
+                                  //     ));
+                                  //   },
+                                  //   size: size,
+                                  //   gradientColors: [
+                                  //     Color(0xffFF6B2C),
+                                  //     Color(0xffffa500)
+                                  //   ],
+                                  //   icon: Icons.miscellaneous_services,
+                                  //   iconColor: Color(0xffffa500),
+                                  //   iconBgColor: cc.white,
+                                  //   title:
+                                  //       AppLocalizations.of(context)!.addService,
+                                  // ),
+                                ],
+                              ),
+                              SizedBox(height: 15),
+                              // Row(
+                              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              //   children: [
+                              //     buildCustomCard(
+                              //       onTap: () {
+                              //         context.toPage(AddRequestForPosterAdd());
+                              //       },
+                              //       size: size,
+                              //       gradientColors: [
+                              //         Color(0xffFF6B2C),
+                              //         Color(0xffffa500)
+                              //       ],
+                              //       icon: Icons.signpost_rounded,
+                              //       iconColor: Color(0xffffa500),
+                              //       iconBgColor: cc.white,
+                              //       title:
+                              //           AppLocalizations.of(context)!.promotion,
+                              //     ),
+                              //   ],
+                              // ),
+
+                              // SizedBox(height: 15),
+                              // Row(
+                              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              //   children: [
+                              //     buildCustomCard(
+                              //       onTap: () {
+                              //         context.toPage(CreateSchedule());
+                              //       },
+                              //       size: size,
+                              //       gradientColors: [
+                              //         Colors.purple.shade200,
+                              //         Colors.pink.shade400
+                              //       ],
+                              //       icon: Icons.schedule,
+                              //       iconColor: Colors.pink.shade400,
+                              //       iconBgColor: cc.white,
+                              //       title: "Create Opening Schedule",
+                              //     ),
+                              //     buildCustomCard(
+                              //       onTap: () => context.toPage(HelpSupport()),
+                              //       size: size,
+                              //       gradientColors: [
+                              //         Colors.tealAccent.shade200,
+                              //         Colors.teal.shade400
+                              //       ],
+                              //       icon: Icons.support,
+                              //       iconColor: Colors.teal.shade400,
+                              //       iconBgColor: cc.white,
+                              //       title: "Help & Support",
+                              //     ),
+                              //   ],
+                              // ),
+                              vendorDashboardController.isLoading
+                                  ? Padding(
+                                      padding: EdgeInsets.only(top: 50),
+                                      child: OthersHelper()
+                                          .showLoading(cc.primaryColor),
+                                    )
+                                  : vendorDashboardController.isSubscribed ==
+                                          true
+                                      ? Offstage()
+                                      : InkWell(
+                                          onTap: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      SubscriptionModule(
+                                                    navFrom: "Dashboard",
+                                                  ),
+                                                ));
+                                          },
+                                          child: SizedBox(
+                                              height: 150,
+                                              width: double.infinity,
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(8.0),
+                                                child: CachedNetworkImage(
+                                                  imageUrl:
+                                                      "https://sashaktnirmaan.com/assets/subscription.gif",
+                                                  errorWidget: (context, url,
+                                                          error) =>
+                                                      const Icon(Icons.error),
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              )),
+                                        )
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
                   )),
             );
           },

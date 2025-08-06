@@ -34,6 +34,49 @@ class MenuPersonalInfoSection extends StatelessWidget {
                           AppLocalizations.of(context)!.email,
                           profileProvider.profileDetails.userDetails.email ??
                               ''),
+                      profileProvider.profileDetails.userDetails.businessName ==
+                              null
+                          ? Offstage()
+                          : BookingHelper().bRow(
+                              'null',
+                              AppLocalizations.of(context)!.businessName,
+                              profileProvider.profileDetails.userDetails
+                                      .businessName ??
+                                  ''),
+                      profileProvider
+                                  .profileDetails.userDetails.businessEmail ==
+                              null
+                          ? Offstage()
+                          : BookingHelper().bRow(
+                              'null',
+                              AppLocalizations.of(context)!.businessEmail,
+                              profileProvider.profileDetails.userDetails
+                                      .businessEmail ??
+                                  ''),
+                      profileProvider.profileDetails.userDetails
+                                  .businessFullAddress ==
+                              null
+                          ? Offstage()
+                          : BookingHelper().bRow(
+                              'null',
+                              AppLocalizations.of(context)!.businessFullAddress,
+                              profileProvider.profileDetails.userDetails
+                                      .businessFullAddress ??
+                                  '',
+                            ),
+
+                      profileProvider.profileDetails.userDetails
+                                  .businessGstNumber ==
+                              null
+                          ? Offstage()
+                          : BookingHelper().bRow(
+                              'null',
+                              AppLocalizations.of(context)!.businessGstNumber,
+                              profileProvider.profileDetails.userDetails
+                                      .businessGstNumber ??
+                                  '',
+                            ),
+
                       profileProvider.profileDetails.userDetails.city == null
                           ? Offstage()
                           : BookingHelper().bRow(
@@ -41,7 +84,8 @@ class MenuPersonalInfoSection extends StatelessWidget {
                               AppLocalizations.of(context)!.state,
                               profileProvider.profileDetails.userDetails.city
                                       .serviceCity ??
-                                  ''),
+                                  '',
+                            ),
                       profileProvider.profileDetails.userDetails.area == null
                           ? Offstage()
                           : BookingHelper().bRow(
@@ -49,7 +93,8 @@ class MenuPersonalInfoSection extends StatelessWidget {
                               AppLocalizations.of(context)!.city,
                               profileProvider.profileDetails.userDetails.area
                                       .serviceArea ??
-                                  ''),
+                                  '',
+                            ),
                       profileProvider.profileDetails.userDetails.country == null
                           ? Offstage()
                           : BookingHelper().bRow(
@@ -57,18 +102,22 @@ class MenuPersonalInfoSection extends StatelessWidget {
                               AppLocalizations.of(context)!.country,
                               profileProvider.profileDetails.userDetails.country
                                       .country ??
-                                  ''),
+                                  '',
+                            ),
                       // BookingHelper().bRow(
                       //     'null',
                       //     asProvider.getString("Post Code"),
                       //     profileProvider.profileDetails.userDetails.postCode ??
                       //         ''),
-                      // BookingHelper().bRow(
-                      //     'null',
-                      //     asProvider.getString("Address"),
-                      //     profileProvider.profileDetails.userDetails.address ??
-                      //         '',
-                      //     lastBorder: false),
+                      profileProvider.profileDetails.userDetails.address == null
+                          ? Offstage()
+                          : BookingHelper().bRow(
+                              'null',
+                              AppLocalizations.of(context)!.address,
+                              profileProvider
+                                      .profileDetails.userDetails.address ??
+                                  '',
+                              lastBorder: false),
                     ]),
               )),
     );

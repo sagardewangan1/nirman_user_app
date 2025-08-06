@@ -1,21 +1,21 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:otp_autofill/otp_autofill.dart';
 import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
 import 'package:qixer/helper/SharedPreferencesHelper.dart';
-import 'package:qixer/helper/extension/context_extension.dart';
 import 'package:qixer/model/navigationModel.dart';
 import 'package:qixer/service/app_string_service.dart';
 import 'package:qixer/service/auth_services/login_service.dart';
 import 'package:qixer/service/auth_services/signup_service.dart';
-import 'package:qixer/view/auth/signup/signup.dart';
 import 'package:qixer/view/auth/signup/signupVenderView.dart';
 import 'package:qixer/view/home/landing_page.dart';
 import 'package:qixer/view/utils/common_helper.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:qixer/view/utils/others_helper.dart';
-import 'package:qixer/view/utils/responsive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../service/rtl_service.dart';
@@ -33,10 +33,35 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   late bool _passwordVisible;
+  final scaffoldKey = GlobalKey();
+  late final OTPInteractor _otpInteractor;
+  late final OTPTextEditController _otpController;
+
+  final _formKey = GlobalKey<FormState>();
+
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController numberController = TextEditingController();
+  TextEditingController otpController = TextEditingController();
+
+  bool shashaktnirman_is_logged_in = true;
   @override
   void initState() {
     super.initState();
-    print("navigationModel =====> ${widget.navigationModel?.roleType}");
+    _otpInteractor = OTPInteractor();
+    _otpInteractor.getAppSignature().then((signature) {
+      print('App signature hash: $signature');
+    });
+    _otpController = OTPTextEditController(
+      codeLength: 6,
+      onCodeReceive: (code) {
+        print('Received OTP: $code');
+        otpController.text = code;
+      },
+      otpInteractor: _otpInteractor,
+    )..startListenUserConsent(
+        (parsed) => RegExp(r'\d{6}').stringMatch(parsed ?? '') ?? '',
+      );
     _passwordVisible = false;
     initPassword();
   }
@@ -58,52 +83,50 @@ class _LoginPageState extends State<LoginPage> {
     numberController.text = number ?? "";
   }
 
-  final _formKey = GlobalKey<FormState>();
-
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-  TextEditingController numberController = TextEditingController();
-  TextEditingController otpController = TextEditingController();
-
-  bool shashaktnirman_is_logged_in = true;
-
-  Future<void> loginFunction(context, LoginService provider) async {
-    if (provider.isloading == false) {
+  Future<void> loginFunction(
+      BuildContext context, LoginService provider, String phoneNumber) async {
+    if (!provider.isloading) {
       if (_formKey.currentState?.validate() ?? false) {
-        provider
-            .sendOTP(
-          numberController.text.trim(),
+        // bool otpSent = await provider.sendOTPWithFirebase(
+        //   context: context,
+        //   phoneNumber: "+91$phoneNumber",
+        // );
+
+        bool otpSent = await provider.sendOTP(
+          phoneNumber,
           widget.navigationModel?.roleType.toString(),
           context,
-          false,
-        )
-            .then((value) {
-          if (value == true) {
-            showModalBottomSheet(
-              isDismissible: false,
-              backgroundColor: Colors.transparent,
-              enableDrag: false,
-              isScrollControlled: true,
-              context: context,
-              builder: (modalContext) {
-                final keyboardVisible =
-                    MediaQuery.of(modalContext).viewInsets.bottom > 0;
-                final initialChildSize = keyboardVisible ? 0.57 : 0.27;
-                return DraggableScrollableSheet(
-                  expand: false,
-                  maxChildSize: 0.6,
-                  initialChildSize: initialChildSize,
-                  minChildSize: 0,
-                  builder: (modalContext, scrollController) {
-                    return otpVerify(context, provider);
-                  },
-                );
-              },
-            ).whenComplete(() {
-              otpController.clear();
-            });
-          }
-        });
+          isFromLoginPage: true,
+        );
+
+        if (otpSent) {
+          showModalBottomSheet(
+            isDismissible: false,
+            backgroundColor: Colors.transparent,
+            enableDrag: false,
+            isScrollControlled: true,
+            context: context,
+            builder: (modalContext) {
+              final keyboardVisible =
+                  MediaQuery.of(modalContext).viewInsets.bottom > 0;
+              final initialChildSize = keyboardVisible ? 0.57 : 0.27;
+              return DraggableScrollableSheet(
+                expand: false,
+                maxChildSize: 0.6,
+                initialChildSize: initialChildSize,
+                minChildSize: 0,
+                builder: (modalContext, scrollController) {
+                  return otpVerify(context, provider);
+                },
+              );
+            },
+          ).whenComplete(() {
+            otpController.clear();
+          });
+        } else {
+          OthersHelper().showToast(
+              'Failed to send OTP. Please try again.', cc.errorColor);
+        }
       }
     }
   }
@@ -136,59 +159,127 @@ class _LoginPageState extends State<LoginPage> {
             // Configure Pinput as needed
           ),
           SizedBox(height: 16),
-          CommonHelper().buttonOrange(
-            AppLocalizations.of(context)!.continueText,
-            () {
-              if (otpController.text.isEmpty) {
-                OthersHelper().showToast(
-                  AppLocalizations.of(context)!.pleaseEnterOtp,
-                  ConstantColors().warningColor,
-                );
-              } else {
-                provider
-                    .otpVerify(
-                  numberController.text.trim(),
-                  otpController.text.trim(),
-                  widget.navigationModel?.roleType.toString() ?? "",
-                  context,
-                  false,
-                )
-                    .then((value) async {
-                  if (value != null) {
-                    if (value.status == true) {
-                      OthersHelper().showToast(
-                        AppLocalizations.of(context)!.otpVerificationSuccess,
-                        ConstantColors().successColor,
-                      );
-                      SharedPreferencesHelper.setData(value);
-                      print("value type is new ====> ${value.user?.isNew}");
-                      if (value.user?.isNew == 0) {
-                        if (value.user?.userType == 0) {
-                          final prefs = await SharedPreferences.getInstance();
-                          prefs.setBool('shashaktnirman_is_logged_in', false);
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => SignUpVendorView()));
-                        } else {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                                builder: (context) => LandingPage()),
-                          );
-                        }
+          CommonHelper()
+              .buttonOrange(AppLocalizations.of(context)!.continueText, () {
+            if (otpController.text.isEmpty) {
+              OthersHelper().showToast(
+                AppLocalizations.of(context)!.pleaseEnterOtp,
+                ConstantColors().warningColor,
+              );
+            } else {
+              // provider
+              //     .verifyOTP(
+              //         context: context,
+              //         smsCode: otpController.text.toString(),
+              //         verificationId: provider.verificationId.toString())
+              //     .then(
+              //   (userCred) {
+              //     if (userCred?.user != null) {
+              //       provider
+              //           .otpVerify(
+              //               numberController.text.toString(),
+              //               userCred?.user?.uid.toString() ?? '',
+              //               widget.navigationModel?.roleType.toString(),
+              //               context,
+              //               true)
+              //           .then(
+              //         (value) async {
+              //           if (value != null) {
+              //             if (value.status == true) {
+              //               OthersHelper().showToast(
+              //                 AppLocalizations.of(context)!
+              //                     .otpVerificationSuccess,
+              //                 ConstantColors().successColor,
+              //               );
+              //               SharedPreferencesHelper.setData(value);
+              //               print(
+              //                   "value type is new ====> ${value.user?.isNew}");
+              //               if (value.user?.isNew == 0) {
+              //                 if (value.user?.userType == 0) {
+              //                   final prefs =
+              //                       await SharedPreferences.getInstance();
+              //                   prefs.setBool(
+              //                       'shashaktnirman_is_logged_in', false);
+              //                   Navigator.of(context).push(MaterialPageRoute(
+              //                       builder: (context) =>
+              //                           SignUpVendorView()));
+              //                 } else {
+              //                   Navigator.of(context).push(
+              //                     MaterialPageRoute(
+              //                         builder: (context) => LandingPage()),
+              //                   );
+              //                 }
+              //               } else {
+              //                 SharedPreferencesHelper.setData(value);
+              //                 if (mounted) {
+              //                   Navigator.of(context).pushAndRemoveUntil(
+              //                     MaterialPageRoute(
+              //                         builder: (context) => LandingPage()),
+              //                     (route) => false,
+              //                   );
+              //                 }
+              //               }
+              //             } else {
+              //               OthersHelper().showToast(
+              //                 AppLocalizations.of(context)!
+              //                     .otpVerificationFailed,
+              //                 ConstantColors().warningColor,
+              //               );
+              //             }
+              //           } else {
+              //             OthersHelper().showToast(
+              //               AppLocalizations.of(context)!
+              //                   .otpVerificationFailed,
+              //               ConstantColors().warningColor,
+              //             );
+              //           }
+              //         },
+              //       );
+              //     } else {
+              //       OthersHelper()
+              //           .showToast("OTP Verification Failed!", cc.errorColor);
+              //     }
+              //   },
+              // );
+
+              provider
+                  .otpVerify(
+                numberController.text.trim(),
+                otpController.text.trim(),
+                widget.navigationModel?.roleType.toString() ?? "",
+                context,
+                false,
+              )
+                  .then((value) async {
+                if (value != null) {
+                  if (value.status == true) {
+                    OthersHelper().showToast(
+                      AppLocalizations.of(context)!.otpVerificationSuccess,
+                      ConstantColors().successColor,
+                    );
+                    SharedPreferencesHelper.setData(value);
+                    print("value type is new ====> ${value.user?.isNew}");
+                    if (value.user?.isNew == 0) {
+                      if (value.user?.userType == 0) {
+                        final prefs = await SharedPreferences.getInstance();
+                        prefs.setBool('shashaktnirman_is_logged_in', false);
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => SignUpVendorView()));
                       } else {
-                        SharedPreferencesHelper.setData(value);
-                        if (mounted) {
-                          Navigator.of(context).pushAndRemoveUntil(
-                            MaterialPageRoute(
-                                builder: (context) => LandingPage()),
-                            (route) => false,
-                          );
-                        }
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                              builder: (context) => LandingPage()),
+                        );
                       }
                     } else {
-                      OthersHelper().showToast(
-                        AppLocalizations.of(context)!.otpVerificationFailed,
-                        ConstantColors().warningColor,
-                      );
+                      SharedPreferencesHelper.setData(value);
+                      if (mounted) {
+                        Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                              builder: (context) => LandingPage()),
+                          (route) => false,
+                        );
+                      }
                     }
                   } else {
                     OthersHelper().showToast(
@@ -196,14 +287,25 @@ class _LoginPageState extends State<LoginPage> {
                       ConstantColors().warningColor,
                     );
                   }
-                });
-                // Navigator.pop(context);
-              }
-            },
-          ),
+                } else {
+                  OthersHelper().showToast(
+                    AppLocalizations.of(context)!.otpVerificationFailed,
+                    ConstantColors().warningColor,
+                  );
+                }
+              });
+              // Navigator.pop(context);
+            }
+          }, isloading: provider.isloading2),
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _otpController.stopListen();
+    super.dispose();
   }
 
   @override
@@ -211,467 +313,206 @@ class _LoginPageState extends State<LoginPage> {
     ConstantColors cc = ConstantColors();
     final loginController = Provider.of<LoginService>(context);
     return Scaffold(
+      key: scaffoldKey,
       backgroundColor: Colors.white,
       appBar: CommonHelper().appbarCommon(
         AppLocalizations.of(context)!.login,
         context,
         () => Navigator.pop(context),
       ),
-      body: CustomScrollView(
-        physics: physicsCommon,
-        slivers: [
-          // SliverAppBar.large(
-          //   leading: IconButton(
-          //     onPressed: () {
-          //       debugPrint("Pressed back".toString());
-          //       context.popFalse;
-          //     },
-          //     icon: const Icon(Icons.arrow_back_ios_new_rounded),
-          //   ),
-          //   flexibleSpace: Container(
-          //     height: 230.0,
-          //     width: double.infinity,
-          //     decoration: const BoxDecoration(
-          //       image: DecorationImage(
-          //         image: AssetImage('assets/images/loginImageNirman.jpg'),
-          //         fit: BoxFit.cover,
-          //       ),
-          //     ),
-          //   ),
-          // ),
-          Consumer<AppStringService>(
-            builder: (context, asprovider, child) {
-              return Consumer<SignupService>(
-                builder: (context, provider, child) {
-                  return Form(
-                    key: _formKey,
-                    child: SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: 25),
-                      sliver: SliverList(
-                        delegate: SliverChildListDelegate(
-                          [
-                            const SizedBox(height: 33),
-                            CommonHelper().titleCommon(
-                              AppLocalizations.of(context)!.welcomeBackLogin,
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              AppLocalizations.of(context)!.loginViewText,
-                              style: TextStyle(
-                                color: cc.greyThree,
-                                fontSize: 14,
+      body: SafeArea(
+        child: CustomScrollView(
+          physics: physicsCommon,
+          slivers: [
+            Consumer<AppStringService>(
+              builder: (context, asprovider, child) {
+                return Consumer<SignupService>(
+                  builder: (context, provider, child) {
+                    return Form(
+                      key: _formKey,
+                      child: SliverPadding(
+                        padding: const EdgeInsets.symmetric(horizontal: 25),
+                        sliver: SliverList(
+                          delegate: SliverChildListDelegate(
+                            [
+                              const SizedBox(height: 33),
+                              CommonHelper().titleCommon(
+                                AppLocalizations.of(context)!.welcomeBackLogin,
                               ),
-                            ),
-                            const SizedBox(height: 25),
+                              const SizedBox(height: 10),
+                              Text(
+                                AppLocalizations.of(context)!.loginViewText,
+                                style: TextStyle(
+                                  color: cc.greyThree,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              const SizedBox(height: 25),
+                              CommonHelper().labelCommon(
+                                AppLocalizations.of(context)!.mobileNumber,
+                              ),
+                              Consumer<RtlService>(
+                                builder: (context, rtlP, child) =>
+                                    IntlPhoneField(
+                                  controller: numberController,
+                                  decoration:
+                                      SignupHelper().phoneFieldDecoration(),
+                                  keyboardType: TextInputType.number,
+                                  textInputAction: TextInputAction.done,
+                                  searchText: AppLocalizations.of(context)!
+                                      .searchCountry,
+                                  initialCountryCode:
+                                      context.read<SignupService>().countryCode,
+                                  disableLengthCheck: true,
+                                  textAlign: rtlP.direction == 'ltr'
+                                      ? TextAlign.left
+                                      : TextAlign.right,
+                                  inputFormatters: [
+                                    LengthLimitingTextInputFormatter(
+                                        10), // Set max length to 10
+                                    FilteringTextInputFormatter
+                                        .digitsOnly, // Allow only numbers
+                                  ],
+                                  onChanged: (phone) {
+                                    provider
+                                        .setCountryCode(phone.countryISOCode);
 
-                            CommonHelper().labelCommon(
-                              AppLocalizations.of(context)!.mobileNumber,
-                            ),
-                            Consumer<RtlService>(
-                              builder: (context, rtlP, child) => IntlPhoneField(
-                                controller: numberController,
-                                decoration:
-                                    SignupHelper().phoneFieldDecoration(),
-                                keyboardType: TextInputType.number,
-                                textInputAction: TextInputAction.done,
-                                searchText:
-                                    AppLocalizations.of(context)!.searchCountry,
-                                initialCountryCode:
-                                    context.read<SignupService>().countryCode,
-                                disableLengthCheck: true,
-                                textAlign: rtlP.direction == 'ltr'
-                                    ? TextAlign.left
-                                    : TextAlign.right,
-                                inputFormatters: [
-                                  LengthLimitingTextInputFormatter(
-                                      10), // Set max length to 10
-                                  FilteringTextInputFormatter
-                                      .digitsOnly, // Allow only numbers
-                                ],
-                                onChanged: (phone) {
-                                  provider.setCountryCode(phone.countryISOCode);
-
-                                  provider.setPhone(phone.completeNumber);
-                                },
-                                validator: (p0) {
-                                  if (p0?.number.length != 10) {
-                                    return AppLocalizations.of(context)!
-                                        .numberValidation;
+                                    provider.setPhone(phone.completeNumber);
+                                  },
+                                  validator: (p0) {
+                                    if (p0?.number.length != 10) {
+                                      return AppLocalizations.of(context)!
+                                          .numberValidation;
+                                    }
+                                    return null;
+                                  },
+                                ),
+                              ),
+                              const SizedBox(height: 25),
+                              const SizedBox(height: 13),
+                              CommonHelper().buttonOrange(
+                                AppLocalizations.of(context)!.continueText,
+                                () async {
+                                  if (numberController.text.trim().isEmpty ||
+                                      numberController.text.trim().length !=
+                                          10 ||
+                                      !RegExp(r'^[0-9]{10}$').hasMatch(
+                                          numberController.text.trim())) {
+                                    OthersHelper().showToast(
+                                        AppLocalizations.of(context)!
+                                            .invalidMobileNumber,
+                                        ConstantColors().warningColor);
+                                  } else {
+                                    // context.read<LoginService>().otpVerify(
+                                    //     numberController.text.toString(),
+                                    //     "UID",
+                                    //     "0",
+                                    //     context,
+                                    //     true);
+                                    await loginFunction(
+                                      context,
+                                      loginController,
+                                      numberController.text.trim(),
+                                    );
                                   }
-                                  return null;
                                 },
+                                isloading: loginController.isloading == false
+                                    ? false
+                                    : true,
                               ),
-                            ),
-                            // CustomInput(
-                            //   controller: numberController,
-                            //   validation: (value) {
-                            //     if (value == null || value.isEmpty) {
-                            //       return 'Please enter your mobile number';
-                            //     }
-                            //     if (value.length != 10) {
-                            //       return 'Please enter valid mobile number';
-                            //     }
-                            //     return null;
-                            //   },
-                            //   hintText: lnProvider.getString("Phone"),
-                            //   icon: 'assets/icons/user.png',
-                            //   textInputAction: TextInputAction.next,
-                            //   isNumberField: true,
-                            //   inputType: [
-                            //     FilteringTextInputFormatter.digitsOnly
-                            //   ],
-                            //   maxLength: 10,
-                            //   autofillHints: const [
-                            //     AutofillHints.telephoneNumber,
-                            //   ],
-                            // ),
-                            const SizedBox(height: 25),
-
-                            // CommonHelper()
-                            //     .labelCommon(lnProvider.getString("Email or username")),
-                            //
-                            // CustomInput(
-                            //   controller: emailController,
-                            //   validation: (value) {
-                            //     if (value == null || value.isEmpty) {
-                            //       return 'Please enter your email or username';
-                            //     }
-                            //     return null;
-                            //   },
-                            //   hintText: lnProvider.getString("Email"),
-                            //   icon: 'assets/icons/user.png',
-                            //   textInputAction: TextInputAction.next,
-                            //   maxLength: 10,
-                            //   autofillHints: const [
-                            //     AutofillHints.username,
-                            //     AutofillHints.email
-                            //   ],
-                            // ),
-                            // const SizedBox(height: 25),
-
-                            // CommonHelper()
-                            //     .labelCommon(lnProvider.getString("Password")),
-                            // Container(
-                            //   margin: const EdgeInsets.only(bottom: 19),
-                            //   decoration: BoxDecoration(
-                            //     borderRadius: BorderRadius.circular(10),
-                            //   ),
-                            //   child: TextFormField(
-                            //     controller: passwordController,
-                            //     textInputAction: TextInputAction.next,
-                            //     obscureText: !_passwordVisible,
-                            //     style: const TextStyle(fontSize: 14),
-                            //     autofillHints: const [AutofillHints.password],
-                            //     validator: (value) {
-                            //       if (value == null || value.isEmpty) {
-                            //         return lnProvider
-                            //             .getString('Please enter your password');
-                            //       }
-                            //       return null;
-                            //     },
-                            //     decoration: InputDecoration(
-                            //       prefixIcon: Column(
-                            //         mainAxisAlignment: MainAxisAlignment.center,
-                            //         children: [
-                            //           Container(
-                            //             height: 22.0,
-                            //             width: 40.0,
-                            //             decoration: const BoxDecoration(
-                            //               image: DecorationImage(
-                            //                   image:
-                            //                       AssetImage('assets/icons/lock.png'),
-                            //                   fit: BoxFit.fitHeight),
-                            //             ),
-                            //           ),
-                            //         ],
-                            //       ),
-                            //       suffixIcon: IconButton(
-                            //         splashColor: Colors.transparent,
-                            //         highlightColor: Colors.transparent,
-                            //         icon: Icon(
-                            //           _passwordVisible
-                            //               ? Icons.visibility_off_outlined
-                            //               : Icons.visibility_outlined,
-                            //           color: Colors.grey,
-                            //           size: 22,
-                            //         ),
-                            //         onPressed: () {
-                            //           setState(() {
-                            //             _passwordVisible = !_passwordVisible;
-                            //           });
-                            //         },
-                            //       ),
-                            //       enabledBorder: OutlineInputBorder(
-                            //         borderSide:
-                            //             BorderSide(color: ConstantColors().greyFive),
-                            //         borderRadius: BorderRadius.circular(9),
-                            //       ),
-                            //       focusedBorder: OutlineInputBorder(
-                            //         borderSide: BorderSide(
-                            //             color: ConstantColors().primaryColor),
-                            //       ),
-                            //       errorBorder: OutlineInputBorder(
-                            //         borderSide: BorderSide(
-                            //             color: ConstantColors().warningColor),
-                            //       ),
-                            //       focusedErrorBorder: OutlineInputBorder(
-                            //         borderSide: BorderSide(
-                            //             color: ConstantColors().primaryColor),
-                            //       ),
-                            //       hintText: lnProvider.getString('Enter password'),
-                            //       contentPadding: const EdgeInsets.symmetric(
-                            //           horizontal: 8, vertical: 18),
-                            //     ),
-                            //   ),
-                            // ),
-
-                            // Row(
-                            //   mainAxisAlignment: MainAxisAlignment.end,
-                            //   children: [
-                            //     Expanded(
-                            //       child: CheckboxListTile(
-                            //         checkColor: Colors.white,
-                            //         activeColor: ConstantColors().primaryColor,
-                            //         contentPadding: const EdgeInsets.all(0),
-                            //         title: Container(
-                            //           padding: const EdgeInsets.symmetric(vertical: 5),
-                            //           child: Text(
-                            //             lnProvider.getString("Remember Me"),
-                            //             style: TextStyle(
-                            //               color: ConstantColors().greyFour,
-                            //               fontWeight: FontWeight.w400,
-                            //               fontSize: 14,
-                            //             ),
-                            //           ),
-                            //         ),
-                            //         value: shashaktnirman_is_logged_in,
-                            //         onChanged: (newValue) {
-                            //           setState(() {
-                            //             shashaktnirman_is_logged_in = !shashaktnirman_is_logged_in;
-                            //           });
-                            //         },
-                            //         controlAffinity: ListTileControlAffinity.leading,
-                            //       ),
-                            //     ),
-                            //     const SizedBox(width: 10),
-                            //     InkWell(
-                            //       onTap: () {
-                            //         Navigator.push(
-                            //           context,
-                            //           MaterialPageRoute<void>(
-                            //             builder: (BuildContext context) =>
-                            //                 const ResetPassEmailPage(),
-                            //           ),
-                            //         );
-                            //       },
-                            //       child: SizedBox(
-                            //         width: 122,
-                            //         child: Text(
-                            //           lnProvider.getString("Forgot Password?"),
-                            //           style: TextStyle(
-                            //             color: cc.primaryColor,
-                            //             fontSize: 13,
-                            //             fontWeight: FontWeight.w600,
-                            //           ),
-                            //         ),
-                            //       ),
-                            //     )
-                            //   ],
-                            // ),
-
-                            const SizedBox(height: 13),
-
-                            CommonHelper().buttonOrange(
-                              AppLocalizations.of(context)!.continueText,
-                              () async {
-                                if (numberController.text.trim().isEmpty ||
-                                    numberController.text.trim().length != 10 ||
-                                    !RegExp(r'^[0-9]{10}$').hasMatch(
-                                        numberController.text.trim())) {
-                                  OthersHelper().showToast(
-                                      AppLocalizations.of(context)!
-                                          .invalidMobileNumber,
-                                      ConstantColors().warningColor);
-                                } else {
-                                  await loginFunction(context, loginController);
-                                }
-                              },
-                              isloading: loginController.isloading == false
-                                  ? false
-                                  : true,
-                            ),
-                            // Consumer<LoginService>(
-                            //   builder: (context, provider, child) =>
-                            //
-                            // ),
-
-                            // const SizedBox(height: 25),
-                            // Row(
-                            //   mainAxisAlignment: MainAxisAlignment.center,
-                            //   children: [
-                            //     RichText(
-                            //       text: TextSpan(
-                            //         text: lnProvider.getString("Don't have account?") +
-                            //             "  ",
-                            //         style: const TextStyle(
-                            //             color: Color(0xff646464), fontSize: 14),
-                            //         children: [
-                            //           TextSpan(
-                            //             recognizer: TapGestureRecognizer()
-                            //               ..onTap = () {
-                            //                 Navigator.push(
-                            //                   context,
-                            //                   MaterialPageRoute(
-                            //                     builder: (context) =>
-                            //                         const SignupPage(),
-                            //                   ),
-                            //                 );
-                            //               },
-                            //             text: lnProvider.getString('Sign up'),
-                            //             style: TextStyle(
-                            //               fontWeight: FontWeight.w600,
-                            //               fontSize: 14,
-                            //               color: cc.primaryColor,
-                            //             ),
-                            //           ),
-                            //         ],
-                            //       ),
-                            //     ),
-                            //   ],
-                            // ),
-
-                            // Additional components for 'Login with Google', 'Login with Facebook', etc.
-
-                            // Divider (or)
-                            const SizedBox(
-                              height: 30,
-                            ),
-                            // Row(
-                            //   mainAxisAlignment: MainAxisAlignment.center,
-                            //   crossAxisAlignment: CrossAxisAlignment.center,
-                            //   children: [
-                            //     Expanded(
-                            //         child: Container(
-                            //       height: 1,
-                            //       color: cc.greyFive,
-                            //     )),
-                            //     Container(
-                            //       width: 40,
-                            //       alignment: Alignment.center,
-                            //       margin: const EdgeInsets.only(bottom: 25),
-                            //       child: Text(
-                            //         lnProvider.getString("OR"),
-                            //         style: TextStyle(
-                            //             color: cc.greyPrimary,
-                            //             fontSize: 17,
-                            //             fontWeight: FontWeight.w600),
-                            //       ),
-                            //     ),
-                            //     Expanded(
-                            //         child: Container(
-                            //       height: 1,
-                            //       color: cc.greyFive,
-                            //     )),
-                            //   ],
-                            // ),
-                            //
-                            // // login with google, facebook button ===========>
-                            // const SizedBox(
-                            //   height: 20,
-                            // ),
-                            // Consumer<GoogleSignInService>(
-                            //   builder: (context, gProvider, child) => InkWell(
-                            //       onTap: () {
-                            //         if (gProvider.isloading == false) {
-                            //           gProvider.googleLogin(context);
-                            //         }
-                            //       },
-                            //       child: LoginHelper().commonButton(
-                            //           'assets/icons/google.png',
-                            //           lnProvider.getString("Login with Google"),
-                            //           isloading:
-                            //               gProvider.isloading == false ? false : true)),
-                            // ),
-                            //
-                            // if (Platform.isIOS) ...[
-                            //   const SizedBox(height: 20),
-                            //   Consumer<AppleSignInService>(
-                            //     builder: (context, gProvider, child) => InkWell(
-                            //         onTap: () async {
-                            //           if (gProvider.isloading == false) {
-                            //             gProvider.setLoadingTrue();
-                            //             await gProvider
-                            //                 .appleLogin(context, autoLogin: true)
-                            //                 .then((value) async {
-                            //               if (value == true) {
-                            //                 // Navigator.of(context).pop();
-                            //                 await Provider.of<ProfileService>(context,
-                            //                         listen: false)
-                            //                     .fetchData();
-                            //                 context.popTrue;
-                            //               }
-                            //             }).onError((error, stackTrace) =>
-                            //                     gProvider.setLoadingFalse());
-                            //             gProvider.setLoadingFalse();
-                            //           }
-                            //         },
-                            //         child: LoginHelper().commonButton(
-                            //             'assets/icons/apple.png',
-                            //             ("Sign in with Apple").tr(),
-                            //             isloading: gProvider.isloading == false
-                            //                 ? false
-                            //                 : true)),
-                            //   )
-                            // ],
-                            // const SizedBox(
-                            //   height: 20,
-                            // ),
-                            // Consumer<FacebookLoginService>(
-                            //   builder: (context, fProvider, child) => InkWell(
-                            //     onTap: () {
-                            //       if (fProvider.isloading == false) {
-                            //         fProvider.checkIfLoggedIn(context);
-                            //       }
-                            //     },
-                            //     child: LoginHelper().commonButton(
-                            //         'assets/icons/facebook.png',
-                            //         lnProvider.getString("Login with Facebook"),
-                            //         isloading:
-                            //             fProvider.isloading == false ? false : true),
-                            //   ),
-                            // ),
-                            // Row(
-                            //   mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            //   children: [
-                            //     Expanded(
-                            //       child: CommonHelper().buttonOrange(
-                            //         "Signup user",
-                            //         () => context.toPage(SignupPage()),
-                            //       ),
-                            //     ),
-                            //     SizedBox(width: 10),
-                            //     Expanded(
-                            //       child: CommonHelper().buttonOrange(
-                            //         "Signup vender",
-                            //         () => context.toPage(SignUpVendorView(
-                            //             navigationModel: NavigationModel())),
-                            //       ),
-                            //     )
-                            //   ],
-                            // ),
-                            // const SizedBox(
-                            //   height: 30,
-                            // ),
-                          ],
+                              const SizedBox(
+                                height: 100,
+                              ),
+                              // const FadingNote(),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
-              );
-            },
-          )
-        ],
+                    );
+                  },
+                );
+              },
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class FadingNote extends StatefulWidget {
+  const FadingNote({super.key});
+
+  @override
+  State<FadingNote> createState() => _FadingNoteState();
+}
+
+class _FadingNoteState extends State<FadingNote> {
+  double _opacity = 1.0;
+  late Timer _timer;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Start fading loop
+    _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
+      setState(() {
+        _opacity = _opacity == 1.0 ? 0.0 : 1.0;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel(); // Clean up timer
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedOpacity(
+      opacity: _opacity,
+      duration: const Duration(seconds: 2),
+      child: Center(
+        child: RichText(
+          textAlign: TextAlign.center,
+          text: const TextSpan(
+            style: TextStyle(fontSize: 14, color: Colors.black),
+            children: [
+              TextSpan(
+                text: 'Note: ',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue,
+                ),
+              ),
+              TextSpan(
+                text:
+                    'After clicking Continue, please don’t press back or refresh. ',
+              ),
+              TextSpan(
+                text:
+                    'A verification code is being sent — just wait a moment.\n\n',
+              ),
+              TextSpan(
+                text: 'नोट: ',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue,
+                ),
+              ),
+              TextSpan(
+                text:
+                    'Continue पर क्लिक करने के बाद पीछे न जाएं या ऐप को बंद न करें। ',
+              ),
+              TextSpan(
+                text:
+                    'verification code भेजा जा रहा है — कृपया थोड़ी देर प्रतीक्षा करें।',
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

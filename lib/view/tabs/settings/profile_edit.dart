@@ -90,336 +90,345 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
               Colors.black);
         }
       }),
-      body: Listener(
-        onPointerDown: (_) {
-          FocusScopeNode currentFocus = FocusScope.of(context);
-          if (!currentFocus.hasPrimaryFocus) {
-            currentFocus.focusedChild?.unfocus();
-          }
-        },
-        child: Consumer<AppStringService>(
-          builder: (context, asProvider, child) => Consumer<ProfileEditService>(
-            builder: (context, provider, child) => WillPopScope(
-              onWillPop: () {
-                if (provider.isloading == false) {
-                  // Provider.of<CountryStatesService>(context, listen: false)
-                  //     .setStateAndAreaValueToDefault();
-                  return Future.value(true);
-                } else {
-                  OthersHelper().showToast(
-                      AppLocalizations.of(context)!
-                          .pleaseWaitWhileTheProfileIsUpdating,
-                      Colors.black);
-                  return Future.value(false);
-                }
-              },
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: cc.white,
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    padding: EdgeInsets.symmetric(horizontal: screenPadding),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        //pick profile image
-                        InkWell(
-                          splashColor: Colors.transparent,
-                          highlightColor: Colors.transparent,
-                          onTap: () async {
-                            pickedImage = await provider.pickImage();
-                            setState(() {});
-                          },
-                          child: SizedBox(
-                            width: 105,
-                            height: 105,
-                            child: Stack(
-                              children: [
-                                Consumer<ProfileService>(
-                                  builder: (context, profileProvider, child) =>
-                                      Container(
-                                    width: 100,
-                                    height: 100,
-                                    alignment: Alignment.center,
-                                    padding: const EdgeInsets.all(5),
-                                    child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(8),
-                                        child: pickedImage == null
-                                            ? profileProvider.profileImage !=
-                                                    null
-                                                ? CommonHelper().profileImage(
-                                                    profileProvider
-                                                        .profileImage,
-                                                    85,
-                                                    85)
-                                                : Image.asset(
-                                                    'assets/images/avatar.png',
-                                                    height: 85,
-                                                    width: 85,
-                                                    fit: BoxFit.cover,
-                                                  )
-                                            : Image.file(
-                                                File(pickedImage!.path),
-                                                height: 85,
-                                                width: 85,
-                                                fit: BoxFit.cover,
-                                              )),
-                                  ),
-                                ),
-                                Positioned(
-                                  bottom: 9,
-                                  right: 12,
-                                  child: Container(
-                                    alignment: Alignment.center,
-                                    padding: const EdgeInsets.all(4),
-                                    decoration: const BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: Colors.white,
+      body: SafeArea(
+        child: Listener(
+          onPointerDown: (_) {
+            FocusScopeNode currentFocus = FocusScope.of(context);
+            if (!currentFocus.hasPrimaryFocus) {
+              currentFocus.focusedChild?.unfocus();
+            }
+          },
+          child: Consumer<AppStringService>(
+            builder: (context, asProvider, child) =>
+                Consumer<ProfileEditService>(
+              builder: (context, provider, child) => WillPopScope(
+                onWillPop: () {
+                  if (provider.isloading == false) {
+                    // Provider.of<CountryStatesService>(context, listen: false)
+                    //     .setStateAndAreaValueToDefault();
+                    return Future.value(true);
+                  } else {
+                    OthersHelper().showToast(
+                        AppLocalizations.of(context)!
+                            .pleaseWaitWhileTheProfileIsUpdating,
+                        Colors.black);
+                    return Future.value(false);
+                  }
+                },
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: cc.white,
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      padding: EdgeInsets.symmetric(horizontal: screenPadding),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          //pick profile image
+                          InkWell(
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            onTap: () async {
+                              pickedImage = await provider.pickImage();
+                              setState(() {});
+                            },
+                            child: SizedBox(
+                              width: 105,
+                              height: 105,
+                              child: Stack(
+                                children: [
+                                  Consumer<ProfileService>(
+                                    builder:
+                                        (context, profileProvider, child) =>
+                                            Container(
+                                      width: 100,
+                                      height: 100,
+                                      alignment: Alignment.center,
+                                      padding: const EdgeInsets.all(5),
+                                      child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          child: pickedImage == null
+                                              ? profileProvider.profileImage !=
+                                                      null
+                                                  ? CommonHelper().profileImage(
+                                                      profileProvider
+                                                          .profileImage,
+                                                      85,
+                                                      85)
+                                                  : Image.asset(
+                                                      'assets/images/avatar.png',
+                                                      height: 85,
+                                                      width: 85,
+                                                      fit: BoxFit.cover,
+                                                    )
+                                              : Image.file(
+                                                  File(pickedImage!.path),
+                                                  height: 85,
+                                                  width: 85,
+                                                  fit: BoxFit.cover,
+                                                )),
                                     ),
-                                    child: ClipRRect(
-                                        child: Icon(
-                                      Icons.camera,
-                                      color: cc.greyPrimary,
-                                    )),
                                   ),
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(
-                          height: 25,
-                        ),
-
-                        //Email, name
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            //Name ============>
-                            CommonHelper().labelCommon(
-                                AppLocalizations.of(context)!.fullName,
-                                isRequired: true),
-
-                            CustomInput(
-                              controller: fullNameController,
-                              validation: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return AppLocalizations.of(context)!
-                                      .pleaseEnterYourFullName;
-                                }
-                                return null;
-                              },
-                              hintText: AppLocalizations.of(context)!
-                                  .enterYourFullName,
-                              icon: 'assets/icons/user.png',
-                              textInputAction: TextInputAction.next,
-                            ),
-                            const SizedBox(
-                              height: 18,
-                            ),
-
-                            //Email ============>
-                            CommonHelper().labelCommon(
-                                AppLocalizations.of(context)!.email,
-                                isRequired: true),
-
-                            CustomInput(
-                              controller: emailController,
-                              validation: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return AppLocalizations.of(context)!
-                                      .enterYourEmail;
-                                }
-                                return null;
-                              },
-                              hintText:
-                                  AppLocalizations.of(context)!.enterYourEmail,
-                              icon: 'assets/icons/email-grey.png',
-                              textInputAction: TextInputAction.next,
-                            ),
-
-                            const SizedBox(
-                              height: 18,
-                            ),
-                          ],
-                        ),
-
-                        //phone
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            CommonHelper().labelCommon(
-                                AppLocalizations.of(context)!.phone,
-                                isRequired: true),
-                            Consumer<RtlService>(
-                              builder: (context, rtlP, child) => IntlPhoneField(
-                                searchText:
-                                    AppLocalizations.of(context)!.searchCountry,
-                                initialCountryCode: provider.countryCode.isEmpty
-                                    ? 'IN'
-                                    : provider
-                                        .countryCode, // ✅ Default to India if empty
-                                initialValue: phoneController.text,
-                                // controller: phoneController,
-                                enabled: false,
-                                readOnly: true,
-                                decoration:
-                                    SignupHelper().phoneFieldDecoration(),
-                                disableLengthCheck: true,
-                                textAlign: rtlP.direction == 'ltr'
-                                    ? TextAlign.left
-                                    : TextAlign.right,
-                                onChanged: (phone) {
-                                  provider.setCountryCode(phone.countryISOCode);
-                                  phoneController.text = phone.completeNumber;
-                                },
+                                  Positioned(
+                                    bottom: 9,
+                                    right: 12,
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      padding: const EdgeInsets.all(4),
+                                      decoration: const BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.white,
+                                      ),
+                                      child: ClipRRect(
+                                          child: Icon(
+                                        Icons.camera,
+                                        color: cc.greyPrimary,
+                                      )),
+                                    ),
+                                  )
+                                ],
                               ),
                             ),
-                            sizedBoxCustom(20),
-                            // CommonHelper()
-                            //     .labelCommon(asProvider.getString('Post code'),isRequired: true),
-                            // CustomInput(
-                            //   controller: postCodeController,
-                            //   validation: (value) {
-                            //     if (value == null || value.isEmpty) {
-                            //       return asProvider
-                            //           .getString('Please enter post code');
-                            //     }
-                            //     return null;
-                            //   },
-                            //   isNumberField: true,
-                            //   hintText:
-                            //       asProvider.getString('Enter your post code'),
-                            //   icon: 'assets/icons/user.png',
-                            //   textInputAction: TextInputAction.next,
-                            // ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 18,
-                        ),
+                          ),
 
-                        //dropdowns
-                        const CountryStatesDropdowns(),
+                          const SizedBox(
+                            height: 25,
+                          ),
 
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(
-                              height: 25,
-                            ),
-                            CommonHelper().labelCommon(
-                                AppLocalizations.of(context)!.yourAddress,
-                                isRequired: true),
-                            TextareaField(
-                              hintText: AppLocalizations.of(context)!.address,
-                              notesController: addressController,
-                            ),
-                          ],
-                        ),
+                          //Email, name
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              //Name ============>
+                              CommonHelper().labelCommon(
+                                  AppLocalizations.of(context)!.fullName,
+                                  isRequired: true),
 
-                        //About
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(
-                              height: 25,
-                            ),
-                            CommonHelper().labelCommon(
-                                AppLocalizations.of(context)!.about,
-                                isRequired: true),
-                            TextareaField(
-                              hintText: AppLocalizations.of(context)!.about,
-                              notesController: aboutController,
-                            ),
-                          ],
-                        ),
+                              CustomInput(
+                                controller: fullNameController,
+                                validation: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return AppLocalizations.of(context)!
+                                        .pleaseEnterYourFullName;
+                                  }
+                                  return null;
+                                },
+                                hintText: AppLocalizations.of(context)!
+                                    .enterYourFullName,
+                                icon: 'assets/icons/user.png',
+                                textInputAction: TextInputAction.next,
+                              ),
+                              const SizedBox(
+                                height: 18,
+                              ),
 
-                        const SizedBox(
-                          height: 25,
-                        ),
-                        CommonHelper().buttonOrange(
-                            AppLocalizations.of(context)!.save, () async {
-                          provider.setLoadingFalse();
-                          var selectedStateId =
-                              Provider.of<StateDropdownService>(context,
-                                      listen: false)
-                                  .selectedStateId;
-                          var selectedAreaId = Provider.of<AreaDropdownService>(
-                                  context,
-                                  listen: false)
-                              .selectedAreaId;
-                          // if (selectedStateId == '0' || selectedAreaId == '0') {
-                          //   OthersHelper().showSnackBar(
-                          //       context,
-                          //       AppLocalizations.of(context)!
-                          //           .youMustSelectAStateAndArea,
-                          //       cc.warningColor);
-                          //   return;
-                          // } else if (provider.isloading == false) {
-                          //   if (addressController.text.isEmpty) {
-                          //     OthersHelper().showToast(
-                          //         AppLocalizations.of(context)!
-                          //             .addressFieldIsRequired,
-                          //         Colors.black);
-                          //     return;
-                          //   } else
-                          if (phoneController.text.isEmpty) {
+                              //Email ============>
+                              CommonHelper().labelCommon(
+                                  AppLocalizations.of(context)!.email,
+                                  isRequired: true),
+
+                              CustomInput(
+                                controller: emailController,
+                                validation: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return AppLocalizations.of(context)!
+                                        .enterYourEmail;
+                                  }
+                                  return null;
+                                },
+                                hintText: AppLocalizations.of(context)!
+                                    .enterYourEmail,
+                                icon: 'assets/icons/email-grey.png',
+                                textInputAction: TextInputAction.next,
+                              ),
+
+                              const SizedBox(
+                                height: 18,
+                              ),
+                            ],
+                          ),
+
+                          //phone
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              CommonHelper().labelCommon(
+                                  AppLocalizations.of(context)!.phone,
+                                  isRequired: true),
+                              Consumer<RtlService>(
+                                builder: (context, rtlP, child) =>
+                                    IntlPhoneField(
+                                  searchText: AppLocalizations.of(context)!
+                                      .searchCountry,
+                                  initialCountryCode: provider
+                                          .countryCode.isEmpty
+                                      ? 'IN'
+                                      : provider
+                                          .countryCode, // ✅ Default to India if empty
+                                  initialValue: phoneController.text,
+                                  // controller: phoneController,
+                                  enabled: false,
+                                  readOnly: true,
+                                  decoration:
+                                      SignupHelper().phoneFieldDecoration(),
+                                  disableLengthCheck: true,
+                                  textAlign: rtlP.direction == 'ltr'
+                                      ? TextAlign.left
+                                      : TextAlign.right,
+                                  onChanged: (phone) {
+                                    provider
+                                        .setCountryCode(phone.countryISOCode);
+                                    phoneController.text = phone.completeNumber;
+                                  },
+                                ),
+                              ),
+                              sizedBoxCustom(20),
+                              // CommonHelper()
+                              //     .labelCommon(asProvider.getString('Post code'),isRequired: true),
+                              // CustomInput(
+                              //   controller: postCodeController,
+                              //   validation: (value) {
+                              //     if (value == null || value.isEmpty) {
+                              //       return asProvider
+                              //           .getString('Please enter post code');
+                              //     }
+                              //     return null;
+                              //   },
+                              //   isNumberField: true,
+                              //   hintText:
+                              //       asProvider.getString('Enter your post code'),
+                              //   icon: 'assets/icons/user.png',
+                              //   textInputAction: TextInputAction.next,
+                              // ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 18,
+                          ),
+
+                          //dropdowns
+                          const CountryStatesDropdowns(),
+
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(
+                                height: 25,
+                              ),
+                              CommonHelper().labelCommon(
+                                  AppLocalizations.of(context)!.yourAddress,
+                                  isRequired: true),
+                              TextareaField(
+                                hintText: AppLocalizations.of(context)!.address,
+                                notesController: addressController,
+                              ),
+                            ],
+                          ),
+
+                          //About
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(
+                                height: 25,
+                              ),
+                              CommonHelper().labelCommon(
+                                  AppLocalizations.of(context)!.about,
+                                  isRequired: true),
+                              TextareaField(
+                                hintText: AppLocalizations.of(context)!.about,
+                                notesController: aboutController,
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(
+                            height: 25,
+                          ),
+                          CommonHelper().buttonOrange(
+                              AppLocalizations.of(context)!.save, () async {
+                            provider.setLoadingFalse();
+                            var selectedStateId =
+                                Provider.of<StateDropdownService>(context,
+                                        listen: false)
+                                    .selectedStateId;
+                            var selectedAreaId =
+                                Provider.of<AreaDropdownService>(context,
+                                        listen: false)
+                                    .selectedAreaId;
+                            // if (selectedStateId == '0' || selectedAreaId == '0') {
+                            //   OthersHelper().showSnackBar(
+                            //       context,
+                            //       AppLocalizations.of(context)!
+                            //           .youMustSelectAStateAndArea,
+                            //       cc.warningColor);
+                            //   return;
+                            // } else if (provider.isloading == false) {
+                            //   if (addressController.text.isEmpty) {
+                            //     OthersHelper().showToast(
+                            //         AppLocalizations.of(context)!
+                            //             .addressFieldIsRequired,
+                            //         Colors.black);
+                            //     return;
+                            //   } else
+                            if (phoneController.text.isEmpty) {
+                              OthersHelper().showToast(
+                                  AppLocalizations.of(context)!
+                                      .phoneFieldIsRequired,
+                                  Colors.black);
+                              return;
+                            }
                             OthersHelper().showToast(
                                 AppLocalizations.of(context)!
-                                    .phoneFieldIsRequired,
-                                Colors.black);
-                            return;
-                          }
-                          OthersHelper().showToast(
-                              AppLocalizations.of(context)!.successfullyUpdated,
-                              cc.successColor);
-                          // showTopSnackBar(
-                          //     Overlay.of(context),
-                          //     CustomSnackBar.success(
-                          //       message: asProvider.getString(
-                          //           'Updating profile...It may take few seconds'),
-                          //     ),
-                          //     persistent: true,
-                          //     onAnimationControllerInit: (controller) =>
-                          //         localAnimationController = controller,
-                          //     onTap: () {
-                          //       // localAnimationController.reverse();
-                          //     });
+                                    .successfullyUpdated,
+                                cc.successColor);
+                            // showTopSnackBar(
+                            //     Overlay.of(context),
+                            //     CustomSnackBar.success(
+                            //       message: asProvider.getString(
+                            //           'Updating profile...It may take few seconds'),
+                            //     ),
+                            //     persistent: true,
+                            //     onAnimationControllerInit: (controller) =>
+                            //         localAnimationController = controller,
+                            //     onTap: () {
+                            //       // localAnimationController.reverse();
+                            //     });
 
-                          //update profile
-                          var result = await provider.updateProfile(
-                            fullNameController.text,
-                            emailController.text,
-                            phoneController.text,
-                            selectedStateId,
-                            selectedAreaId,
-                            Provider.of<CountryDropdownService>(context,
-                                    listen: false)
-                                .selectedCountryId,
-                            postCodeController.text,
-                            addressController.text,
-                            aboutController.text,
-                            pickedImage?.path,
-                            context,
-                          );
-                          if (result == true || result == false) {
-                            localAnimationController.reverse();
+                            //update profile
+                            var result = await provider.updateProfile(
+                              fullNameController.text,
+                              emailController.text,
+                              phoneController.text,
+                              selectedStateId,
+                              selectedAreaId,
+                              Provider.of<CountryDropdownService>(context,
+                                      listen: false)
+                                  .selectedCountryId,
+                              postCodeController.text,
+                              addressController.text,
+                              aboutController.text,
+                              pickedImage?.path,
+                              context,
+                            );
+                            if (result == true || result == false) {
+                              localAnimationController.reverse();
+                            }
                           }
-                        }
-                            // },
-                            ,
-                            isloading:
-                                provider.isloading == false ? false : true),
+                              // },
+                              ,
+                              isloading:
+                                  provider.isloading == false ? false : true),
 
-                        const SizedBox(
-                          height: 38,
-                        ),
-                      ],
+                          const SizedBox(
+                            height: 38,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

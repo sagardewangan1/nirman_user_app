@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -140,8 +142,7 @@ class LoginService with ChangeNotifier {
     }
   }
 
-  Future<bool> sendOTP(
-      mobile, userType, BuildContext context, bool shashaktnirmanIsLoggedIn,
+  Future<bool> sendOTP(mobile, userType, BuildContext context,
       {isFromLoginPage = true}) async {
     var connection = await checkConnection();
     if (connection) {
@@ -191,6 +192,14 @@ class LoginService with ChangeNotifier {
     }
   }
 
+  // provider.sendOTP(
+  // phoneNumber,
+  // widget.navigationModel?.roleType.toString(),
+  // context,
+  // ).then((value) {
+  //
+  // },);
+
   OtpResponseModel _otpResponseModel = OtpResponseModel();
   OtpResponseModel get otpResponseModel => _otpResponseModel;
 
@@ -208,7 +217,8 @@ class LoginService with ChangeNotifier {
     PushNotifications.isTokenRefreshed();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var deviceToken = prefs.getString('sashaktNirmaanDeviceToken') ?? '';
-
+    await SharedPreferences.getInstance();
+    prefs.setBool('intro', true);
     setLoading2();
 
     var data = jsonEncode({
@@ -226,7 +236,7 @@ class LoginService with ChangeNotifier {
     try {
       final response = await http.post(Uri.parse('$baseApi/login'),
           body: data, headers: header);
-
+      print("actual raw response ====> ${response.body}");
       if (response.statusCode == 201) {
         print("actaul reponse====> ${response.body}");
         _otpResponseModel =
@@ -235,8 +245,8 @@ class LoginService with ChangeNotifier {
         String token = _otpResponseModel.token ?? '';
         dynamic userId =
             _otpResponseModel.user != null ? _otpResponseModel.user!.id : 0;
-        String state = _otpResponseModel.user?.state ?? '';
-        String countryId = _otpResponseModel.user?.countryId ?? '';
+        String state = _otpResponseModel.user?.state.toString() ?? '';
+        String countryId = _otpResponseModel.user?.countryId.toString() ?? '';
 
         if (userId == 0) {
           debugPrint("User ID is not available");
@@ -251,14 +261,128 @@ class LoginService with ChangeNotifier {
 
         return _otpResponseModel;
       }
-    } catch (e) {
-      debugPrint("Error during HTTP request: $e");
+    } catch (e, stackTrace) {
+      debugPrint("Error during HTTP request: $e, stackTrace ====> $stackTrace");
       setLoadingFalse();
       OthersHelper().showToast("Something went wrong. Please try again.",
           ConstantColors().warningColor);
       return _otpResponseModel;
     }
     return null;
+  }
+
+  final FirebaseAuth auth = FirebaseAuth.instance;
+
+  String? _verificationId;
+  String? get verificationId => _verificationId;
+
+  Future<bool> sendOTPWithFirebase({
+    required String phoneNumber,
+    required BuildContext context,
+  }) async {
+    setLoadingTrue();
+    final completer = Completer<bool>();
+    print('📱 Starting OTP process for: $phoneNumber');
+    await auth.verifyPhoneNumber(
+      phoneNumber: phoneNumber.trim(),
+      timeout: const Duration(seconds: 60),
+      verificationCompleted: (PhoneAuthCredential credential) async {
+        print('✅ Auto-verification successful');
+        try {
+          await auth.signInWithCredential(credential);
+          print('🎉 Auto sign-in completed');
+          if (!completer.isCompleted) completer.complete(true);
+        } catch (e) {
+          print('❌ Auto sign-in error: $e');
+          if (!completer.isCompleted) completer.complete(false);
+        } finally {
+          setLoadingFalse();
+        }
+      },
+      verificationFailed: (FirebaseAuthException e) {
+        print('🚨 Verification failed: ${e.message}');
+        if (!completer.isCompleted) completer.complete(false);
+        setLoadingFalse();
+      },
+      codeSent: (String verificationId, int? resendToken) {
+        print('📨 OTP code sent – ID saved');
+        _verificationId = verificationId;
+        if (!completer.isCompleted) completer.complete(true);
+        setLoadingFalse();
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {
+        print('⏰ Auto-retrieval timed out');
+        _verificationId = verificationId;
+        if (!completer.isCompleted) completer.complete(false);
+        setLoadingFalse();
+      },
+    );
+    bool result = await completer.future;
+    setLoadingFalse();
+    return result;
+  }
+
+  /// Step 2: Verify OTP manually
+  bool _isLoading3 = false;
+  bool get isLoading3 => _isLoading3;
+  setIsLoading(bool value) {
+    _isLoading3 = value;
+    notifyListeners();
+  }
+
+  Future<UserCredential?> verifyOTP({
+    required String verificationId,
+    required String smsCode,
+    required BuildContext context,
+  }) async {
+    setIsLoading(true);
+    try {
+      // Build the PhoneAuthCredential
+      final credential = PhoneAuthProvider.credential(
+        verificationId: verificationId,
+        smsCode: smsCode.trim(),
+      );
+      debugPrint(
+          '🔐 Verifying OTP... ${verificationId} and otp ===>${smsCode} ');
+      // Sign in with credential
+      final userCredential = await auth.signInWithCredential(credential);
+      debugPrint('✅ OTP verified — UID: ${userCredential.user?.uid}');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text('✅ OTP verified — UID: ${userCredential.user?.uid}'),
+            backgroundColor: Colors.green),
+      );
+      return userCredential;
+    } on FirebaseAuthException catch (e) {
+      debugPrint('🚨 OTP verification failed: ${e.code} — ${e.message}');
+      String msg;
+      switch (e.code) {
+        case 'invalid-verification-code':
+          msg = 'Invalid OTP code entered';
+          break;
+        case 'session-expired':
+        case 'code-expired':
+          msg = 'OTP session expired. Request a new one.';
+          break;
+        default:
+          msg = 'OTP verification failed. Please try again.';
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(msg), backgroundColor: Colors.red),
+      );
+      return null;
+    } catch (e) {
+      debugPrint('❌ Unexpected error during OTP verification: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('An unexpected error occurred'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   saveDetails(

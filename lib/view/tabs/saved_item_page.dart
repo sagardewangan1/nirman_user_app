@@ -41,134 +41,140 @@ class _SavedItemPageState extends State<SavedItemPage> {
   Widget build(BuildContext context) {
     ConstantColors cc = ConstantColors();
     final saveItemController = Provider.of<SavedItemService>(context);
-    return Scaffold(
-      // backgroundColor: Colors.white,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Consumer<AppStringService>(
-          builder: (context, asProvider, child) => Padding(
-            padding: const EdgeInsets.only(right: 20.0),
-            child: Text(
-              overflow: TextOverflow.visible,
-              asProvider.getString(AppLocalizations.of(context)!.savedServices),
-              textAlign: TextAlign.center,
-              softWrap: true,
-              style: TextStyle(
-                  color: cc.greyPrimary,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600),
+    return SafeArea(
+      child: Scaffold(
+        // backgroundColor: Colors.white,
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: Consumer<AppStringService>(
+            builder: (context, asProvider, child) => Padding(
+              padding: const EdgeInsets.only(right: 20.0),
+              child: Text(
+                overflow: TextOverflow.visible,
+                asProvider
+                    .getString(AppLocalizations.of(context)!.savedServices),
+                textAlign: TextAlign.center,
+                softWrap: true,
+                style: TextStyle(
+                    color: cc.greyPrimary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600),
+              ),
             ),
           ),
         ),
-      ),
-      body: saveItemController.isLoading
-          ? OthersHelper().showLoading(cc.primaryColor)
-          : isLoggedIn == false
-              ? LoginOrRegister()
-              : SafeArea(
-                  child: SingleChildScrollView(
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: screenPadding),
-                      clipBehavior: Clip.none,
-                      child: Consumer<SavedItemService>(
-                        builder: (context, provider, child) => provider
-                                .savedItemList.isNotEmpty
-                            ? Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                    // const SizedBox(
-                                    //   height: 25,
-                                    // ),
-                                    // CommonHelper().titleCommon(
-                                    //     lnProvider.getString('Saved services')),
-                                    const SizedBox(
-                                      height: 22,
-                                    ),
-                                    Column(
-                                      children: [
-                                        for (int i = 0;
-                                            i < provider.savedItemList.length;
-                                            i++)
-                                          Container(
-                                            margin: const EdgeInsets.only(
-                                                bottom: 20),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(8.0),
-                                              color: Colors.white,
+        body: saveItemController.isLoading
+            ? OthersHelper().showLoading(cc.primaryColor)
+            : isLoggedIn == false
+                ? LoginOrRegister()
+                : SafeArea(
+                    child: SingleChildScrollView(
+                      child: Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: screenPadding),
+                        clipBehavior: Clip.none,
+                        child: Consumer<SavedItemService>(
+                          builder: (context, provider, child) => provider
+                                  .savedItemList.isNotEmpty
+                              ? Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                      // const SizedBox(
+                                      //   height: 25,
+                                      // ),
+                                      // CommonHelper().titleCommon(
+                                      //     lnProvider.getString('Saved services')),
+                                      const SizedBox(
+                                        height: 22,
+                                      ),
+                                      Column(
+                                        children: [
+                                          for (int i = 0;
+                                              i < provider.savedItemList.length;
+                                              i++)
+                                            Container(
+                                              margin: const EdgeInsets.only(
+                                                  bottom: 20),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(8.0),
+                                                color: Colors.white,
+                                              ),
+                                              child: ServiceCard(
+                                                cc: cc,
+                                                imageLink:
+                                                    provider.savedItemList[i]
+                                                            ['image'] ??
+                                                        placeHolderUrl,
+                                                rating: twoDouble(
+                                                    provider.savedItemList[i]
+                                                        ['rating']),
+                                                title: provider.savedItemList[i]
+                                                    ['title'],
+                                                sellerName:
+                                                    provider.savedItemList[i]
+                                                        ['sellerName'],
+                                                price: provider.savedItemList[i]
+                                                    ['price'],
+                                                buttonText: AppLocalizations.of(
+                                                        context)!
+                                                    .enquiryNow,
+                                                width: double.infinity,
+                                                marginRight: 0.0,
+                                                pressed: () {
+                                                  provider.remove(
+                                                    provider.savedItemList[i]
+                                                        ['serviceId'],
+                                                    provider.savedItemList[i]
+                                                        ['title'],
+                                                    provider.savedItemList[i]
+                                                        ['image'],
+                                                    provider.savedItemList[i]
+                                                        ['price'],
+                                                    provider.savedItemList[i]
+                                                        ['sellerName'],
+                                                    twoDouble(provider
+                                                            .savedItemList[i]
+                                                        ['rating']),
+                                                    i,
+                                                    context,
+                                                    provider.savedItemList[i]
+                                                        ['sellerId'],
+                                                    provider.savedItemList[i]
+                                                        ['experience'],
+                                                  );
+                                                },
+                                                isSaved: true,
+                                                serviceId:
+                                                    provider.savedItemList[i]
+                                                        ['serviceId'],
+                                                sellerId:
+                                                    provider.savedItemList[i]
+                                                        ['sellerId'],
+                                                cardFrom: 'Home',
+                                                experience: "",
+                                                status: "",
+                                                address: "",
+                                              ),
                                             ),
-                                            child: ServiceCard(
-                                              cc: cc,
-                                              imageLink:
-                                                  provider.savedItemList[i]
-                                                          ['image'] ??
-                                                      placeHolderUrl,
-                                              rating: twoDouble(provider
-                                                  .savedItemList[i]['rating']),
-                                              title: provider.savedItemList[i]
-                                                  ['title'],
-                                              sellerName:
-                                                  provider.savedItemList[i]
-                                                      ['sellerName'],
-                                              price: provider.savedItemList[i]
-                                                  ['price'],
-                                              buttonText:
-                                                  AppLocalizations.of(context)!
-                                                      .enquiryNow,
-                                              width: double.infinity,
-                                              marginRight: 0.0,
-                                              pressed: () {
-                                                provider.remove(
-                                                  provider.savedItemList[i]
-                                                      ['serviceId'],
-                                                  provider.savedItemList[i]
-                                                      ['title'],
-                                                  provider.savedItemList[i]
-                                                      ['image'],
-                                                  provider.savedItemList[i]
-                                                      ['price'],
-                                                  provider.savedItemList[i]
-                                                      ['sellerName'],
-                                                  twoDouble(
-                                                      provider.savedItemList[i]
-                                                          ['rating']),
-                                                  i,
-                                                  context,
-                                                  provider.savedItemList[i]
-                                                      ['sellerId'],
-                                                  provider.savedItemList[i]
-                                                      ['experience'],
-                                                );
-                                              },
-                                              isSaved: true,
-                                              serviceId:
-                                                  provider.savedItemList[i]
-                                                      ['serviceId'],
-                                              sellerId: provider
-                                                  .savedItemList[i]['sellerId'],
-                                              cardFrom: 'Home',
-                                              experience: "",
-                                              status: "",
-                                              address: "",
-                                            ),
-                                          ),
-                                      ],
-                                    )
+                                        ],
+                                      )
 
-                                    //
-                                  ])
-                            : Container(
-                                alignment: Alignment.center,
-                                height: screenHeight - 140,
-                                child: Image.asset(
-                                  "assets/images/nodata.png",
-                                  fit: BoxFit.contain,
+                                      //
+                                    ])
+                              : Container(
+                                  alignment: Alignment.center,
+                                  height: screenHeight - 140,
+                                  child: Image.asset(
+                                    "assets/images/nodata.png",
+                                    fit: BoxFit.contain,
+                                  ),
                                 ),
-                              ),
+                        ),
                       ),
                     ),
                   ),
-                ),
+      ),
     );
   }
 }

@@ -194,7 +194,7 @@ class SellerForMobile {
   int? id;
   String? name;
   String? image;
-  int? countryId;
+  dynamic countryId;
   String? phone;
   String? serviceCity;
   List<dynamic>? serviceArea;
@@ -219,7 +219,7 @@ class SellerForMobile {
         id: json["id"] as int?,
         name: json["name"],
         image: json["image"],
-        countryId: json["country_id"] as int?,
+        countryId: json["country_id"],
         phone: json["phone"],
         serviceCity: json["service_city"],
         serviceArea: () {

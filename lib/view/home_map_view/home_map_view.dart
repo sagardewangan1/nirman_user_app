@@ -11,7 +11,6 @@ import 'package:qixer/view/utils/common_helper.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:qixer/view/utils/others_helper.dart';
 
-
 class HomeMapView extends StatelessWidget {
   HomeMapView({super.key});
 
@@ -129,34 +128,36 @@ class HomeMapView extends StatelessWidget {
       appBar: CommonHelper().appbarCommon("", context, () {
         context.popFalse;
       }),
-      body: FutureBuilder(
-          future: getMarker(context),
-          builder: (context, snapShot) {
-            if (snapShot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: OthersHelper().showLoading(cc.primaryColor),
-              );
-            }
-            return GoogleMap(
-              initialCameraPosition: CameraPosition(
-                target: firstLocation ?? currentLocationNotifier.value,
-                zoom: 21.0,
-              ),
-              zoomControlsEnabled: false,
-              // polylines: Set<Polyline>.of(polylines.values),
-              onMapCreated: _onMapCreated,
-              markers: Set<Marker>.of(markers.values),
-              buildingsEnabled: false,
-              mapToolbarEnabled: true,
-              indoorViewEnabled: false,
-              liteModeEnabled: false,
-              rotateGesturesEnabled: false,
-              myLocationButtonEnabled: true,
-              myLocationEnabled: true,
+      body: SafeArea(
+        child: FutureBuilder(
+            future: getMarker(context),
+            builder: (context, snapShot) {
+              if (snapShot.connectionState == ConnectionState.waiting) {
+                return Center(
+                  child: OthersHelper().showLoading(cc.primaryColor),
+                );
+              }
+              return GoogleMap(
+                initialCameraPosition: CameraPosition(
+                  target: firstLocation ?? currentLocationNotifier.value,
+                  zoom: 21.0,
+                ),
+                zoomControlsEnabled: false,
+                // polylines: Set<Polyline>.of(polylines.values),
+                onMapCreated: _onMapCreated,
+                markers: Set<Marker>.of(markers.values),
+                buildingsEnabled: false,
+                mapToolbarEnabled: true,
+                indoorViewEnabled: false,
+                liteModeEnabled: false,
+                rotateGesturesEnabled: false,
+                myLocationButtonEnabled: true,
+                myLocationEnabled: true,
 
-              mapType: MapType.normal,
-            );
-          }),
+                mapType: MapType.normal,
+              );
+            }),
+      ),
     );
   }
 

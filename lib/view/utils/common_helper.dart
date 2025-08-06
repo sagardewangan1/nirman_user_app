@@ -150,6 +150,32 @@ class CommonHelper {
     );
   }
 
+  buttonOrangeForDetails(String title, VoidCallback pressed,
+      {isloading = false,
+      bgColor,
+      double paddingVerticle = 18,
+      double? width}) {
+    return InkWell(
+      onTap: pressed,
+      child: Container(
+          width: width,
+          alignment: Alignment.center,
+          padding: EdgeInsets.symmetric(vertical: paddingVerticle),
+          decoration: BoxDecoration(
+              color: bgColor ?? cc.primaryColor,
+              borderRadius: BorderRadius.circular(8)),
+          child: isloading == false
+              ? Text(
+                  lnProvider.getString(title),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                  ),
+                )
+              : OthersHelper().showLoading(Colors.white)),
+    );
+  }
+
   borderButtonOrange(String title, VoidCallback pressed,
       {bgColor, double paddingVerticle = 17}) {
     return InkWell(

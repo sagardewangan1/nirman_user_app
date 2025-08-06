@@ -55,14 +55,18 @@ class AboutSellerTab extends StatelessWidget {
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          provider.serviceDetailsModel.serviceSellerName
-                              .toString()
-                              .capitalize(),
-                          style: TextStyle(
-                              color: cc.greyFour,
-                              fontSize: 17,
-                              fontWeight: FontWeight.w600),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.7,
+                          child: Text(
+                            provider.serviceDetailsModel.serviceSellerName
+                                .toString()
+                                .capitalize(),
+                            overflow: TextOverflow.visible,
+                            style: TextStyle(
+                                color: cc.greyFour,
+                                fontSize: 17,
+                                fontWeight: FontWeight.w600),
+                          ),
                         ),
                         // const SizedBox(
                         //   height: 6,

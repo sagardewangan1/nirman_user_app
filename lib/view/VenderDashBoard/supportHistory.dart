@@ -20,24 +20,27 @@ class _SupportHistoryState extends State<SupportHistory> {
   Widget build(BuildContext context) {
     return Consumer<AppStringService>(
       builder: (context, asProvider, child) {
-        return Scaffold(
-          appBar: CommonHelper().appbarCommon(
-            "Support History",
-            context,
-            () => Navigator.pop(context),
-          ),
-          body: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12.0),
-              color: cc.white,
+        return SafeArea(
+          child: Scaffold(
+            appBar: CommonHelper().appbarCommon(
+              "Support History",
+              context,
+              () => Navigator.pop(context),
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ListView.builder(
-                padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
-                itemBuilder: (context, index) {
-                  return Container();
-                },
+            body: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12.0),
+                color: cc.white,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ListView.builder(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+                  itemBuilder: (context, index) {
+                    return Container();
+                  },
+                ),
               ),
             ),
           ),

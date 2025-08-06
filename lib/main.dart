@@ -92,6 +92,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent, // 🔹 Make background transparent
+        statusBarIconBrightness: Brightness.light, // or Brightness.light
+      ),
+    );
     List<Locale> locals = [];
     for (var language in AppLanguages.languages) {
       locals.add(Locale(language.languageCode!, language.countryCode));
@@ -104,7 +110,7 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
           locale: langController.appLocale,
           debugShowCheckedModeBanner: false,
-          title: 'Shashakt Nirman',
+          title: 'Sashakt Nirmaan',
           localizationsDelegates: const [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,

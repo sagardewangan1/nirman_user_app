@@ -15,26 +15,28 @@ class TacPP extends StatelessWidget {
     return Scaffold(
       backgroundColor: cc.white,
       appBar: AppBar(),
-      body: FutureBuilder(
-        future: fetchData(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return OthersHelper().showLoading(cc.primaryColor);
-          }
-          if (snapshot.data.toString() == "null" || snapshot.hasError) {
-            return Container(
-              alignment: Alignment.center,
-              height: screenHeight - 140,
-              child: Image.asset(
-                "assets/images/nodata.png",
-                fit: BoxFit.contain,
-              ),
-            );
-          }
-          return SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
-              child: HtmlWidget(snapshot.data.toString()));
-        },
+      body: SafeArea(
+        child: FutureBuilder(
+          future: fetchData(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return OthersHelper().showLoading(cc.primaryColor);
+            }
+            if (snapshot.data.toString() == "null" || snapshot.hasError) {
+              return Container(
+                alignment: Alignment.center,
+                height: screenHeight - 140,
+                child: Image.asset(
+                  "assets/images/nodata.png",
+                  fit: BoxFit.contain,
+                ),
+              );
+            }
+            return SingleChildScrollView(
+                padding: const EdgeInsets.all(20),
+                child: HtmlWidget(snapshot.data.toString()));
+          },
+        ),
       ),
     );
   }

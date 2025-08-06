@@ -15,52 +15,54 @@ class ServicesOfUser extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ConstantColors cc = ConstantColors();
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: CommonHelper().appbarCommon('Leslie Alexander', context, () {
-        Navigator.pop(context);
-      }),
-      body: ListView.separated(
-          padding: EdgeInsets.all(screenPadding),
-          itemBuilder: (context, index) {
-            return InkWell(
-              splashColor: Colors.transparent,
-              highlightColor: Colors.transparent,
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.pop(context);
-                Provider.of<ServiceDetailsService>(context, listen: false)
-                    .fetchServiceDetails(68);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute<void>(
-                    builder: (BuildContext context) =>
-                        const ServiceDetailsPage(),
-                  ),
-                );
-              },
-              child: ServiceCard(
-                cc: cc,
-                imageLink:
-                    "https://cdn.pixabay.com/photo/2021/09/14/11/33/tree-6623764__340.jpg",
-                rating: '4.5',
-                title: 'Hair cutting service at low price Hair cutting',
-                sellerName: 'Jane Cooper',
-                price: 30,
-                buttonText: 'Book Now',
-                width: double.infinity,
-                marginRight: 0.0,
-                pressed: () {},
-                isSaved: false,
-                serviceId: 50,
-                sellerId: 2,
-              ),
-            );
-          },
-          separatorBuilder: (context, index) {
-            return sizedBoxCustom(10);
-          },
-          itemCount: 3),
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: CommonHelper().appbarCommon('Leslie Alexander', context, () {
+          Navigator.pop(context);
+        }),
+        body: ListView.separated(
+            padding: EdgeInsets.all(screenPadding),
+            itemBuilder: (context, index) {
+              return InkWell(
+                splashColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                  Provider.of<ServiceDetailsService>(context, listen: false)
+                      .fetchServiceDetails(68);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute<void>(
+                      builder: (BuildContext context) =>
+                          const ServiceDetailsPage(),
+                    ),
+                  );
+                },
+                child: ServiceCard(
+                  cc: cc,
+                  imageLink:
+                      "https://cdn.pixabay.com/photo/2021/09/14/11/33/tree-6623764__340.jpg",
+                  rating: '4.5',
+                  title: 'Hair cutting service at low price Hair cutting',
+                  sellerName: 'Jane Cooper',
+                  price: 30,
+                  buttonText: 'Book Now',
+                  width: double.infinity,
+                  marginRight: 0.0,
+                  pressed: () {},
+                  isSaved: false,
+                  serviceId: 50,
+                  sellerId: 2,
+                ),
+              );
+            },
+            separatorBuilder: (context, index) {
+              return sizedBoxCustom(10);
+            },
+            itemCount: 3),
+      ),
     );
   }
 }

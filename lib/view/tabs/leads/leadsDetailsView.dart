@@ -57,361 +57,363 @@ class _LeadsDetailsViewState extends State<LeadsDetailsView> {
       builder: (context, asProvider, child) {
         Size size = MediaQuery.of(context).size;
         final leadController = Provider.of<LeadsController>(context);
-        return Scaffold(
-          resizeToAvoidBottomInset: true,
-          appBar: AppBar(
-            centerTitle: true,
-            surfaceTintColor: cc.white,
-            iconTheme: IconThemeData(color: cc.greyPrimary),
-            systemOverlayStyle: SystemUiOverlayStyle.dark,
-            title: Text(
-              asProvider.getString("All Leads"),
-              style: TextStyle(
-                  color: cc.greyPrimary,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600),
-            ),
-            backgroundColor: cc.white,
-            elevation: 0,
-            leading: widget.navigationModel?.navFrom != "Home Side"
-                ? InkWell(
-                    onTap: () => Navigator.pop(context),
-                    child: const Icon(
-                      Icons.arrow_back_ios,
-                      // size: 24,
-                    ),
-                  )
-                : null,
-          ),
-          body: Column(
-            children: [
-              Column(
-                children: [
-                  SizedBox(
-                    height: 38,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      shrinkWrap: true,
-                      itemCount: mainFilter.length,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 5.0, vertical: 3),
-                          child: InkWell(
-                            onTap: () {
-                              setState(() {
-                                selectedFilterIndex =
-                                    index; // Highlight the selected filter
-                              });
-                            },
-                            borderRadius: BorderRadius.circular(5.0),
-                            child: AnimatedContainer(
-                              duration: Duration(milliseconds: 300),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5.0),
-                                gradient: index == selectedFilterIndex
-                                    ? LinearGradient(
-                                        colors: [
-                                          Colors.blue.shade300,
-                                          Colors.blue.shade600,
-                                        ],
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                      )
-                                    : null,
-                                border: Border.all(
-                                  width: 1,
-                                  color: index == selectedFilterIndex
-                                      ? Colors.transparent
-                                      : cc.black6,
-                                ),
-                                color: index == selectedFilterIndex
-                                    ? cc.white
-                                    : cc.white,
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(5.0),
-                                child: Row(
-                                  children: [
-                                    Tooltip(
-                                      message: mainFilter[index]['name'],
-                                      child: Icon(
-                                        mainFilter[index]['icon'],
-                                        size: 16,
-                                        color: index == selectedFilterIndex
-                                            ? cc.white
-                                            : mainFilter[index]['color'],
-                                      ),
-                                    ),
-                                    Gap(5),
-                                    Text(
-                                      mainFilter[index]['name'],
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w400,
-                                        color: index == selectedFilterIndex
-                                            ? Colors.white
-                                            : Colors.black,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  // Gap(2),
-                  // Padding(
-                  //   padding: const EdgeInsets.symmetric(vertical: 2.0),
-                  //   child: Container(
-                  //     height: 1,
-                  //     width: size.width,
-                  //     color: Colors.grey.shade600,
-                  //   ),
-                  // ),
-                  // Container(
-                  //     alignment: Alignment.centerLeft,
-                  //     height: 38,
-                  //     child: ListView(
-                  //       shrinkWrap: true,
-                  //       scrollDirection: Axis.horizontal,
-                  //       padding: EdgeInsets.zero,
-                  //       children: [
-                  //         // Padding(
-                  //         //   padding: const EdgeInsets.all(5.0),
-                  //         //   child: InkWell(
-                  //         //     onTap: () => showModalBottomSheet(
-                  //         //         context: context,
-                  //         //         backgroundColor: Colors.transparent,
-                  //         //         builder: (context) {
-                  //         //           return DateBottomSheet(
-                  //         //             cc: cc,
-                  //         //           );
-                  //         //         }),
-                  //         //     child: Container(
-                  //         //       alignment: Alignment.center,
-                  //         //       decoration: BoxDecoration(
-                  //         //         color: Colors.grey.shade100,
-                  //         //         borderRadius: BorderRadius.circular(5.0),
-                  //         //         border:
-                  //         //             Border.all(width: 1, color: cc.black7),
-                  //         //       ),
-                  //         //       child: Padding(
-                  //         //         padding: const EdgeInsets.symmetric(
-                  //         //             horizontal: 5.0, vertical: 3.0),
-                  //         //         child: Row(
-                  //         //           mainAxisAlignment: MainAxisAlignment.center,
-                  //         //           crossAxisAlignment:
-                  //         //               CrossAxisAlignment.center,
-                  //         //           mainAxisSize: MainAxisSize.min,
-                  //         //           children: [
-                  //         //             Icon(
-                  //         //               Icons.date_range,
-                  //         //               size: 16,
-                  //         //             ),
-                  //         //             Gap(5),
-                  //         //             Text(
-                  //         //               "Date",
-                  //         //               style: TextStyle(
-                  //         //                 fontSize: 12,
-                  //         //                 fontWeight: FontWeight.w400,
-                  //         //                 color: Colors.black,
-                  //         //               ),
-                  //         //             ),
-                  //         //           ],
-                  //         //         ),
-                  //         //       ),
-                  //         //     ),
-                  //         //   ),
-                  //         // ),
-                  //         // Padding(
-                  //         //   padding: const EdgeInsets.all(5.0),
-                  //         //   child: Container(
-                  //         //     alignment: Alignment.center,
-                  //         //     decoration: BoxDecoration(
-                  //         //       color: Colors.grey.shade100,
-                  //         //       borderRadius: BorderRadius.circular(5.0),
-                  //         //       border: Border.all(width: 1, color: cc.black7),
-                  //         //     ),
-                  //         //     child: Padding(
-                  //         //       padding: const EdgeInsets.symmetric(
-                  //         //           horizontal: 5.0, vertical: 3.0),
-                  //         //       child: Row(
-                  //         //         mainAxisAlignment: MainAxisAlignment.center,
-                  //         //         crossAxisAlignment: CrossAxisAlignment.center,
-                  //         //         mainAxisSize: MainAxisSize.min,
-                  //         //         children: [
-                  //         //           Icon(
-                  //         //             Icons.bookmark_rounded,
-                  //         //             size: 16,
-                  //         //             color: cc.primaryColor,
-                  //         //           ),
-                  //         //           Gap(5),
-                  //         //           Text(
-                  //         //             "Bookmarked",
-                  //         //             style: TextStyle(
-                  //         //               fontSize: 12,
-                  //         //               fontWeight: FontWeight.w400,
-                  //         //               color: Colors.black,
-                  //         //             ),
-                  //         //           ),
-                  //         //         ],
-                  //         //       ),
-                  //         //     ),
-                  //         //   ),
-                  //         // ),
-                  //         // Padding(
-                  //         //   padding: const EdgeInsets.all(5.0),
-                  //         //   child: Container(
-                  //         //     alignment: Alignment.center,
-                  //         //     decoration: BoxDecoration(
-                  //         //       color: Colors.grey.shade100,
-                  //         //       borderRadius: BorderRadius.circular(5.0),
-                  //         //       border: Border.all(width: 1, color: cc.black7),
-                  //         //     ),
-                  //         //     child: Padding(
-                  //         //       padding: const EdgeInsets.symmetric(
-                  //         //           horizontal: 5.0, vertical: 3.0),
-                  //         //       child: Row(
-                  //         //         mainAxisAlignment: MainAxisAlignment.center,
-                  //         //         crossAxisAlignment: CrossAxisAlignment.center,
-                  //         //         mainAxisSize: MainAxisSize.min,
-                  //         //         children: [
-                  //         //           Icon(
-                  //         //             Icons.note_alt_rounded,
-                  //         //             size: 16,
-                  //         //             color: cc.successColor,
-                  //         //           ),
-                  //         //           Gap(5),
-                  //         //           Text(
-                  //         //             "Remarks",
-                  //         //             style: TextStyle(
-                  //         //               fontSize: 12,
-                  //         //               fontWeight: FontWeight.w400,
-                  //         //               color: Colors.black,
-                  //         //             ),
-                  //         //           ),
-                  //         //         ],
-                  //         //       ),
-                  //         //     ),
-                  //         //   ),
-                  //         // ),
-                  //         // Padding(
-                  //         //   padding: const EdgeInsets.all(5.0),
-                  //         //   child: Container(
-                  //         //     alignment: Alignment.center,
-                  //         //     decoration: BoxDecoration(
-                  //         //       color: Colors.grey.shade100,
-                  //         //       borderRadius: BorderRadius.circular(5.0),
-                  //         //       border: Border.all(width: 1, color: cc.black7),
-                  //         //     ),
-                  //         //     child: Padding(
-                  //         //       padding: const EdgeInsets.symmetric(
-                  //         //           horizontal: 5.0, vertical: 3.0),
-                  //         //       child: Row(
-                  //         //         mainAxisAlignment: MainAxisAlignment.center,
-                  //         //         crossAxisAlignment: CrossAxisAlignment.center,
-                  //         //         mainAxisSize: MainAxisSize.min,
-                  //         //         children: [
-                  //         //           Text(
-                  //         //             "More Filter",
-                  //         //             style: TextStyle(
-                  //         //               fontSize: 12,
-                  //         //               fontWeight: FontWeight.w400,
-                  //         //               color: Colors.black,
-                  //         //             ),
-                  //         //           ),
-                  //         //           Gap(5),
-                  //         //           SvgPicture.asset(
-                  //         //               height: 16,
-                  //         //               width: 16,
-                  //         //               "assets/svg/filter2.svg"),
-                  //         //         ],
-                  //         //       ),
-                  //         //     ),
-                  //         //   ),
-                  //         // )
-                  //       ],
-                  //     ))
-                ],
+        return SafeArea(
+          child: Scaffold(
+            resizeToAvoidBottomInset: true,
+            appBar: AppBar(
+              centerTitle: true,
+              surfaceTintColor: cc.white,
+              iconTheme: IconThemeData(color: cc.greyPrimary),
+              systemOverlayStyle: SystemUiOverlayStyle.dark,
+              title: Text(
+                asProvider.getString("All Leads"),
+                style: TextStyle(
+                    color: cc.greyPrimary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600),
               ),
-              Expanded(
-                  flex: 8,
-                  child: ListView.builder(
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.all(4.0),
-                        child: LeadsDetailItemCard(
-                          cc: cc,
-                          isNew: leadController.isNew,
-                          name: "Rajesh Kumar Thawait",
-                          enquiryName: "Website Development For School",
-                          imageUrl:
-                              "https://i.postimg.cc/FKrHpCYL/pngwing-com-2.png",
-                          leftTime: "12hr",
-                          address:
-                              "606 , Shanti Ngr, 606 , Shanti Ngr, Behind Shell Colony, Behind Shell Colony, Chembur Mumbai",
-                          onTapCall: () => print("calling"),
-                          isFav: false,
-                          datetime: "23 Jan 2025, 09:25 am",
-                          onTapMenu: (value) => showDialog(
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                title: Center(
-                                  child: Text(
-                                    "Add Remarks",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                    ),
+              backgroundColor: cc.white,
+              elevation: 0,
+              leading: widget.navigationModel?.navFrom != "Home Side"
+                  ? InkWell(
+                      onTap: () => Navigator.pop(context),
+                      child: const Icon(
+                        Icons.arrow_back_ios,
+                        // size: 24,
+                      ),
+                    )
+                  : null,
+            ),
+            body: Column(
+              children: [
+                Column(
+                  children: [
+                    SizedBox(
+                      height: 38,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        shrinkWrap: true,
+                        itemCount: mainFilter.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 5.0, vertical: 3),
+                            child: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  selectedFilterIndex =
+                                      index; // Highlight the selected filter
+                                });
+                              },
+                              borderRadius: BorderRadius.circular(5.0),
+                              child: AnimatedContainer(
+                                duration: Duration(milliseconds: 300),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(5.0),
+                                  gradient: index == selectedFilterIndex
+                                      ? LinearGradient(
+                                          colors: [
+                                            Colors.blue.shade300,
+                                            Colors.blue.shade600,
+                                          ],
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                        )
+                                      : null,
+                                  border: Border.all(
+                                    width: 1,
+                                    color: index == selectedFilterIndex
+                                        ? Colors.transparent
+                                        : cc.black6,
                                   ),
+                                  color: index == selectedFilterIndex
+                                      ? cc.white
+                                      : cc.white,
                                 ),
-                                content: SingleChildScrollView(
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize
-                                        .min, // Ensures the column takes only the required height
+                                child: Padding(
+                                  padding: const EdgeInsets.all(5.0),
+                                  child: Row(
                                     children: [
-                                      TextField(
-                                        controller: _remarkController,
-                                        decoration: InputDecoration(
-                                          labelText: "Your Remarks",
-                                          border: OutlineInputBorder(),
+                                      Tooltip(
+                                        message: mainFilter[index]['name'],
+                                        child: Icon(
+                                          mainFilter[index]['icon'],
+                                          size: 16,
+                                          color: index == selectedFilterIndex
+                                              ? cc.white
+                                              : mainFilter[index]['color'],
                                         ),
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                        maxLines: 3,
                                       ),
-                                      SizedBox(height: 20),
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          // Add your save logic here
-                                          Navigator.pop(context);
-                                        },
-                                        child: Text(
-                                          "Save",
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
-                                          ),
+                                      Gap(5),
+                                      Text(
+                                        mainFilter[index]['name'],
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w400,
+                                          color: index == selectedFilterIndex
+                                              ? Colors.white
+                                              : Colors.black,
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
-                              );
-                            },
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    // Gap(2),
+                    // Padding(
+                    //   padding: const EdgeInsets.symmetric(vertical: 2.0),
+                    //   child: Container(
+                    //     height: 1,
+                    //     width: size.width,
+                    //     color: Colors.grey.shade600,
+                    //   ),
+                    // ),
+                    // Container(
+                    //     alignment: Alignment.centerLeft,
+                    //     height: 38,
+                    //     child: ListView(
+                    //       shrinkWrap: true,
+                    //       scrollDirection: Axis.horizontal,
+                    //       padding: EdgeInsets.zero,
+                    //       children: [
+                    //         // Padding(
+                    //         //   padding: const EdgeInsets.all(5.0),
+                    //         //   child: InkWell(
+                    //         //     onTap: () => showModalBottomSheet(
+                    //         //         context: context,
+                    //         //         backgroundColor: Colors.transparent,
+                    //         //         builder: (context) {
+                    //         //           return DateBottomSheet(
+                    //         //             cc: cc,
+                    //         //           );
+                    //         //         }),
+                    //         //     child: Container(
+                    //         //       alignment: Alignment.center,
+                    //         //       decoration: BoxDecoration(
+                    //         //         color: Colors.grey.shade100,
+                    //         //         borderRadius: BorderRadius.circular(5.0),
+                    //         //         border:
+                    //         //             Border.all(width: 1, color: cc.black7),
+                    //         //       ),
+                    //         //       child: Padding(
+                    //         //         padding: const EdgeInsets.symmetric(
+                    //         //             horizontal: 5.0, vertical: 3.0),
+                    //         //         child: Row(
+                    //         //           mainAxisAlignment: MainAxisAlignment.center,
+                    //         //           crossAxisAlignment:
+                    //         //               CrossAxisAlignment.center,
+                    //         //           mainAxisSize: MainAxisSize.min,
+                    //         //           children: [
+                    //         //             Icon(
+                    //         //               Icons.date_range,
+                    //         //               size: 16,
+                    //         //             ),
+                    //         //             Gap(5),
+                    //         //             Text(
+                    //         //               "Date",
+                    //         //               style: TextStyle(
+                    //         //                 fontSize: 12,
+                    //         //                 fontWeight: FontWeight.w400,
+                    //         //                 color: Colors.black,
+                    //         //               ),
+                    //         //             ),
+                    //         //           ],
+                    //         //         ),
+                    //         //       ),
+                    //         //     ),
+                    //         //   ),
+                    //         // ),
+                    //         // Padding(
+                    //         //   padding: const EdgeInsets.all(5.0),
+                    //         //   child: Container(
+                    //         //     alignment: Alignment.center,
+                    //         //     decoration: BoxDecoration(
+                    //         //       color: Colors.grey.shade100,
+                    //         //       borderRadius: BorderRadius.circular(5.0),
+                    //         //       border: Border.all(width: 1, color: cc.black7),
+                    //         //     ),
+                    //         //     child: Padding(
+                    //         //       padding: const EdgeInsets.symmetric(
+                    //         //           horizontal: 5.0, vertical: 3.0),
+                    //         //       child: Row(
+                    //         //         mainAxisAlignment: MainAxisAlignment.center,
+                    //         //         crossAxisAlignment: CrossAxisAlignment.center,
+                    //         //         mainAxisSize: MainAxisSize.min,
+                    //         //         children: [
+                    //         //           Icon(
+                    //         //             Icons.bookmark_rounded,
+                    //         //             size: 16,
+                    //         //             color: cc.primaryColor,
+                    //         //           ),
+                    //         //           Gap(5),
+                    //         //           Text(
+                    //         //             "Bookmarked",
+                    //         //             style: TextStyle(
+                    //         //               fontSize: 12,
+                    //         //               fontWeight: FontWeight.w400,
+                    //         //               color: Colors.black,
+                    //         //             ),
+                    //         //           ),
+                    //         //         ],
+                    //         //       ),
+                    //         //     ),
+                    //         //   ),
+                    //         // ),
+                    //         // Padding(
+                    //         //   padding: const EdgeInsets.all(5.0),
+                    //         //   child: Container(
+                    //         //     alignment: Alignment.center,
+                    //         //     decoration: BoxDecoration(
+                    //         //       color: Colors.grey.shade100,
+                    //         //       borderRadius: BorderRadius.circular(5.0),
+                    //         //       border: Border.all(width: 1, color: cc.black7),
+                    //         //     ),
+                    //         //     child: Padding(
+                    //         //       padding: const EdgeInsets.symmetric(
+                    //         //           horizontal: 5.0, vertical: 3.0),
+                    //         //       child: Row(
+                    //         //         mainAxisAlignment: MainAxisAlignment.center,
+                    //         //         crossAxisAlignment: CrossAxisAlignment.center,
+                    //         //         mainAxisSize: MainAxisSize.min,
+                    //         //         children: [
+                    //         //           Icon(
+                    //         //             Icons.note_alt_rounded,
+                    //         //             size: 16,
+                    //         //             color: cc.successColor,
+                    //         //           ),
+                    //         //           Gap(5),
+                    //         //           Text(
+                    //         //             "Remarks",
+                    //         //             style: TextStyle(
+                    //         //               fontSize: 12,
+                    //         //               fontWeight: FontWeight.w400,
+                    //         //               color: Colors.black,
+                    //         //             ),
+                    //         //           ),
+                    //         //         ],
+                    //         //       ),
+                    //         //     ),
+                    //         //   ),
+                    //         // ),
+                    //         // Padding(
+                    //         //   padding: const EdgeInsets.all(5.0),
+                    //         //   child: Container(
+                    //         //     alignment: Alignment.center,
+                    //         //     decoration: BoxDecoration(
+                    //         //       color: Colors.grey.shade100,
+                    //         //       borderRadius: BorderRadius.circular(5.0),
+                    //         //       border: Border.all(width: 1, color: cc.black7),
+                    //         //     ),
+                    //         //     child: Padding(
+                    //         //       padding: const EdgeInsets.symmetric(
+                    //         //           horizontal: 5.0, vertical: 3.0),
+                    //         //       child: Row(
+                    //         //         mainAxisAlignment: MainAxisAlignment.center,
+                    //         //         crossAxisAlignment: CrossAxisAlignment.center,
+                    //         //         mainAxisSize: MainAxisSize.min,
+                    //         //         children: [
+                    //         //           Text(
+                    //         //             "More Filter",
+                    //         //             style: TextStyle(
+                    //         //               fontSize: 12,
+                    //         //               fontWeight: FontWeight.w400,
+                    //         //               color: Colors.black,
+                    //         //             ),
+                    //         //           ),
+                    //         //           Gap(5),
+                    //         //           SvgPicture.asset(
+                    //         //               height: 16,
+                    //         //               width: 16,
+                    //         //               "assets/svg/filter2.svg"),
+                    //         //         ],
+                    //         //       ),
+                    //         //     ),
+                    //         //   ),
+                    //         // )
+                    //       ],
+                    //     ))
+                  ],
+                ),
+                Expanded(
+                    flex: 8,
+                    child: ListView.builder(
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: LeadsDetailItemCard(
+                            cc: cc,
+                            isNew: leadController.isNew,
+                            name: "Rajesh Kumar Thawait",
+                            enquiryName: "Website Development For School",
+                            imageUrl:
+                                "https://i.postimg.cc/FKrHpCYL/pngwing-com-2.png",
+                            leftTime: "12hr",
+                            address:
+                                "606 , Shanti Ngr, 606 , Shanti Ngr, Behind Shell Colony, Behind Shell Colony, Chembur Mumbai",
+                            onTapCall: () => print("calling"),
+                            isFav: false,
+                            datetime: "23 Jan 2025, 09:25 am",
+                            onTapMenu: (value) => showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: Center(
+                                    child: Text(
+                                      "Add Remarks",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                  content: SingleChildScrollView(
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize
+                                          .min, // Ensures the column takes only the required height
+                                      children: [
+                                        TextField(
+                                          controller: _remarkController,
+                                          decoration: InputDecoration(
+                                            labelText: "Your Remarks",
+                                            border: OutlineInputBorder(),
+                                          ),
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                          maxLines: 3,
+                                        ),
+                                        SizedBox(height: 20),
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            // Add your save logic here
+                                            Navigator.pop(context);
+                                          },
+                                          child: Text(
+                                            "Save",
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                  )),
-            ],
+                        );
+                      },
+                    )),
+              ],
+            ),
           ),
         );
       },

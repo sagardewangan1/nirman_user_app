@@ -268,7 +268,7 @@ class Seller {
     String? taxNumber,
     dynamic businessRegistration,
     String? postCode,
-    num? countryId,
+    dynamic countryId,
     num? emailVerified,
     dynamic emailVerifyToken,
     dynamic facebookId,
@@ -438,7 +438,7 @@ class Seller {
   String? _taxNumber;
   dynamic _businessRegistration;
   String? _postCode;
-  num? _countryId;
+  dynamic _countryId;
   num? _emailVerified;
   dynamic _emailVerifyToken;
   dynamic _facebookId;
@@ -494,7 +494,7 @@ class Seller {
     String? taxNumber,
     dynamic businessRegistration,
     String? postCode,
-    num? countryId,
+    dynamic countryId,
     num? emailVerified,
     dynamic emailVerifyToken,
     dynamic facebookId,
@@ -607,7 +607,7 @@ class Seller {
   String? get taxNumber => _taxNumber;
   dynamic get businessRegistration => _businessRegistration;
   String? get postCode => _postCode;
-  num? get countryId => _countryId;
+  dynamic get countryId => _countryId;
   num? get emailVerified => _emailVerified;
   dynamic get emailVerifyToken => _emailVerifyToken;
   dynamic get facebookId => _facebookId;
@@ -725,7 +725,7 @@ class BuyerModel {
   String? taxNumber;
   String? businessRegistration;
   String? postCode;
-  int? countryId;
+  dynamic countryId;
   String? emailVerified;
   String? emailVerifyToken;
   String? facebookId;
@@ -943,7 +943,7 @@ class Area {
   int? id;
   String? serviceArea;
   int? serviceCityId;
-  int? countryId;
+  dynamic countryId;
   int? status;
   String? createdAt;
   String? updatedAt;

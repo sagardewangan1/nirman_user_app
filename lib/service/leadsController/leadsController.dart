@@ -84,12 +84,11 @@ class LeadsController extends ChangeNotifier {
         return true;
       }
     } on SocketException catch (_) {
-      OthersHelper()
-          .showToast("No internet connection. Please try again!", Colors.red);
+      debugPrint(_.osError.toString());
     } catch (e, stackTrace) {
       if (!_leadsStreamController.isClosed) {
-        _leadsStreamController
-            .addError("Something went wrong. Please try again later.");
+        _leadsStreamController.addError(
+            "Something went wrong. Please try again later. $e and \nStackTrace : $stackTrace");
       }
     }
     _isFetching = false;
