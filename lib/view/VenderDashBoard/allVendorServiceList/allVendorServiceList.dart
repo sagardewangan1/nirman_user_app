@@ -21,7 +21,7 @@ import 'package:qixer/view/utils/custom_input%20copy.dart';
 import 'package:qixer/view/utils/others_helper.dart';
 import 'package:qixer/view/utils/responsive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qixer/generated/app_localizations.dart';
 
 class AllVendroServiceList extends StatefulWidget {
   const AllVendroServiceList({super.key});

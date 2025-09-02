@@ -20,7 +20,7 @@ import '../../../utils/custom_input.dart';
 import '../../../utils/others_helper.dart';
 import '../../../utils/responsive.dart';
 import '../components/country_states_dropdowns.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qixer/generated/app_localizations.dart';
 
 import '../dropdowns/area_dropdown_popup.dart';
 import '../dropdowns/country_states_dropdowns.dart';

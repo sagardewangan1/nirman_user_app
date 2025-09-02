@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:qixer/service/service_details_service.dart';
 import 'package:qixer/view/services/components/desc_from_html.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qixer/generated/app_localizations.dart';
 
 class OverviewTab extends StatelessWidget {
   const OverviewTab({super.key, this.provider});

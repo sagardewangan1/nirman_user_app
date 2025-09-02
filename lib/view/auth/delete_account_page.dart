@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../service/app_string_service.dart';
 import '../../service/auth_services/delete_account_service.dart';
 import '../booking/components/textarea_field.dart';
@@ -7,7 +8,7 @@ import '../utils/common_helper.dart';
 import '../utils/constant_colors.dart';
 import '../utils/constant_styles.dart';
 import '../utils/others_helper.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qixer/generated/app_localizations.dart';
 
 class DeleteAccountPage extends StatelessWidget {
   DeleteAccountPage({super.key});

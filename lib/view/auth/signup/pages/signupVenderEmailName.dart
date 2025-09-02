@@ -6,7 +6,7 @@ import 'package:qixer/view/auth/signup/components/email_name_fields.dart';
 import 'package:qixer/view/utils/common_helper.dart';
 
 import '../../../utils/constant_colors.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qixer/generated/app_localizations.dart';
 
 class SignupVendorEmailName extends StatefulWidget {
   const SignupVendorEmailName({

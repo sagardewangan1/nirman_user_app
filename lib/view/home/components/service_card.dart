@@ -16,7 +16,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../../service/booking_services/personalization_service.dart';
 import '../../utils/common_helper.dart';
 import '../../utils/constant_colors.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qixer/generated/app_localizations.dart';
 
 class ServiceCard extends StatelessWidget {
   const ServiceCard(

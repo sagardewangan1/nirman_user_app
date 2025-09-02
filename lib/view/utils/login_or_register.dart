@@ -4,7 +4,7 @@ import 'package:qixer/view/selectionRole/selectionRoleView.dart';
 
 import '../utils/custom_button.dart';
 import 'common_helper.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qixer/generated/app_localizations.dart';
 
 class LoginOrRegister extends StatelessWidget {
   const LoginOrRegister({super.key});

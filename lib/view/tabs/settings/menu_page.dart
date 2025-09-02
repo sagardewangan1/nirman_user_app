@@ -24,7 +24,7 @@ import '../../auth/delete_account_page.dart';
 import '../../home/homepage_helper.dart';
 import '../../utils/login_or_register.dart';
 import 'appSettings.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qixer/generated/app_localizations.dart';
 
 class MenuPage extends StatefulWidget {
   const MenuPage({super.key});

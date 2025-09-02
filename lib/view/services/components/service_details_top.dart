@@ -14,7 +14,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../utils/constant_styles.dart';
 import '../service_helper.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qixer/generated/app_localizations.dart';
 
 class ServiceDetailsTop extends StatelessWidget {
   const ServiceDetailsTop({

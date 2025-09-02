@@ -10,7 +10,7 @@ import 'package:qixer/helper/extension/widget_extension.dart';
 import 'package:qixer/service/all_services_service.dart';
 import 'package:qixer/view/services/service_details_page.dart';
 import 'package:qixer/view/utils/common_helper.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qixer/generated/app_localizations.dart';
 import '../../service/common_service.dart';
 import '../../service/service_details_service.dart';
 import '../home/components/service_card.dart';

@@ -11,7 +11,7 @@ import 'package:qixer/view/utils/field_label.dart';
 import '../../../service/filter_services_service.dart';
 import '../../utils/constant_colors.dart';
 import '../../utils/responsive.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qixer/generated/app_localizations.dart';
 
 class FilterSheet extends StatelessWidget {
   const FilterSheet({super.key});

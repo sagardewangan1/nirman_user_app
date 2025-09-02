@@ -26,8 +26,8 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "com.sashakt_nirman_app"  // Only one namespace declaration needed
-    compileSdk 35  // Changed to integer instead of = 35
-    ndkVersion flutter.ndkVersion
+    compileSdk 36  // Changed to integer instead of = 35
+    ndkVersion "27.3.13750724"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -40,10 +40,11 @@ android {
 
     defaultConfig {
         applicationId "com.sashakt_nirman_app"
-        minSdkVersion 23  // Added .toInteger()
-        targetSdkVersion 35  // Added .toInteger()
-        versionCode flutterVersionCode.toInteger()
-        versionName flutterVersionName
+        minSdkVersion 23
+        targetSdk = 36
+        versionCode = flutterVersionCode.toInteger()
+        versionName = flutterVersionName
+        multiDexEnabled true
     }
 
     signingConfigs {
@@ -69,11 +70,12 @@ flutter {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22"  // Added version
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.multidex:multidex:2.0.1'
-    implementation 'com.facebook.android:facebook-login:16.3.0'  // Use specific version
-    implementation 'com.google.firebase:firebase-messaging:23.4.0'  // Updated version
-    testImplementation 'junit:junit:4.13.2'  // Updated version
-    implementation 'com.pusher:push-notifications-android:1.9.0'
+//    implementation 'com.facebook.android:facebook-login:latest.release'
+//    implementation 'com.google.firebase:firebase-messaging:21.1.0'
+//    implementation 'com.pusher:push-notifications-android:${ANDROID_SDK_VERSION}'
+    testImplementation 'junit:junit:4.12'
+//    implementation 'com.pusher:push-notifications-android:1.9.0'
     implementation 'phonepe.intentsdk.android.release:IntentSDK:3.1.0'
 }

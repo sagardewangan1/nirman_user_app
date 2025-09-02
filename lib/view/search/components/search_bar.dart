@@ -28,7 +28,7 @@ import '../../services/service_details_page.dart';
 import '../../utils/constant_colors.dart';
 import 'category_sheet.dart';
 import 'filter_sheet.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qixer/generated/app_localizations.dart';
 
 class SearchBar extends StatelessWidget {
   const SearchBar({super.key});

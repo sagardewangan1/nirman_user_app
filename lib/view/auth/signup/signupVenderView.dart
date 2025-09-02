@@ -7,7 +7,7 @@ import 'package:qixer/view/auth/signup/pages/signupVenderEmailName.dart';
 import 'package:qixer/view/auth/signup/pages/signupVendorBussinessDetails.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qixer/generated/app_localizations.dart';
 import '../../../service/auth_services/signUpVendorService.dart';
 import '../../../service/auth_services/signup_service.dart';
 import '../../utils/common_helper.dart';

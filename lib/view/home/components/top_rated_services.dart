@@ -9,7 +9,7 @@ import 'package:qixer/view/home/top_all_service_page.dart';
 import 'package:qixer/view/services/service_details_page.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:qixer/view/utils/others_helper.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qixer/generated/app_localizations.dart';
 
 class TopRatedServices extends StatelessWidget {
   const TopRatedServices({

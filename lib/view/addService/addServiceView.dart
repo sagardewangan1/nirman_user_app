@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qixer/generated/app_localizations.dart';
 
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/foundation.dart';

@@ -31,7 +31,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/constant_styles.dart';
 import '../utils/custom_input.dart';
 import 'components/home_app_bar.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qixer/generated/app_localizations.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});

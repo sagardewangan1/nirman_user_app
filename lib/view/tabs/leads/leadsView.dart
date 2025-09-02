@@ -23,7 +23,7 @@ import '../../../model/MyLeadsDataModel.dart';
 import '../../utils/login_or_register.dart';
 import 'components/LeadDetailsItemCard.dart';
 import 'components/LeadItemCard.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qixer/generated/app_localizations.dart';
 
 class LeadsView extends StatefulWidget {
   final NavigationModel? navigationModel;

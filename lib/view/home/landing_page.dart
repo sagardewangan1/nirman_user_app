@@ -15,7 +15,7 @@ import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:upgrader/upgrader.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qixer/generated/app_localizations.dart';
 
 class LandingPage extends StatefulWidget {
   const LandingPage({super.key});

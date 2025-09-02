@@ -7,7 +7,7 @@ import 'package:qixer/model/dropdown_models/states_dropdown_model.dart';
 import 'package:qixer/service/dropdowns_services/country_dropdown_service.dart';
 import 'package:qixer/service/profile_service.dart';
 import 'package:qixer/view/utils/others_helper.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qixer/generated/app_localizations.dart';
 
 class StateDropdownService with ChangeNotifier {
   var statesDropdownList = [];

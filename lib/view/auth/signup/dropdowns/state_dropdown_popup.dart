@@ -11,7 +11,7 @@ import 'package:qixer/view/utils/others_helper.dart';
 import 'package:qixer/view/utils/responsive.dart';
 
 import '../../../../service/searchbar_with_dropdown_service.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qixer/generated/app_localizations.dart';
 
 class StateDropdownPopup extends StatelessWidget {
   const StateDropdownPopup({super.key});

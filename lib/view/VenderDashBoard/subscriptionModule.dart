@@ -13,11 +13,11 @@ import 'package:qixer/view/services/components/desc_from_html.dart';
 import 'package:qixer/view/utils/common_helper.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:qixer/view/utils/others_helper.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qixer/generated/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../service/addServiceProvider/addServicerProvider.dart';
 import '../../service/home_services/category_service.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qixer/generated/app_localizations.dart';
 
 class SubscriptionModule extends StatefulWidget {
   final List<Map<String, dynamic>>? catIds;

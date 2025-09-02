@@ -1,11 +1,9 @@
 import 'dart:io';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_maps_flutter_android/google_maps_flutter_android.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'package:provider/provider.dart';
@@ -21,6 +19,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:upgrader/upgrader.dart';
 
 import 'app/providers/AppInitializer.dart';
+import 'generated/app_localizations.dart';
 import 'service/languageController/languageController.dart';
 
 @pragma('vm:entry-point')

@@ -17,7 +17,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../service/app_string_service.dart';
 import '../utils/common_helper.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qixer/generated/app_localizations.dart';
 
 class ChooseCategoryView extends StatefulWidget {
   final NavigationModel? navigationModel;

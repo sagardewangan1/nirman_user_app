@@ -17,7 +17,7 @@ import '../../../service/filter_category_service.dart';
 import '../../../service/filter_services_service.dart';
 import '../../utils/constant_colors.dart';
 import '../../utils/responsive.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qixer/generated/app_localizations.dart';
 
 class CategorySheet extends StatelessWidget {
   const CategorySheet({super.key});

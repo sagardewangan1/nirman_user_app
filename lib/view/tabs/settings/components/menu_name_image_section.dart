@@ -13,7 +13,7 @@ import 'package:qixer/view/tabs/settings/settings_helper.dart';
 import 'package:qixer/view/utils/common_helper.dart';
 import 'package:qixer/view/utils/constant_colors.dart';
 import 'package:qixer/view/utils/constant_styles.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qixer/generated/app_localizations.dart';
 import '../../../../model/navigationModel.dart';
 import '../../leads/leadsView.dart';
 

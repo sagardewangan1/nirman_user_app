@@ -16,7 +16,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../view/auth/signup/components/email_verify_page.dart';
 import '../pushNotificationFirebase.dart';
 import 'email_verify_service.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qixer/generated/app_localizations.dart';
 
 class LoginService with ChangeNotifier {
   bool isloading = false;

@@ -9,7 +9,7 @@ import '../utils/constant_colors.dart';
 import 'dart:io'; // ✅ For Platform check
 
 import 'dart:io';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qixer/generated/app_localizations.dart';
 
 class BottomNav extends StatelessWidget {
   final int currentIndex;

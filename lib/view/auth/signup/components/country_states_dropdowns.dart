@@ -8,7 +8,7 @@ import 'package:qixer/view/utils/common_helper.dart';
 import 'package:qixer/view/utils/responsive.dart';
 
 import '../../../utils/constant_colors.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qixer/generated/app_localizations.dart';
 
 class CountryStatesDropdowns extends StatefulWidget {
   const CountryStatesDropdowns({super.key});
