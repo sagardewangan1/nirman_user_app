@@ -1,0 +1,111 @@
+Applicalization :   flutter pub add flutter_localization :
+	sdk: any
+
+Create .arb file for languages.
+Ex. {
+“name”:””Name”,
+“emailAddress” : “Enter Email Address”,
+}   (For Multilang),
+
+Then run this command in terminal,
+flutter gen-l10n --arb-dir=lib/app/localizations/l10n --output-dir=lib/generated  Now import on view page where to use this.
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+And set in Text()
+Text(
+  AppLocalizations.of(context)!.language,
+  // "Language : ",
+  style: TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.w500,
+      color: cc.black3),
+).
+
+
+Control your language controller
+
+import 'package:flutter/cupertino.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class LanguageController extends ChangeNotifier {
+  late final SharedPreferences? sharedPreferences;
+  LanguageController({required this.sharedPreferences}) {
+    _loadCurrentTheme();
+  }
+  Locale? _appLocale;
+  Locale? get appLocale => _appLocale;
+
+  void changeLanguage(Locale type) async {
+    _appLocale = type;
+    if (type == const Locale('en')) {
+      sharedPreferences?.setString("nirmanLang", "en");
+    } else if (type == Locale('hi')) {
+      sharedPreferences?.setString("nirmanLang", "hi");
+    } else if (type == Locale('bn')) {
+      sharedPreferences?.setString("nirmanLang", "bn");
+    } else {
+      sharedPreferences?.setString("nirmanLang", "ar");
+    }
+  }
+
+  void _loadCurrentTheme() async {
+    _appLocale = Locale(sharedPreferences!.getString("nirmanLang") ?? 'en');
+    notifyListeners();
+  }
+
+  int _langIndex = 0;
+  int get langIndex => _langIndex;
+  setLangIndex(int index) {
+    _langIndex = index;
+    notifyListeners();
+  }
+}
+
+
+And also set in My App Material under Consumer
+
+@override
+Widget build(BuildContext context) {
+  List<Locale> locals = [];
+  for (var language in AppLanguages.languages) {
+    locals.add(Locale(language.languageCode!, language.countryCode));
+  }
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark));
+  return Consumer2<RtlService, LanguageController>(
+    builder: (context, rtlProvider, langController, child) {
+      return MaterialApp(
+        locale: langController.appLocale,
+        debugShowCheckedModeBanner: false,
+        title: 'Shashakt Nirman',
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: locals,
+        builder: (context, rtlChild) => Directionality(
+          textDirection: rtlProvider.direction == 'ltr'
+              ? TextDirection.ltr
+              : TextDirection.rtl,
+          child: rtlChild!,
+        ),
+        theme: ThemeData(
+          scaffoldBackgroundColor: Color(0xFFFFF5F5),
+          primarySwatch: Colors.blue,
+          appBarTheme: DefaultThemes().appBarTheme(context),
+          colorScheme: ColorScheme.fromSeed(seedColor: cc.primaryColor),
+          inputDecorationTheme: DefaultThemes().inputDecorationTheme(context),
+          outlinedButtonTheme: DefaultThemes().outlinedButtonTheme(context),
+          elevatedButtonTheme: DefaultThemes().elevatedButtonTheme(context),
+          dropdownMenuTheme: DefaultThemes().dropdownMenuTheme(),
+        ),
+        home: child,
+      );
+    },
+    child: const SplashScreen(),
+  );
+  ;
+}
+ 
