@@ -200,6 +200,150 @@ class LoginService with ChangeNotifier {
   //
   // },);
 
+  String? _verificationId;
+  String? get verificationId => _verificationId;
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  String? _verificationErrorCode;
+  String? get verificationErrorCode => _verificationErrorCode;
+  String? _verificationErrorMessage;
+  String? get verificationErrorMessage => _verificationErrorMessage;
+  int? _resendToken;
+  int? get resendToken => _resendToken;
+
+  Future<bool> sendOTPWithFirebase({
+    required String phoneNumber,
+    required BuildContext context,
+  }) async {
+    setLoadingTrue();
+    final completer = Completer<bool>();
+    print('📱 Starting OTP process for: $phoneNumber');
+    await auth.verifyPhoneNumber(
+      phoneNumber: phoneNumber.trim(),
+      timeout: const Duration(seconds: 60),
+      forceResendingToken: resendToken,
+      verificationCompleted: (PhoneAuthCredential credential) async {
+        print('✅ Auto-verification successful');
+        try {
+          await auth.signInWithCredential(credential);
+          print('🎉 Auto sign-in completed');
+        } catch (e) {
+          print('❌ Auto sign-in error: $e');
+          if (!completer.isCompleted) completer.complete(false);
+        } finally {
+          setLoadingFalse();
+        }
+      },
+      verificationFailed: (FirebaseAuthException e) {
+        print('🚨 Verification failed: ${e.message}');
+        OthersHelper().showToast(e.message.toString(), cc.warningColor);
+        String msg;
+        _verificationErrorCode = e.code;
+        switch (e.code) {
+          case 'invalid-phone-number':
+            msg = 'Invalid phone number. Please check format.';
+            OthersHelper().showToast(msg, cc.warningColor);
+            break;
+          case 'too-many-requests':
+            msg = 'Too many requests. SMS quota exceeded. Try after some time.';
+            OthersHelper().showToast(msg, cc.warningColor);
+            break;
+          case 'quota-exceeded':
+            msg = 'Too many requests. SMS quota exceeded. Try after some time.';
+            OthersHelper().showToast(msg, cc.warningColor);
+            break;
+          case 'operation-not-allowed':
+            msg = 'Phone authentication not enabled. Contact support.';
+            OthersHelper().showToast(msg, cc.warningColor);
+            break;
+          default:
+            msg = e.message ?? 'Something went wrong during verification.';
+            OthersHelper().showToast(msg, cc.warningColor);
+        }
+        _verificationErrorMessage = msg;
+        if (!completer.isCompleted) completer.complete(false);
+        setLoadingFalse();
+      },
+      codeSent: (String verificationId, int? resendToken) {
+        print('📨 OTP code sent – ID saved');
+        _verificationId = verificationId;
+        _resendToken = resendToken;
+        OthersHelper()
+            .showToast("OTP Code Successfully Sent!", cc.successColor);
+        if (!completer.isCompleted) completer.complete(true);
+        setLoadingFalse();
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {
+        print('⏰ Auto-retrieval timed out');
+        _verificationId = verificationId;
+        if (!completer.isCompleted) completer.complete(false);
+        setLoadingFalse();
+      },
+    );
+    bool result = await completer.future;
+    setLoadingFalse();
+    return result;
+  }
+
+  bool _isLoadingVerifyOTP = false;
+  bool get isLoadingVerifyOTP => _isLoadingVerifyOTP;
+
+  setIsLoading(bool value) {
+    _isLoadingVerifyOTP = value;
+    notifyListeners();
+  }
+
+  Future<UserCredential?> verifyOTP({
+    required String verificationId,
+    required String smsCode,
+    required BuildContext context,
+  }) async {
+    setIsLoading(true);
+    try {
+      // Build the PhoneAuthCredential
+      final credential = PhoneAuthProvider.credential(
+        verificationId: verificationId,
+        smsCode: smsCode.trim(),
+      );
+      debugPrint(
+          '🔐 Verifying OTP... ${verificationId} and otp ===>${smsCode} ');
+      // Sign in with credential
+      final userCredential = await auth.signInWithCredential(credential);
+      debugPrint('✅ OTP verified — UID: ${userCredential.user?.uid}');
+      OthersHelper().showToast("✅ OTP verified", cc.successColor);
+      return userCredential;
+    } on FirebaseAuthException catch (e) {
+      debugPrint('🚨 OTP verification failed: ${e.code} — ${e.message}');
+      String msg;
+      _verificationErrorCode = e.code;
+      switch (e.code) {
+        case 'invalid-verification-code':
+          msg = 'Invalid OTP code entered';
+          break;
+        case 'session-expired':
+        case 'code-expired':
+          msg = 'OTP session expired. Request a new one.';
+          break;
+        default:
+          msg = 'OTP verification failed. Please try again.';
+      }
+      _verificationErrorMessage = msg;
+      notifyListeners();
+      OthersHelper().showToast(msg, cc.warningColor);
+      return null;
+    } catch (e) {
+      debugPrint('❌ Unexpected error during OTP verification: $e');
+      OthersHelper().showCompactSuccessDialog2(context,
+          messageType: "Error",
+          messageTitle: "Error",
+          message: "An unexpected error occurred",
+          image: "assets/icons/error.gif",
+          onTap: () => Navigator.pop(context));
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   OtpResponseModel _otpResponseModel = OtpResponseModel();
   OtpResponseModel get otpResponseModel => _otpResponseModel;
 
@@ -234,8 +378,10 @@ class LoginService with ChangeNotifier {
     };
 
     try {
-      final response = await http.post(Uri.parse('$baseApi/login'),
-          body: data, headers: header);
+      // String url = '$baseApi/login';
+      String url = '$baseApi/user-login';
+      final response =
+          await http.post(Uri.parse(url), body: data, headers: header);
       print("actual raw response ====> ${response.body}");
       if (response.statusCode == 201) {
         print("actaul reponse====> ${response.body}");
@@ -269,120 +415,6 @@ class LoginService with ChangeNotifier {
       return _otpResponseModel;
     }
     return null;
-  }
-
-  final FirebaseAuth auth = FirebaseAuth.instance;
-
-  String? _verificationId;
-  String? get verificationId => _verificationId;
-
-  Future<bool> sendOTPWithFirebase({
-    required String phoneNumber,
-    required BuildContext context,
-  }) async {
-    setLoadingTrue();
-    final completer = Completer<bool>();
-    print('📱 Starting OTP process for: $phoneNumber');
-    await auth.verifyPhoneNumber(
-      phoneNumber: phoneNumber.trim(),
-      timeout: const Duration(seconds: 60),
-      verificationCompleted: (PhoneAuthCredential credential) async {
-        print('✅ Auto-verification successful');
-        try {
-          await auth.signInWithCredential(credential);
-          print('🎉 Auto sign-in completed');
-          if (!completer.isCompleted) completer.complete(true);
-        } catch (e) {
-          print('❌ Auto sign-in error: $e');
-          if (!completer.isCompleted) completer.complete(false);
-        } finally {
-          setLoadingFalse();
-        }
-      },
-      verificationFailed: (FirebaseAuthException e) {
-        print('🚨 Verification failed: ${e.message}');
-        if (!completer.isCompleted) completer.complete(false);
-        setLoadingFalse();
-      },
-      codeSent: (String verificationId, int? resendToken) {
-        print('📨 OTP code sent – ID saved');
-        _verificationId = verificationId;
-        if (!completer.isCompleted) completer.complete(true);
-        setLoadingFalse();
-      },
-      codeAutoRetrievalTimeout: (String verificationId) {
-        print('⏰ Auto-retrieval timed out');
-        _verificationId = verificationId;
-        if (!completer.isCompleted) completer.complete(false);
-        setLoadingFalse();
-      },
-    );
-    bool result = await completer.future;
-    setLoadingFalse();
-    return result;
-  }
-
-  /// Step 2: Verify OTP manually
-  bool _isLoading3 = false;
-  bool get isLoading3 => _isLoading3;
-  setIsLoading(bool value) {
-    _isLoading3 = value;
-    notifyListeners();
-  }
-
-  Future<UserCredential?> verifyOTP({
-    required String verificationId,
-    required String smsCode,
-    required BuildContext context,
-  }) async {
-    setIsLoading(true);
-    try {
-      // Build the PhoneAuthCredential
-      final credential = PhoneAuthProvider.credential(
-        verificationId: verificationId,
-        smsCode: smsCode.trim(),
-      );
-      debugPrint(
-          '🔐 Verifying OTP... ${verificationId} and otp ===>${smsCode} ');
-      // Sign in with credential
-      final userCredential = await auth.signInWithCredential(credential);
-      debugPrint('✅ OTP verified — UID: ${userCredential.user?.uid}');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text('✅ OTP verified — UID: ${userCredential.user?.uid}'),
-            backgroundColor: Colors.green),
-      );
-      return userCredential;
-    } on FirebaseAuthException catch (e) {
-      debugPrint('🚨 OTP verification failed: ${e.code} — ${e.message}');
-      String msg;
-      switch (e.code) {
-        case 'invalid-verification-code':
-          msg = 'Invalid OTP code entered';
-          break;
-        case 'session-expired':
-        case 'code-expired':
-          msg = 'OTP session expired. Request a new one.';
-          break;
-        default:
-          msg = 'OTP verification failed. Please try again.';
-      }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(msg), backgroundColor: Colors.red),
-      );
-      return null;
-    } catch (e) {
-      debugPrint('❌ Unexpected error during OTP verification: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('An unexpected error occurred'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return null;
-    } finally {
-      setIsLoading(false);
-    }
   }
 
   saveDetails(

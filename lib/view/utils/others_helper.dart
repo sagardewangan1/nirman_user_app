@@ -31,6 +31,82 @@ String mapApiKey = '';
 String clientSecret = '';
 
 class OthersHelper with ChangeNotifier {
+  Future<void> showCompactSuccessDialog2(BuildContext buildContext,
+      {String image = "assets/icons/like.gif",
+      String messageType = 'Success!',
+      String messageTitle = 'Message Title!',
+      String message = 'Message!',
+      VoidCallback? onTap}) {
+    return showDialog(
+      context: buildContext,
+      builder: (context) {
+        return Center(
+          child: Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 40.0, vertical: 24.0),
+            child: AlertDialog(
+              backgroundColor: cc.white,
+              insetPadding: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              contentPadding:
+                  const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Image.asset(
+                    image,
+                    // messageType == "Error"
+                    //     ? "assets/icons/error.gif"
+                    //     : "assets/icons/like.gif",
+                    height: 65,
+                    width: 65,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    messageTitle,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    message,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 8),
+                  InkWell(
+                    onTap: onTap,
+                    child: Container(
+                      width: 100,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                          color: messageType == "Error"
+                              ? Colors.red
+                              : Colors.green,
+                          borderRadius: BorderRadius.circular(10.0)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          textAlign: TextAlign.center,
+                          "OK",
+                          style: TextStyle(color: cc.white),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   ConstantColors cc = ConstantColors();
   int deliveryCharge = 60;
 

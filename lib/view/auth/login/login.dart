@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
-import 'package:otp_autofill/otp_autofill.dart';
+
 import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
 import 'package:qixer/generated/app_localizations.dart';
@@ -12,6 +12,7 @@ import 'package:qixer/model/navigationModel.dart';
 import 'package:qixer/service/app_string_service.dart';
 import 'package:qixer/service/auth_services/login_service.dart';
 import 'package:qixer/service/auth_services/signup_service.dart';
+import 'package:qixer/view/auth/OtpVerifyPage.dart';
 import 'package:qixer/view/auth/signup/signupVenderView.dart';
 import 'package:qixer/view/home/landing_page.dart';
 import 'package:qixer/view/utils/common_helper.dart';
@@ -34,8 +35,6 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   late bool _passwordVisible;
   final scaffoldKey = GlobalKey();
-  late final OTPInteractor _otpInteractor;
-  late final OTPTextEditController _otpController;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -48,20 +47,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    _otpInteractor = OTPInteractor();
-    _otpInteractor.getAppSignature().then((signature) {
-      print('App signature hash: $signature');
-    });
-    _otpController = OTPTextEditController(
-      codeLength: 6,
-      onCodeReceive: (code) {
-        print('Received OTP: $code');
-        otpController.text = code;
-      },
-      otpInteractor: _otpInteractor,
-    )..startListenUserConsent(
-        (parsed) => RegExp(r'\d{6}').stringMatch(parsed ?? '') ?? '',
-      );
+
     _passwordVisible = false;
     initPassword();
   }
@@ -303,12 +289,6 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   @override
-  void dispose() {
-    _otpController.stopListen();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     ConstantColors cc = ConstantColors();
     final loginController = Provider.of<LoginService>(context);
@@ -403,16 +383,54 @@ class _LoginPageState extends State<LoginPage> {
                                             .invalidMobileNumber,
                                         ConstantColors().warningColor);
                                   } else {
-                                    // context.read<LoginService>().otpVerify(
-                                    //     numberController.text.toString(),
-                                    //     "UID",
-                                    //     "0",
-                                    //     context,
-                                    //     true);
-                                    await loginFunction(
-                                      context,
-                                      loginController,
-                                      numberController.text.trim(),
+                                    loginController
+                                        .sendOTPWithFirebase(
+                                            phoneNumber:
+                                                "+91${numberController.text.toString()}",
+                                            context: context)
+                                        .then(
+                                      (value) {
+                                        if (value == true) {
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (_) =>
+                                                  ChangeNotifierProvider.value(
+                                                value:
+                                                    Provider.of<LoginService>(
+                                                        context,
+                                                        listen: false),
+                                                child: OtpVerifyPage(
+                                                  navigationModel:
+                                                      NavigationModel(
+                                                    isLoggedIn: false,
+                                                    navFrom: "login",
+                                                    pageName: numberController
+                                                        .text
+                                                        .toString(),
+                                                    roleType: widget
+                                                        .navigationModel
+                                                        ?.roleType
+                                                        .toString(),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        } else {
+                                          final errorMessage = loginController
+                                              .verificationErrorMessage;
+                                          OthersHelper()
+                                              .showCompactSuccessDialog2(
+                                            context,
+                                            image: "assets/icons/error.gif",
+                                            messageType: "Error",
+                                            messageTitle: "Error",
+                                            message: errorMessage.toString(),
+                                            onTap: () =>
+                                                Navigator.of(context).pop(),
+                                          );
+                                        }
+                                      },
                                     );
                                   }
                                 },
